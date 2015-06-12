@@ -36,8 +36,6 @@ namespace Rabbit.WeiXin.Sample.Controllers
 
             var context = new HandlerContext(Request);
 
-            //设置依赖注入。
-            context.SetDependencyResolver(DefaultDependencyResolver.Instance);
             //设置基本信息。
             context
                 .SetMessageHandlerBaseInfo(new MessageHandlerBaseInfo(

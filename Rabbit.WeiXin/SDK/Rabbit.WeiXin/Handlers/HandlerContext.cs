@@ -71,6 +71,9 @@ namespace Rabbit.WeiXin.Handlers
         {
             Request = request.NotNull("request");
             Environment = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+            //设置默认的依赖解析器。
+            this.SetDependencyResolver(DefaultDependencyResolver.Instance);
         }
 
         #region Implementation of IHandlerContext
