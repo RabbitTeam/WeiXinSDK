@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin", "Rabbit.WeiXin\Rabbit.WeiXin.csproj", "{3F244F68-3C83-47CF-A733-8E75567202B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin", "SDK\Rabbit.WeiXin\Rabbit.WeiXin.csproj", "{3F244F68-3C83-47CF-A733-8E75567202B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.MvcExtension", "Rabbit.WeiXin.MvcExtension\Rabbit.WeiXin.MvcExtension.csproj", "{7AF00BC0-3381-4817-BE91-FA7413811526}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.MvcExtension", "SDK\Rabbit.WeiXin.MvcExtension\Rabbit.WeiXin.MvcExtension.csproj", "{7AF00BC0-3381-4817-BE91-FA7413811526}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A063200D-803B-4DA8-A374-88EECF220823}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.Tests", "Rabbit.WeiXin.Tests\Rabbit.WeiXin.Tests.csproj", "{AE979F9B-3CF0-43B2-8205-7BDFE1143B7E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{F919AD5B-2909-4C28-905A-86E89E6E00F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{3F244F68-3C83-47CF-A733-8E75567202B3} = {F919AD5B-2909-4C28-905A-86E89E6E00F9}
+		{7AF00BC0-3381-4817-BE91-FA7413811526} = {F919AD5B-2909-4C28-905A-86E89E6E00F9}
 		{AE979F9B-3CF0-43B2-8205-7BDFE1143B7E} = {A063200D-803B-4DA8-A374-88EECF220823}
 	EndGlobalSection
 EndGlobal
