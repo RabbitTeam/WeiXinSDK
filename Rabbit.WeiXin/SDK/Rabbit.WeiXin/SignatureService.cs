@@ -34,7 +34,7 @@ namespace Rabbit.WeiXin
         /// <returns>检验成功则返回true，否则返回false。</returns>
         public bool Check(string signature, string timestamp, string nonce, string token)
         {
-            return signature.Equals(GetSignature(timestamp, nonce, token));
+            return new[] { signature, timestamp, nonce, token }.All(i => !string.IsNullOrEmpty(i)) && signature.Equals(GetSignature(timestamp, nonce, token));
         }
 
         #endregion Implementation of ISignatureService

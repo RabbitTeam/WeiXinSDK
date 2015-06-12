@@ -1,3 +1,6 @@
+using Rabbit.WeiXin.DependencyInjection;
+using Rabbit.WeiXin.Messages.Request;
+using Rabbit.WeiXin.Messages.Response;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Collections.Concurrent;
@@ -117,5 +120,132 @@ namespace Rabbit.WeiXin.Handlers
         }
 
         #endregion Implementation of IHandlerContext
+    }
+
+    /// <summary>
+    /// 处理上下文扩展方法。
+    /// </summary>
+    public static partial class HandlerContextExtensions
+    {
+        /// <summary>
+        /// 设置依赖解析器。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <param name="dependencyResolver">依赖解析器实例。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="dependencyResolver"/> 为 null。</exception>
+        /// <returns>处理上下文。</returns>
+        public static IHandlerContext SetDependencyResolver(this IHandlerContext context, IDependencyResolver dependencyResolver)
+        {
+            context.NotNull("context").Environment["Rabbit.WeiXin.DependencyResolver"] = dependencyResolver.NotNull("dependencyResolver");
+
+            return context;
+        }
+
+        /// <summary>
+        /// 获取依赖解析器。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="Exception">在当前上下文中找不到依赖解析器。</exception>
+        /// <returns>依赖解析器。</returns>
+        public static IDependencyResolver GetDependencyResolver(this IHandlerContext context)
+        {
+            var dependencyResolver = context.NotNull("context").Environment["Rabbit.WeiXin.DependencyResolver"] as IDependencyResolver;
+            if (dependencyResolver == null)
+                throw new Exception("在当前上下文中找不到依赖解析器，您可以通过 SetDependencyResolver 方法设置一个依赖解析器。");
+
+            return dependencyResolver;
+        }
+
+        /// <summary>
+        /// 获取请求消息。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="Exception">在当前上下文中找不到请求消息。</exception>
+        /// <returns>请求消息实例。</returns>
+        public static IRequestMessageBase GetRequestMessage(this IHandlerContext context)
+        {
+            var requestMessage = context.Environment["Rabbit.WeiXin.RequestMessage"] as IRequestMessageBase;
+            if (requestMessage == null)
+                throw new Exception("在当前上下文中找不到请求消息，请确保注册的处理中间件中有包含对请求消息创建的处理动作。");
+            return requestMessage;
+        }
+
+        /// <summary>
+        /// 设置请求消息。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <param name="requestMessage">请求消息。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="requestMessage"/> 为 null。</exception>
+        /// <returns>处理上下文。</returns>
+        internal static IHandlerContext SetRequestMessage(this IHandlerContext context, IRequestMessageBase requestMessage)
+        {
+            context.NotNull("context").Environment["Rabbit.WeiXin.RequestMessage"] = requestMessage.NotNull("requestMessage");
+
+            return context;
+        }
+
+        /// <summary>
+        /// 获取响应消息。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="Exception">在当前上下文中找不到响应消息。</exception>
+        /// <returns>响应消息实例。</returns>
+        public static IResponseMessage GetResponseMessage(this IHandlerContext context)
+        {
+            var responseMessage = context.Environment["Rabbit.WeiXin.ResponseMessage"] as IResponseMessage;
+            if (responseMessage == null)
+                throw new Exception("在当前上下文中找不到响应消息，请确保注册的处理中间件中有包含对响应消息创建的处理动作。");
+            return responseMessage;
+        }
+
+        /// <summary>
+        /// 设置响应消息。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <param name="responseMessage">响应消息。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="responseMessage"/> 为 null。</exception>
+        /// <returns>处理上下文。</returns>
+        public static IHandlerContext SetResponseMessage(this IHandlerContext context, IResponseMessage responseMessage)
+        {
+            context.NotNull("context").Environment["Rabbit.WeiXin.ResponseMessage"] = responseMessage.NotNull("responseMessage");
+
+            return context;
+        }
+
+        /// <summary>
+        /// 获取消息处理基本信息。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="Exception">在当前上下文中找不到消息处理基本信息。</exception>
+        /// <returns>消息处理基本信息。</returns>
+        public static MessageHandlerBaseInfo GetMessageHandlerBaseInfo(this IHandlerContext context)
+        {
+            var info = context.Environment["Rabbit.WeiXin.MessageHandlerBaseInfo"] as MessageHandlerBaseInfo;
+            if (info == null)
+                throw new Exception("在当前上下文中找不到消息处理基本信息，请确保向处理上下文注册了消息处理基本信息。");
+            return info;
+        }
+
+        /// <summary>
+        /// 设置消息处理基本信息。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        /// <param name="baseInfo">消息处理基本信息。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="baseInfo"/> 为 null。</exception>
+        /// <returns>处理上下文。</returns>
+        public static IHandlerContext SetMessageHandlerBaseInfo(this IHandlerContext context, MessageHandlerBaseInfo baseInfo)
+        {
+            context.NotNull("context").Environment["Rabbit.WeiXin.MessageHandlerBaseInfo"] = baseInfo.NotNull("baseInfo");
+
+            return context;
+        }
     }
 }

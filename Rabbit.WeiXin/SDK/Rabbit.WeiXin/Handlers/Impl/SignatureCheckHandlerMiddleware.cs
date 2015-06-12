@@ -32,7 +32,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
             var timestamp = request.QueryString["timestamp"];
             var nonce = request.QueryString["nonce"];
 
-            var dependencyResolver = context.Get<IDependencyResolver>("DependencyResolver");
+            var dependencyResolver = context.GetDependencyResolver();
             var signatureService = dependencyResolver.GetService<ISignatureService>();
             if (!signatureService.Check(signature, timestamp, nonce, "weixin"))
                 throw new Exception("非法请求。");

@@ -1,6 +1,5 @@
 ﻿using Rabbit.WeiXin.DependencyInjection;
 using Rabbit.WeiXin.Messages;
-using Rabbit.WeiXin.Messages.Response;
 using System.Threading.Tasks;
 using Tencent;
 
@@ -29,9 +28,9 @@ namespace Rabbit.WeiXin.Handlers.Impl
         /// <returns>任务。</returns>
         public override Task Invoke(IHandlerContext context)
         {
-            var responseMessage = context.Get<IResponseMessage>("ResponseMessage");
+            var responseMessage = context.GetResponseMessage();
 
-            var dependencyResolver = context.Get<IDependencyResolver>("DependencyResolver");
+            var dependencyResolver = context.GetDependencyResolver();
             var responseMessageFactory = dependencyResolver.GetService<IResponseMessageFactory>();
             var content = responseMessage == null ? string.Empty : responseMessageFactory.GetXmlByReponseMessage(responseMessage);
 
@@ -46,9 +45,11 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 {
                     var nonce = request.QueryString["nonce"];
                     var timestamp = request.QueryString["timestamp"];
-                    var appId = context.Get<string>("AppId");
-                    var encodingAesKey = context.Get<string>("EncodingAesKey");
-                    var token = context.Get<string>("Token");
+
+                    var baseInfo = context.GetMessageHandlerBaseInfo();
+                    var appId = baseInfo.AppId;
+                    var encodingAesKey = baseInfo.EncodingAesKey;
+                    var token = baseInfo.Token;
 
                     var wxBizMsgCrypt = new WXBizMsgCrypt(token, encodingAesKey, appId);
                     wxBizMsgCrypt.EncryptMsg(content, timestamp, nonce, ref content);

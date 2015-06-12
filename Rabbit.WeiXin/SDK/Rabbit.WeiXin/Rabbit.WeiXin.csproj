@@ -83,7 +83,9 @@
     <Compile Include="Handlers\Impl\AgentHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\MessageHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\IgnoreRepeatMessageHandlerMiddleware.cs" />
+    <Compile Include="Handlers\Impl\SessionSupportHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\SignatureCheckHandlerMiddleware.cs" />
+    <Compile Include="Handlers\MessageHandlerBaseInfo.cs" />
     <Compile Include="Handlers\WeiXinHandler.cs" />
     <Compile Include="DependencyInjection\IDependencyResolver.cs" />
     <Compile Include="Messages\Events\CustomMenu\ClickMessage.cs" />

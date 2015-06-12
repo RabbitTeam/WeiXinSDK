@@ -28,6 +28,7 @@ namespace Rabbit.WeiXin.Sample.Controllers
             builder
                 .Use<SignatureCheckHandlerMiddleware>() //验证签名中间件。
                 .Use<CreateRequestMessageHandlerMiddleware>() //创建消息中间件（内置消息解密逻辑）。
+                .Use<SessionSupportHandlerMiddleware>() //会话支持中间件。
                 .Use<IgnoreRepeatMessageHandlerMiddleware>() //忽略重复的消息中间件。
                 .Use<TestMessageHandlerMiddleware>() //测试消息处理中间件。
                 .Use<GenerateResponseXmlHandlerMiddleware>(); //生成相应XML处理中间件（内置消息加密逻辑）。
@@ -35,10 +36,14 @@ namespace Rabbit.WeiXin.Sample.Controllers
 
             var context = new HandlerContext(Request);
 
-            context.Set("DependencyResolver", DefaultDependencyResolver.Instance);
-            context.Set("AppId", "wxa4ab3e636e2eb702");
-            context.Set("EncodingAesKey", "zhRjo19GUoReVbuC4b3HrWADbTcQlOnt7qe1wmDmg4T");
-            context.Set("Token", "weixin");
+            //设置依赖注入。
+            context.SetDependencyResolver(DefaultDependencyResolver.Instance);
+            //设置基本信息。
+            context
+                .SetMessageHandlerBaseInfo(new MessageHandlerBaseInfo(
+                    "wxa4ab3e636e2eb702",
+                    "zhRjo19GUoReVbuC4b3HrWADbTcQlOnt7qe1wmDmg4T",
+                    "weixin"));
 
             IWeiXinHandler weiXinHandler = new DefaultWeiXinHandler(builder);
             weiXinHandler.Execute(context);

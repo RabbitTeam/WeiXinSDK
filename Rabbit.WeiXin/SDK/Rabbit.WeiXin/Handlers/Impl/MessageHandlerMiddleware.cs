@@ -13,6 +13,8 @@ namespace Rabbit.WeiXin.Handlers.Impl
     /// </summary>
     public abstract class MessageHandlerMiddleware : HandlerMiddleware
     {
+        #region Constructor
+
         /// <summary>
         /// 初始化一个新的处理中间件。
         /// </summary>
@@ -21,6 +23,17 @@ namespace Rabbit.WeiXin.Handlers.Impl
             : base(next)
         {
         }
+
+        #endregion Constructor
+
+        #region Property
+
+        /// <summary>
+        /// 处理上下文。
+        /// </summary>
+        protected IHandlerContext Context { get; private set; }
+
+        #endregion Property
 
         #region Overrides of HandlerMiddleware
 
@@ -31,7 +44,9 @@ namespace Rabbit.WeiXin.Handlers.Impl
         /// <returns>任务。</returns>
         public override Task Invoke(IHandlerContext context)
         {
-            var requestMessage = context.Get<IRequestMessageBase>("RequestMessage");
+            Context = context;
+
+            var requestMessage = context.GetRequestMessage();
 
             IResponseMessage responseMessage;
             switch (requestMessage.MessageType)
@@ -80,7 +95,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 responseMessage.ToUserName = requestMessage.FromUserName;
             }
 
-            context.Set("ResponseMessage", responseMessage);
+            context.SetResponseMessage(responseMessage);
 
             return Next.Invoke(context);
         }

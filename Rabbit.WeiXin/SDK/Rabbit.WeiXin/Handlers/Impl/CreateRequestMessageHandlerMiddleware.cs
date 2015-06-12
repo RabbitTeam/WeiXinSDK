@@ -31,7 +31,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
         public override Task Invoke(IHandlerContext context)
         {
             var request = context.Request;
-            var dependencyResolver = context.Get<IDependencyResolver>("DependencyResolver");
+            var dependencyResolver = context.GetDependencyResolver();
             var requestMessageFactory = dependencyResolver.GetService<IRequestMessageFactory>();
 
             var content = Encoding.UTF8.GetString(request.InputStream.ReadBytes());
@@ -45,9 +45,11 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 var nonce = request.QueryString["nonce"];
                 var signature = request.QueryString["msg_signature"];
                 var timestamp = request.QueryString["timestamp"];
-                var appId = context.Get<string>("AppId");
-                var encodingAesKey = context.Get<string>("EncodingAesKey");
-                var token = context.Get<string>("Token");
+
+                var baseInfo = context.GetMessageHandlerBaseInfo();
+                var appId = baseInfo.AppId;
+                var encodingAesKey = baseInfo.EncodingAesKey;
+                var token = baseInfo.Token;
 
                 var wxBizMsgCrypt = new WXBizMsgCrypt(token, encodingAesKey, appId);
                 wxBizMsgCrypt.DecryptMsg(signature, timestamp, nonce, content, ref content);
@@ -55,7 +57,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
 
             #endregion Decrypt
 
-            context.Set("RequestMessage", requestMessageFactory.CreateRequestMessage(content));
+            context.SetRequestMessage(requestMessageFactory.CreateRequestMessage(content));
 
             return Next.Invoke(context);
         }

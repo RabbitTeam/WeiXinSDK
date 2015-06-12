@@ -41,7 +41,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
         /// <returns>任务。</returns>
         public override Task Invoke(IHandlerContext context)
         {
-            var requestMessage = context.Get<IRequestMessageBase>("RequestMessage");
+            var requestMessage = context.GetRequestMessage();
 
             //得到消息的唯一标识。
             var identity = GetMessageIdentity(requestMessage);
