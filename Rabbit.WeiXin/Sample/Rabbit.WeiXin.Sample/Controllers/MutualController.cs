@@ -28,6 +28,7 @@ namespace Rabbit.WeiXin.Sample.Controllers
             builder
                 .Use<SignatureCheckHandlerMiddleware>()             //验证签名中间件。
                 .Use<CreateRequestMessageHandlerMiddleware>()   //创建消息中间件。
+                .Use<IgnoreRepeatMessageHandlerMiddleware>()    //忽略重复的消息中间件。
                 .Use<TestMessageHandlerMiddleware>()                //测试消息处理中间件。
                 .Use<GenerateResponseXmlHandlerMiddleware>();   //生成相应XML处理中间件。
 

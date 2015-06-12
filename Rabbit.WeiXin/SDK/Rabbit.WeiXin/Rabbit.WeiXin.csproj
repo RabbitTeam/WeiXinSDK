@@ -81,6 +81,7 @@
     <Compile Include="Handlers\Impl\EmptyHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\GenerateResponseXmlHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\MessageHandlerMiddleware.cs" />
+    <Compile Include="Handlers\Impl\IgnoreRepeatMessageHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\SignatureCheckHandlerMiddleware.cs" />
     <Compile Include="Handlers\WeiXinHandler.cs" />
     <Compile Include="DependencyInjection\IDependencyResolver.cs" />
