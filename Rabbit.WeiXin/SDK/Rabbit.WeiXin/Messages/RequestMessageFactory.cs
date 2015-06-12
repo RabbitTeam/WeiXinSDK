@@ -18,7 +18,7 @@ namespace Rabbit.WeiXin.Messages
         /// </summary>
         /// <param name="xmlContent">xml内容。</param>
         /// <returns>请求消息。</returns>
-        IMessageBase CreateRequestMessage(string xmlContent);
+        IRequestMessageBase CreateRequestMessage(string xmlContent);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ namespace Rabbit.WeiXin.Messages
         /// </summary>
         /// <param name="xmlContent">xml内容。</param>
         /// <returns>请求消息。</returns>
-        public IMessageBase CreateRequestMessage(string xmlContent)
+        public IRequestMessageBase CreateRequestMessage(string xmlContent)
         {
             Func<string, XContainer> getRoot = content =>
             {
@@ -47,7 +47,7 @@ namespace Rabbit.WeiXin.Messages
             var root = getRoot(xmlContent);
 
             var requestMessageType = GetRequestMessageType(root);
-            return MessageFormatterFactory.Factory.GetFormatter(requestMessageType).Deserialize(root);
+            return (IRequestMessageBase)MessageFormatterFactory.Factory.GetFormatter(requestMessageType).Deserialize(root);
         }
 
         #endregion Implementation of IRequestMessageFactory
