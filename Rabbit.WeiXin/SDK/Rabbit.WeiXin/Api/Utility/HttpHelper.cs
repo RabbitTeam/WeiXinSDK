@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
+using Rabbit.WeiXin.Utility.Extensions;
 using System.Net;
 using System.Text;
 
@@ -93,7 +92,7 @@ namespace Rabbit.WeiXin.Api.Utility
                 using (var responseStream = response.GetResponseStream())
                 {
                     responseHeaders = response.Headers;
-                    return ReadBytes(responseStream);
+                    return responseStream.ReadBytes();
                 }
             }
         }
@@ -110,25 +109,10 @@ namespace Rabbit.WeiXin.Api.Utility
                 {
                     using (var responseStream = response.GetResponseStream())
                     {
-                        return ReadBytes(responseStream);
+                        return responseStream.ReadBytes();
                     }
                 }
             }
         }
-
-        #region Private Method
-
-        private static byte[] ReadBytes(Stream stream)
-        {
-            var list = new List<byte>();
-            int b;
-            while ((b = stream.ReadByte()) != -1)
-            {
-                list.Add((byte)b);
-            }
-            return list.ToArray();
-        }
-
-        #endregion Private Method
     }
 }

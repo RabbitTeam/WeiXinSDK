@@ -1,5 +1,6 @@
 using Rabbit.WeiXin.DependencyInjection;
 using Rabbit.WeiXin.Messages;
+using Rabbit.WeiXin.Utility.Extensions;
 using System.Text;
 using System.Threading.Tasks;
 using Tencent;
@@ -33,10 +34,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
             var dependencyResolver = context.Get<IDependencyResolver>("DependencyResolver");
             var requestMessageFactory = dependencyResolver.GetService<IRequestMessageFactory>();
 
-            var stream = request.InputStream;
-            var bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
-            var content = Encoding.UTF8.GetString(bytes);
+            var content = Encoding.UTF8.GetString(request.InputStream.ReadBytes());
 
             #region Decrypt
 

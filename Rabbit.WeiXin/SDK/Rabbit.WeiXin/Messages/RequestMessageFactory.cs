@@ -1,6 +1,6 @@
 ﻿using Rabbit.WeiXin.Messages.Request;
 using Rabbit.WeiXin.Serialization;
-using Rabbit.WeiXin.Utility;
+using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.IO;
 using System.Text;
@@ -35,16 +35,10 @@ namespace Rabbit.WeiXin.Messages
         /// <returns>请求消息。</returns>
         public IRequestMessageBase CreateRequestMessage(string xmlContent)
         {
-            Func<string, XContainer> getRoot = content =>
-            {
-                var document = XDocument.Parse(content);
-                var container = document.Element("xml");
-                if (container == null)
-                    throw new ArgumentException("找不到根元素 xml。");
-                return container;
-            };
-
-            var root = getRoot(xmlContent);
+            var document = XDocument.Parse(xmlContent);
+            var root = document.Element("xml");
+            if (root == null)
+                throw new ArgumentException("找不到根元素 xml。");
 
             var requestMessageType = GetRequestMessageType(root);
             return (IRequestMessageBase)MessageFormatterFactory.Factory.GetFormatter(requestMessageType).Deserialize(root);

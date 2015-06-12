@@ -1,4 +1,4 @@
-﻿using Rabbit.WeiXin.Utility;
+﻿using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Linq;
 

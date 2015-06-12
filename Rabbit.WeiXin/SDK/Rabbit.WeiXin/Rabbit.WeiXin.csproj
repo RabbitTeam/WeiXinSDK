@@ -80,6 +80,7 @@
     <Compile Include="Handlers\Impl\CreateRequestMessageHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\EmptyHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\GenerateResponseXmlHandlerMiddleware.cs" />
+    <Compile Include="Handlers\Impl\AgentHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\MessageHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\IgnoreRepeatMessageHandlerMiddleware.cs" />
     <Compile Include="Handlers\Impl\SignatureCheckHandlerMiddleware.cs" />
@@ -164,13 +165,15 @@
     <Compile Include="Tencent\Cryptography.cs" />
     <Compile Include="Tencent\WXBizMsgCrypt.cs" />
     <Compile Include="Utility\DateTimeHelper.cs" />
-    <Compile Include="Utility\ObjectExtensions.cs" />
+    <Compile Include="Utility\Extensions\ObjectExtensions.cs" />
+    <Compile Include="Utility\Extensions\StreamExtensions.cs" />
     <Compile Include="WeiXinException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rabbit.WeiXin.Utility
+namespace Rabbit.WeiXin.Utility.Extensions
 {
     /// <summary>
     /// 对象扩展方法。
