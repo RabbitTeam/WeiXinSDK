@@ -3,6 +3,7 @@ using Rabbit.WeiXin.Messages.Events;
 using Rabbit.WeiXin.Serialization.Providers.Event;
 using Rabbit.WeiXin.Serialization.Providers.Event.CustomMenu;
 using Rabbit.WeiXin.Serialization.Providers.Event.CustomService;
+using Rabbit.WeiXin.Utility;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -83,11 +84,7 @@ namespace Rabbit.WeiXin.Serialization.Providers.Request
 
             var type = typeElemment.Value;
 
-            T value;
-            if (!Enum.TryParse(type, true, out value))
-                throw new NotSupportedException(string.Format("无法将 {0} 转换为指定的类型 {1}。", type, typeof(T).FullName));
-
-            return value;
+            return EnumParseCacheHelper.Parse<T>(type);
         }
 
         #endregion Private Method

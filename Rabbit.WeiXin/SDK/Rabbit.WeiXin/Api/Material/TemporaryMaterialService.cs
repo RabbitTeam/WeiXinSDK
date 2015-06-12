@@ -1,6 +1,6 @@
-﻿using ChunSun.PublicPlatform.Services.Utility;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Rabbit.WeiXin.Api.Utility;
+using Rabbit.WeiXin.Utility;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Net;

@@ -19,8 +19,23 @@ namespace Rabbit.WeiXin.Messages
     /// <summary>
     /// 响应消息工厂实现。
     /// </summary>
-    public sealed class ResponseMessageFactory : IResponseMessageFactory
+    internal sealed class ResponseMessageFactory : IResponseMessageFactory
     {
+        #region Field
+
+        private readonly IMessageFormatterFactory _messageFormatterFactory;
+
+        #endregion Field
+
+        #region Constructor
+
+        public ResponseMessageFactory(IMessageFormatterFactory messageFormatterFactory)
+        {
+            _messageFormatterFactory = messageFormatterFactory;
+        }
+
+        #endregion Constructor
+
         #region Implementation of IResponseMessageFactory
 
         /// <summary>
@@ -30,8 +45,7 @@ namespace Rabbit.WeiXin.Messages
         /// <returns>xml内容。</returns>
         public string GetXmlByReponseMessage(IResponseMessage responseMessage)
         {
-            var content = MessageFormatterFactory.Factory.GetFormatter(responseMessage.MessageType).Serialize(responseMessage);
-            return content;
+            return _messageFormatterFactory.GetFormatter(responseMessage.MessageType).Serialize(responseMessage);
         }
 
         #endregion Implementation of IResponseMessageFactory

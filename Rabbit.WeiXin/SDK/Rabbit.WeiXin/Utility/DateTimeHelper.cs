@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ChunSun.PublicPlatform.Services.Utility
+namespace Rabbit.WeiXin.Utility
 {
     public class DateTimeHelper
     {
-        private static readonly DateTime StartTime = new DateTime(1970, 1, 1);
+        public static DateTime StartTime = new DateTime(1970, 1, 1);
 
         public static DateTime GetTimeByTimeStamp(ulong timestamp)
         {
@@ -13,8 +13,8 @@ namespace ChunSun.PublicPlatform.Services.Utility
 
         public static DateTime GetTimeByTimeStampString(string timestampString)
         {
-            long timestamp;
-            if (!long.TryParse(timestampString, out timestamp))
+            ulong timestamp;
+            if (!ulong.TryParse(timestampString, out timestamp))
                 throw new ArgumentNullException("timestampString", "不是一个有效的时间戳。");
             return StartTime.AddSeconds(timestamp);
         }

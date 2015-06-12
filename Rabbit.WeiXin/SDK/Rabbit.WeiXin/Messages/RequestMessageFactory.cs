@@ -1,5 +1,6 @@
 ﻿using Rabbit.WeiXin.Messages.Request;
 using Rabbit.WeiXin.Serialization;
+using Rabbit.WeiXin.Utility;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.IO;
@@ -24,8 +25,23 @@ namespace Rabbit.WeiXin.Messages
     /// <summary>
     /// 请求消息工厂实现。
     /// </summary>
-    public sealed class RequestMessageFactory : IRequestMessageFactory
+    internal sealed class RequestMessageFactory : IRequestMessageFactory
     {
+        #region Field
+
+        private readonly IMessageFormatterFactory _messageFormatterFactory;
+
+        #endregion Field
+
+        #region Constructor
+
+        public RequestMessageFactory(IMessageFormatterFactory messageFormatterFactory)
+        {
+            _messageFormatterFactory = messageFormatterFactory;
+        }
+
+        #endregion Constructor
+
         #region Implementation of IRequestMessageFactory
 
         /// <summary>
@@ -41,7 +57,8 @@ namespace Rabbit.WeiXin.Messages
                 throw new ArgumentException("找不到根元素 xml。");
 
             var requestMessageType = GetRequestMessageType(root);
-            return (IRequestMessageBase)MessageFormatterFactory.Factory.GetFormatter(requestMessageType).Deserialize(root);
+
+            return (IRequestMessageBase)_messageFormatterFactory.GetFormatter(requestMessageType).Deserialize(root);
         }
 
         #endregion Implementation of IRequestMessageFactory
@@ -61,11 +78,7 @@ namespace Rabbit.WeiXin.Messages
 
             var type = typeElemment.Value;
 
-            T value;
-            if (!Enum.TryParse(type, true, out value))
-                throw new NotSupportedException(string.Format("无法将 {0} 转换为指定的类型 {1}。", type, typeof(T).FullName));
-
-            return value;
+            return EnumParseCacheHelper.Parse<T>(type);
         }
 
         #endregion Private Method

@@ -8,13 +8,33 @@ using response = Rabbit.WeiXin.Serialization.Providers.Response;
 namespace Rabbit.WeiXin.Serialization
 {
     /// <summary>
+    /// 一个抽象的消息格式化器工厂。
+    /// </summary>
+    public interface IMessageFormatterFactory
+    {
+        /// <summary>
+        /// 根据请求消息类型得到一个对应的格式化器。
+        /// </summary>
+        /// <param name="requestMessageType">请求消息类型。</param>
+        /// <returns>一个可用消息格式化器。</returns>
+        /// <exception cref="NotSupportedException">请求消息的类型不被支持。</exception>
+        IMessageFormatter GetFormatter(RequestMessageType requestMessageType);
+
+        /// <summary>
+        /// 根据请求消息类型得到一个对应的格式化器。
+        /// </summary>
+        /// <param name="responseMessageType">响应消息类型。</param>
+        /// <returns>一个可用消息格式化器。</returns>
+        /// <exception cref="NotSupportedException">响应消息的类型不被支持。</exception>
+        IMessageFormatter GetFormatter(ResponseMessageType responseMessageType);
+    }
+
+    /// <summary>
     /// 消息格式化器工厂。
     /// </summary>
-    public class MessageFormatterFactory
+    internal sealed class MessageFormatterFactory : IMessageFormatterFactory
     {
         #region Field
-
-        private static readonly MessageFormatterFactory Instance = new MessageFormatterFactory();
 
         private static readonly IDictionary<RequestMessageType, IMessageFormatter> RequestMessageFormatterDictionary = new Dictionary<RequestMessageType, IMessageFormatter>
         {
@@ -39,9 +59,9 @@ namespace Rabbit.WeiXin.Serialization
             {ResponseMessageType.Voice, new response.VoiceMessageFormatter()}
         };
 
-        public static MessageFormatterFactory Factory { get { return Instance; } }
-
         #endregion Field
+
+        #region Implementation of IMessageFormatterFactory
 
         /// <summary>
         /// 根据请求消息类型得到一个对应的格式化器。
@@ -51,9 +71,12 @@ namespace Rabbit.WeiXin.Serialization
         /// <exception cref="NotSupportedException">请求消息的类型不被支持。</exception>
         public IMessageFormatter GetFormatter(RequestMessageType requestMessageType)
         {
-            if (!RequestMessageFormatterDictionary.ContainsKey(requestMessageType))
+            var formatter = RequestMessageFormatterDictionary[requestMessageType];
+
+            if (formatter == null)
                 throw new NotSupportedException(string.Format("不支持的请求消息类型：{0}。", requestMessageType));
-            return RequestMessageFormatterDictionary[requestMessageType];
+
+            return formatter;
         }
 
         /// <summary>
@@ -64,9 +87,14 @@ namespace Rabbit.WeiXin.Serialization
         /// <exception cref="NotSupportedException">响应消息的类型不被支持。</exception>
         public IMessageFormatter GetFormatter(ResponseMessageType responseMessageType)
         {
-            if (!ResponseMessageFormatterDictionary.ContainsKey(responseMessageType))
-                throw new NotSupportedException(string.Format("不支持的响应消息类型 {0}。", responseMessageType));
-            return ResponseMessageFormatterDictionary[responseMessageType];
+            var formatter = ResponseMessageFormatterDictionary[responseMessageType];
+
+            if (formatter == null)
+                throw new NotSupportedException(string.Format("不支持的响应消息类型：{0}。", responseMessageType));
+
+            return formatter;
         }
+
+        #endregion Implementation of IMessageFormatterFactory
     }
 }

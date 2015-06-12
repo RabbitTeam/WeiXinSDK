@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rabbit.WeiXin.DependencyInjection;
 using Rabbit.WeiXin.Messages;
 using Rabbit.WeiXin.Messages.Response;
 using System;
@@ -11,7 +12,7 @@ namespace Rabbit.WeiXin.Tests
     {
         #region Field
 
-        private readonly IResponseMessageFactory _responseMessageFactory = new ResponseMessageFactory();
+        private readonly IResponseMessageFactory _responseMessageFactory = DefaultDependencyResolver.Instance.GetService<IResponseMessageFactory>();
 
         #endregion Field
 

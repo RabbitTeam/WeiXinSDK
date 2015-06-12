@@ -1,7 +1,7 @@
-﻿using ChunSun.PublicPlatform.Services.Utility;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.Api.Utility;
+using Rabbit.WeiXin.Utility;
 using System;
 using System.Linq;
 

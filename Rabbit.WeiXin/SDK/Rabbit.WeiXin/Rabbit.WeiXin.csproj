@@ -167,6 +167,7 @@
     <Compile Include="Tencent\Cryptography.cs" />
     <Compile Include="Tencent\WXBizMsgCrypt.cs" />
     <Compile Include="Utility\DateTimeHelper.cs" />
+    <Compile Include="Utility\EnumParseCacheHelper.cs" />
     <Compile Include="Utility\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utility\Extensions\StreamExtensions.cs" />
     <Compile Include="WeiXinException.cs" />

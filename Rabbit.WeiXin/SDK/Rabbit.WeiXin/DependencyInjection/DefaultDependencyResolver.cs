@@ -1,5 +1,6 @@
 ﻿using Rabbit.WeiXin.Handlers.Impl;
 using Rabbit.WeiXin.Messages;
+using Rabbit.WeiXin.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -12,11 +13,14 @@ namespace Rabbit.WeiXin.DependencyInjection
     {
         #region Field
 
-        private static readonly IDependencyResolver DependencyResolver = new DefaultDependencyResolver();
+        private static readonly IDependencyResolver DependencyResolver;
 
         private static readonly ISignatureService SignatureService = new SignatureService();
-        private static readonly IRequestMessageFactory RequestMessageFactory = new RequestMessageFactory();
-        private static readonly IResponseMessageFactory ResponseMessageFactory = new ResponseMessageFactory();
+
+        private static readonly IMessageFormatterFactory MessageFormatterFactory = new MessageFormatterFactory();
+
+        private static readonly IRequestMessageFactory RequestMessageFactory = new RequestMessageFactory(MessageFormatterFactory);
+        private static readonly IResponseMessageFactory ResponseMessageFactory = new ResponseMessageFactory(MessageFormatterFactory);
 
         //局部单例。
         private readonly IUserSessionCollection _userSessionCollection = new UserSessionCollection(TimeSpan.FromMinutes(20));
@@ -31,6 +35,11 @@ namespace Rabbit.WeiXin.DependencyInjection
         #endregion Field
 
         #region Constructor
+
+        static DefaultDependencyResolver()
+        {
+            DependencyResolver = new DefaultDependencyResolver();
+        }
 
         public DefaultDependencyResolver()
         {

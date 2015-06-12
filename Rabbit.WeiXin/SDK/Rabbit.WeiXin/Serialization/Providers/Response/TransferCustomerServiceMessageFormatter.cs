@@ -1,5 +1,5 @@
-﻿using ChunSun.PublicPlatform.Services.Utility;
-using Rabbit.WeiXin.Messages.Response;
+﻿using Rabbit.WeiXin.Messages.Response;
+using Rabbit.WeiXin.Utility;
 using System;
 using System.Text;
 using System.Xml.Linq;

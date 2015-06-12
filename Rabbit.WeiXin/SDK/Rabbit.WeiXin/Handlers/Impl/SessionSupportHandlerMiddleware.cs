@@ -96,7 +96,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
         /// <summary>
         /// 用户会话字典。
         /// </summary>
-        private static readonly ConcurrentDictionary<string, UserSession> ConcurrentDictionary = new ConcurrentDictionary<string, UserSession>();
+        private readonly ConcurrentDictionary<string, UserSession> _concurrentDictionary = new ConcurrentDictionary<string, UserSession>();
 
         #endregion Field
 
@@ -135,7 +135,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
         /// <exception cref="ArgumentNullException"><paramref name="userIdentity"/> 为空。</exception>
         public IUserSession GetOrAdd(string userIdentity)
         {
-            return ConcurrentDictionary.GetOrAdd(userIdentity.NotEmptyOrWhiteSpace("userIdentity"), k => new UserSession()).UpdateLastActiveTime();
+            return _concurrentDictionary.GetOrAdd(userIdentity.NotEmptyOrWhiteSpace("userIdentity"), k => new UserSession()).UpdateLastActiveTime();
         }
 
         /// <summary>
@@ -146,10 +146,10 @@ namespace Rabbit.WeiXin.Handlers.Impl
             return Task.Factory.StartNew(() =>
             {
                 var now = DateTime.Now;
-                foreach (var key in ConcurrentDictionary.Where(i => i.Value.LastActiveTime.Add(Timeout) < now).Select(i => i.Key).ToArray())
+                foreach (var key in _concurrentDictionary.Where(i => i.Value.LastActiveTime.Add(Timeout) < now).Select(i => i.Key).ToArray())
                 {
                     UserSession session;
-                    if (ConcurrentDictionary.TryRemove(key, out session))
+                    if (_concurrentDictionary.TryRemove(key, out session))
                     {
                         //执行事件。
                         session.OnRemoved(key);

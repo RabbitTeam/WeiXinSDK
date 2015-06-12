@@ -1,6 +1,6 @@
-﻿using ChunSun.PublicPlatform.Services.Utility;
-using Rabbit.WeiXin.Messages;
+﻿using Rabbit.WeiXin.Messages;
 using Rabbit.WeiXin.Messages.Response;
+using Rabbit.WeiXin.Utility;
 using System;
 using System.Linq;
 using System.Text;
@@ -53,7 +53,7 @@ namespace Rabbit.WeiXin.Serialization
     /// 一个Xml消息格式化器基类。
     /// </summary>
     /// <typeparam name="T">消息类型。</typeparam>
-    public abstract class XmlMessageFormatterBase<T> : IMessageFormatter<T> where T : class,IMessageBase
+    internal abstract class XmlMessageFormatterBase<T> : IMessageFormatter<T> where T : class,IMessageBase
     {
         #region Implementation of IMessageFormatter<T>
 
@@ -101,13 +101,14 @@ namespace Rabbit.WeiXin.Serialization
 
         protected static string GetValueOrDefault(XContainer container, string name, string defaultValue)
         {
-            var ele = container.Element(name);
+            var ele = GetElement(container, name);
             return ele == null ? defaultValue : ele.Value;
         }
 
         protected static string GetValue(XContainer container, string name)
         {
-            var ele = container.Elements().FirstOrDefault(i => i.Name.LocalName.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var ele = GetElement(container, name);
+
             if (ele == null)
                 throw new ArgumentException(string.Format("找不到名称为 {0} 的元素。", name));
             return ele.Value;
@@ -214,7 +215,7 @@ namespace Rabbit.WeiXin.Serialization
                 .AppendFormat("<CreateTime><![CDATA[{0}]]></CreateTime>",
                     DateTimeHelper.GetTimeStampByTime(message.CreateTime));
 
-            var responseMessage = message as ResponseMessageBase;
+            var responseMessage = message as IResponseMessage;
             if (responseMessage != null)
                 builder.AppendFormat("<MsgType><![CDATA[{0}]]></MsgType>", responseMessage.MessageType);
 
@@ -227,5 +228,16 @@ namespace Rabbit.WeiXin.Serialization
         }
 
         #endregion Protected Method
+
+        #region Private Method
+
+        private static XElement GetElement(XContainer container, string name)
+        {
+            //首先直接得到元素，如果为null则忽略大小写重新尝试获取（之所以这么做是因为直接获取元素性能比后者高）。
+            return container.Element(name) ??
+                      container.Elements().FirstOrDefault(i => i.Name.LocalName.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        #endregion Private Method
     }
 }
