@@ -97,12 +97,14 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 };
 
             string content = null;
+            Exception exception = null;
             //开始请求。
             for (var i = 0; i < _agentRequestModel.RetryCount + 1/*重试次数加上一次必需请求的次数*/; i++)
             {
                 var task = getPostTask();
                 var isTimeout = !task.Wait(_agentRequestModel.Timeout);
 
+                exception = task.Exception;
                 //超时或者失败则进行尝试。
                 if (isTimeout || task.IsFaulted)
                     continue;
@@ -111,6 +113,9 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 //结束请求。
                 break;
             }
+
+            if (content == null)
+                throw new Exception("代理请求次数超过了重试次数并且目标方还是没有正确响应" + (exception == null ? "。" : "错误消息：" + exception.Message));
 
             context.ResponseXml = content;
 
