@@ -83,7 +83,7 @@
     <Content Include="Resoueces\1.mp4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Rabbit.WeiXin\Rabbit.WeiXin.csproj">
+    <ProjectReference Include="..\SDK\Rabbit.WeiXin\Rabbit.WeiXin.csproj">
       <Project>{3f244f68-3c83-47cf-a733-8e75567202b3}</Project>
       <Name>Rabbit.WeiXin</Name>
     </ProjectReference>

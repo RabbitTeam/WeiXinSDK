@@ -24,12 +24,24 @@ namespace Rabbit.WeiXin.Handlers
     /// </summary>
     public sealed class DefaultWeiXinHandler : IWeiXinHandler
     {
+        #region Field
+
         private readonly IHandlerBuilder _builder;
 
+        #endregion Field
+
+        #region Constructor
+
+        /// <summary>
+        /// 初始化一个新的默认微信处理程序。
+        /// </summary>
+        /// <param name="builder">处理构造者。</param>
         public DefaultWeiXinHandler(IHandlerBuilder builder)
         {
             _builder = builder;
         }
+
+        #endregion Constructor
 
         #region Implementation of IHandler
 
@@ -42,7 +54,7 @@ namespace Rabbit.WeiXin.Handlers
         {
             var middlewareItems = (ICollection<KeyValuePair<object, object[]>>)_builder.Properties["Rabbit.Middlewares"];
 
-            var fristMiddleware = Get(middlewareItems);
+            var fristMiddleware = GetFirstMiddleware(middlewareItems);
 
             return fristMiddleware.Invoke(context);
         }
@@ -51,7 +63,7 @@ namespace Rabbit.WeiXin.Handlers
 
         #region Private Method
 
-        private static HandlerMiddleware Get(ICollection<KeyValuePair<object, object[]>> middlewareItems)
+        private static HandlerMiddleware GetFirstMiddleware(ICollection<KeyValuePair<object, object[]>> middlewareItems)
         {
             if (middlewareItems.Count == 0)
                 return EmptyHandlerMiddleware.Instance;

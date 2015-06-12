@@ -78,6 +78,12 @@
     <None Include="Key.snk" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rabbit.WeiXin\Rabbit.WeiXin.csproj">
+      <Project>{3F244F68-3C83-47CF-A733-8E75567202B3}</Project>
+      <Name>Rabbit.WeiXin</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

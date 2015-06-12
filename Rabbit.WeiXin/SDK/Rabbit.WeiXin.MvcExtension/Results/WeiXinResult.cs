@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rabbit.WeiXin.Handlers;
+using System;
 using System.Web.Mvc;
 
 namespace Rabbit.WeiXin.MvcExtension.Results
@@ -17,6 +18,15 @@ namespace Rabbit.WeiXin.MvcExtension.Results
         {
             ContentType = "text/xml";
             Content = string.Empty;
+        }
+
+        /// <summary>
+        /// 初始化一个新的微信结果。
+        /// </summary>
+        /// <param name="context">处理上下文。</param>
+        public WeiXinResult(IHandlerContext context)
+            : this(context.ResponseXml)
+        {
         }
 
         /// <summary>

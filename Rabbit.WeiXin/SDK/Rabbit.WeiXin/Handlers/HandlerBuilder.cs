@@ -28,13 +28,24 @@ namespace Rabbit.WeiXin.Handlers
     /// </summary>
     public sealed class HandlerBuilder : IHandlerBuilder
     {
+        #region Field
+
         private readonly IList<KeyValuePair<object, object[]>> _middlewares;
 
+        #endregion Field
+
+        #region Constructor
+
+        /// <summary>
+        /// 初始化一个新的处理构造者。
+        /// </summary>
         public HandlerBuilder()
         {
             Properties = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             Properties["Rabbit.Middlewares"] = _middlewares = new List<KeyValuePair<object, object[]>>();
         }
+
+        #endregion Constructor
 
         #region Implementation of IHandlerBuilder
 
