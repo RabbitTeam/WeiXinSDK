@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>WeiXinSDK by majian159</title>
+    <title>WeiXinSDK by RabbitTeam</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -13,17 +13,190 @@
     <section class="page-header">
       <h1 class="project-name">WeiXinSDK</h1>
       <h2 class="project-tagline">微信开发SDK。</h2>
-      <a href="https://github.com/majian159/WeiXinSDK" class="btn">View on GitHub</a>
-      <a href="https://github.com/majian159/WeiXinSDK/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/majian159/WeiXinSDK/tarball/master" class="btn">Download .tar.gz</a>
+      <a href="https://github.com/RabbitTeam/WeiXinSDK" class="btn">View on GitHub</a>
+      <a href="https://github.com/RabbitTeam/WeiXinSDK/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/RabbitTeam/WeiXinSDK/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
       <h1>
-<a id="weixinsdk-微信开发sdk" class="anchor" href="#weixinsdk-%E5%BE%AE%E4%BF%A1%E5%BC%80%E5%8F%91sdk" aria-hidden="true"><span class="octicon octicon-link"></span></a>WeiXinSDK 微信开发SDK。</h1>
+<a id="支持的消息类型" class="anchor" href="#%E6%94%AF%E6%8C%81%E7%9A%84%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B" aria-hidden="true"><span class="octicon octicon-link"></span></a>支持的消息类型</h1>
+
+<h2>
+<a id="请求消息" class="anchor" href="#%E8%AF%B7%E6%B1%82%E6%B6%88%E6%81%AF" aria-hidden="true"><span class="octicon octicon-link"></span></a>请求消息</h2>
+
+<p>参考文档：<a href="http://mp.weixin.qq.com/wiki/10/79502792eef98d6e0c6e1739da387346.html">http://mp.weixin.qq.com/wiki/10/79502792eef98d6e0c6e1739da387346.html</a></p>
+
+<ol>
+<li>RequestMessageImage（图片消息）</li>
+<li>RequestMessageLink（链接消息）</li>
+<li>RequestMessageLocation（位置消息）</li>
+<li>RequestMessageShortVideo（短视频消息）</li>
+<li>RequestMessageText（文本消息）</li>
+<li>RequestMessageVideo（视频消息）</li>
+<li>RequestMessageVoice（语音消息）</li>
+</ol>
+
+<h2>
+<a id="事件消息" class="anchor" href="#%E4%BA%8B%E4%BB%B6%E6%B6%88%E6%81%AF" aria-hidden="true"><span class="octicon octicon-link"></span></a>事件消息</h2>
+
+<p>由于较多直接给出GitHub地址：
+<a href="https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.WeiXin/Messages/Events">https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.WeiXin/Messages/Events</a></p>
+
+<h2>
+<a id="响应消息" class="anchor" href="#%E5%93%8D%E5%BA%94%E6%B6%88%E6%81%AF" aria-hidden="true"><span class="octicon octicon-link"></span></a>响应消息</h2>
+
+<ol>
+<li>ResponseMessageImage（图片消息）</li>
+<li>ResponseMessageMusic（音乐消息）</li>
+<li>ResponseMessageNews（图文消息）</li>
+<li>ResponseMessageText（文本消息）</li>
+<li>ResponseMessageTransferCustomerService（多客服消息）</li>
+<li>ResponseMessageVideo（视频消息）</li>
+<li>ResponseMessageVoice（语音消息）</li>
+</ol>
+
+<h1>
+<a id="消息处理中间件" class="anchor" href="#%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86%E4%B8%AD%E9%97%B4%E4%BB%B6" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息处理中间件</h1>
+
+<ol>
+<li>SignatureCheckHandlerMiddleware（验证签名中间件）</li>
+<li>CreateRequestMessageHandlerMiddleware（创建消息中间件）</li>
+<li>SessionSupportHandlerMiddleware（会话支持中间件）</li>
+<li>IgnoreRepeatMessageHandlerMiddleware（忽略重复的消息中间件）</li>
+<li>GenerateResponseXmlHandlerMiddleware（生成相应XML处理中间件）</li>
+<li>AgentHandlerMiddleware（代理请求中间件）</li>
+</ol>
+
+<h1>
+<a id="支持的api" class="anchor" href="#%E6%94%AF%E6%8C%81%E7%9A%84api" aria-hidden="true"><span class="octicon octicon-link"></span></a>支持的API</h1>
+
+<ol>
+<li>基础接口
+
+<ol>
+<li>获取access token </li>
+<li>获取微信服务器IP地址</li>
+</ol>
+</li>
+<li>发送消息
+
+<ol>
+<li>客服接口（<a href="http://mp.weixin.qq.com/wiki/1/70a29afed17f56d537c833f89be979c9.html">http://mp.weixin.qq.com/wiki/1/70a29afed17f56d537c833f89be979c9.html</a>）</li>
+<li>高级群发接口（<a href="http://mp.weixin.qq.com/wiki/15/5380a4e6f02f2ffdc7981a8ed7a40753.html">http://mp.weixin.qq.com/wiki/15/5380a4e6f02f2ffdc7981a8ed7a40753.html</a>）</li>
+<li>模板消息接口（<a href="http://mp.weixin.qq.com/wiki/17/304c1885ea66dbedf7dc170d84999a9d.html">http://mp.weixin.qq.com/wiki/17/304c1885ea66dbedf7dc170d84999a9d.html</a>）</li>
+</ol>
+</li>
+<li>素材管理</li>
+<li>用户管理</li>
+<li>自定义菜单</li>
+<li>账号管理</li>
+<li>多客服接口
+
+<ol>
+<li>客服管理</li>
+<li>多客服会话控制</li>
+<li>获取客服聊天记录</li>
+</ol>
+</li>
+<li>微信门店接口</li>
+<li>微信卡券接口（部分）
+
+<ol>
+<li>上传卡券Logo</li>
+<li>创建卡券</li>
+<li>获取卡券可用颜色</li>
+</ol>
+</li>
+</ol>
+
+<h1>
+<a id="暂不支持的api" class="anchor" href="#%E6%9A%82%E4%B8%8D%E6%94%AF%E6%8C%81%E7%9A%84api" aria-hidden="true"><span class="octicon octicon-link"></span></a>暂不支持的API</h1>
+
+<ol>
+<li>数据统计接口</li>
+<li>微信小店接口</li>
+<li>微信智能接口</li>
+<li>摇一摇周边</li>
+<li>微信卡券接口
+
+<ol>
+<li>投放卡券</li>
+<li>核销卡券</li>
+<li>管理卡券</li>
+<li>卡券事件推送</li>
+</ol>
+</li>
+</ol>
+
+<h1>
+<a id="关于性能" class="anchor" href="#%E5%85%B3%E4%BA%8E%E6%80%A7%E8%83%BD" aria-hidden="true"><span class="octicon octicon-link"></span></a>关于性能</h1>
+
+<p>在之前的文章就有提及新的SDK是比较追求性能的而在beta1版本中通过一些性能测试还算是达标，后续我会继续在性能上做足优化，争取提升并发量。<br>
+下面是与市面上一个较成熟的微信SDK的性能测试对比：<br>
+<strong>测试环境：</strong>  </p>
+
+<blockquote>
+<p>CPU：i7-3610qm<br>
+内存：16gb<br>
+系统：Windows 8.1 x64<br>
+编译配置：Release<br>
+迭代次数：10000（一万次）<br>
+计数工具：CodeTimer<br>
+对比的SDK：暂不透露  </p>
+</blockquote>
+
+<p><strong>测试结果：</strong><br>
+<img src="http://images0.cnblogs.com/blog/384997/201506/150932036543429.png" alt=""></p>
+
+<p>为了防止和用来做对比的SDK粉丝或作者争吵，所以具体的测试代码我不放出了，同样用来被对比的SDK名称我也不公布了，但测试结果绝对公正。</p>
+
+<h1>
+<a id="关于扩展性" class="anchor" href="#%E5%85%B3%E4%BA%8E%E6%89%A9%E5%B1%95%E6%80%A7" aria-hidden="true"><span class="octicon octicon-link"></span></a>关于扩展性</h1>
+
+<p>在消息处理过程中采用了管道模式的设计，借鉴了Open Web Interface的思想和一些规范来打造整个消息处理的模型，使消息处理变得更加轻便。<br>
+同时SDK内部内置了一个简单的依赖注入实现 IDependencyResolver，解耦了很多服务与服务实现。<br>
+下面的Demo项目的中的微信请求Action：<br>
+<img src="http://images0.cnblogs.com/blog/384997/201506/150932047636755.png" alt=""></p>
+
+<p>使用者可以自行注册处理的中间件来完成自定的逻辑，后面会专门写具体的使用教程。</p>
+
+<h1>
+<a id="关于架构" class="anchor" href="#%E5%85%B3%E4%BA%8E%E6%9E%B6%E6%9E%84" aria-hidden="true"><span class="octicon octicon-link"></span></a>关于架构</h1>
+
+<h2>
+<a id="消息处理" class="anchor" href="#%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息处理</h2>
+
+<p><img src="http://images0.cnblogs.com/blog/384997/201506/150932064515441.png" alt=""></p>
+
+<h2>
+<a id="请求消息-1" class="anchor" href="#%E8%AF%B7%E6%B1%82%E6%B6%88%E6%81%AF-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>请求消息</h2>
+
+<p><img src="http://images0.cnblogs.com/blog/384997/201506/150932076237983.png" alt=""></p>
+
+<h2>
+<a id="事件消息-1" class="anchor" href="#%E4%BA%8B%E4%BB%B6%E6%B6%88%E6%81%AF-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>事件消息</h2>
+
+<p><img src="http://images0.cnblogs.com/blog/384997/201506/150932091383253.png" alt=""></p>
+
+<h2>
+<a id="响应消息-1" class="anchor" href="#%E5%93%8D%E5%BA%94%E6%B6%88%E6%81%AF-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>响应消息</h2>
+
+<p><img src="http://images0.cnblogs.com/blog/384997/201506/150932135138749.png" alt=""></p>
+
+<h2>
+<a id="消息格式化器" class="anchor" href="#%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%99%A8" aria-hidden="true"><span class="octicon octicon-link"></span></a>消息格式化器</h2>
+
+<p><img src="http://images0.cnblogs.com/blog/384997/201506/150932167955148.png" alt=""></p>
+
+<h1>
+<a id="交流方式" class="anchor" href="#%E4%BA%A4%E6%B5%81%E6%96%B9%E5%BC%8F" aria-hidden="true"><span class="octicon octicon-link"></span></a>交流方式</h1>
+
+<p>QQ群：384413261<br>
+Email：<a href="mailto:majian159@live.com">majian159@live.com</a></p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/majian159/WeiXinSDK">WeiXinSDK</a> is maintained by <a href="https://github.com/majian159">majian159</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/RabbitTeam/WeiXinSDK">WeiXinSDK</a> is maintained by <a href="https://github.com/RabbitTeam">RabbitTeam</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
