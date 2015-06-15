@@ -1,5 +1,7 @@
 # 支持的消息类型
-## 请求消息（参考文档：http://mp.weixin.qq.com/wiki/10/79502792eef98d6e0c6e1739da387346.html）
+## 请求消息
+参考文档：http://mp.weixin.qq.com/wiki/10/79502792eef98d6e0c6e1739da387346.html
+
 1. RequestMessageImage（图片消息）
 2. RequestMessageLink（链接消息）
 3. RequestMessageLocation（位置消息）
@@ -7,8 +9,11 @@
 5. RequestMessageText（文本消息）
 6. RequestMessageVideo（视频消息）
 7. RequestMessageVoice（语音消息）
+
 ## 事件消息
-由于较多直接给出GitHub地址：https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.WeiXin/Messages/Events
+由于较多直接给出GitHub地址：
+https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.WeiXin/Messages/Events
+
 ## 响应消息
 1. ResponseMessageImage（图片消息）
 2. ResponseMessageMusic（音乐消息）
@@ -17,6 +22,7 @@
 5. ResponseMessageTransferCustomerService（多客服消息）
 6. ResponseMessageVideo（视频消息）
 7. ResponseMessageVoice（语音消息）
+
 # 消息处理中间件
 1. SignatureCheckHandlerMiddleware（验证签名中间件）
 2. CreateRequestMessageHandlerMiddleware（创建消息中间件）
@@ -24,6 +30,7 @@
 4. IgnoreRepeatMessageHandlerMiddleware（忽略重复的消息中间件）
 5. GenerateResponseXmlHandlerMiddleware（生成相应XML处理中间件）
 6. AgentHandlerMiddleware（代理请求中间件）
+
 # 支持的API
 1. 基础接口
        1. 获取access token 
@@ -45,6 +52,7 @@
       1. 上传卡券Logo
       2. 创建卡券
       3. 获取卡券可用颜色
+
 # 暂不支持的API
 1. 数据统计接口
 2. 微信小店接口
@@ -55,25 +63,30 @@
        2. 核销卡券
        3. 管理卡券
        4. 卡券事件推送
+
 # 关于性能
-在之前的文章就有提及新的SDK是比较追求性能的而在beta1版本中通过一些性能测试还算是达标，后续我会继续在性能上做足优化，争取提升并发量。
-下面是与市面上一个较成熟的微信SDK的性能测试对比：
-测试环境：
-CPU：i7-3610qm
-内存：16gb
-系统：Windows 8.1 x64
-编译配置：Release
-迭代次数：10000（一万次）
-计数工具：CodeTimer
-对比的SDK：暂不透露
-测试结果：
+在之前的文章就有提及新的SDK是比较追求性能的而在beta1版本中通过一些性能测试还算是达标，后续我会继续在性能上做足优化，争取提升并发量。  
+下面是与市面上一个较成熟的微信SDK的性能测试对比：  
+**测试环境：**  
+> CPU：i7-3610qm  
+> 内存：16gb  
+> 系统：Windows 8.1 x64  
+> 编译配置：Release  
+> 迭代次数：10000（一万次）  
+> 计数工具：CodeTimer  
+> 对比的SDK：暂不透露  
+
+**测试结果：**  
 ![](http://images0.cnblogs.com/blog/384997/201506/150932036543429.png)
+
 为了防止和用来做对比的SDK粉丝或作者争吵，所以具体的测试代码我不放出了，同样用来被对比的SDK名称我也不公布了，但测试结果绝对公正。
+
 # 关于扩展性
-在消息处理过程中采用了管道模式的设计，借鉴了Open Web Interface的思想和一些规范来打造整个消息处理的模型，使消息处理变得更加轻便。
-同时SDK内部内置了一个简单的依赖注入实现 IDependencyResolver，解耦了很多服务与服务实现。
-下面的Demo项目的中的微信请求Action：
+在消息处理过程中采用了管道模式的设计，借鉴了Open Web Interface的思想和一些规范来打造整个消息处理的模型，使消息处理变得更加轻便。  
+同时SDK内部内置了一个简单的依赖注入实现 IDependencyResolver，解耦了很多服务与服务实现。  
+下面的Demo项目的中的微信请求Action：  
 ![](http://images0.cnblogs.com/blog/384997/201506/150932047636755.png)
+
 使用者可以自行注册处理的中间件来完成自定的逻辑，后面会专门写具体的使用教程。
 # 关于架构
 ## 消息处理
@@ -87,5 +100,5 @@ CPU：i7-3610qm
 ## 消息格式化器
 ![](http://images0.cnblogs.com/blog/384997/201506/150932167955148.png)
 # 交流方式
-QQ群：384413261
-Email：[majian159@live.com](majian159@live.com)
+QQ群：384413261  
+Email：<majian159@live.com>
