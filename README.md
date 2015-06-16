@@ -104,11 +104,11 @@ https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.Wei
 
 > **Rabbit.Web**  
 > 地址：<https://www.nuget.org/packages/Rabbit.WeiXin/>  
-> 命令：Install-Package Rabbit.WeiXin.MvcExtension
+> 命令：Install-Package Rabbit.WeiXin
 
 > **Rabbit.WeiXin.MvcExtension**  
 > 地址：<https://www.nuget.org/packages/Rabbit.WeiXin.MvcExtension/>  
-> 命令：Install-Package Rabbit.WeiXin
+> 命令：Install-Package Rabbit.WeiXin.MvcExtension
 
 
 # 交流方式
