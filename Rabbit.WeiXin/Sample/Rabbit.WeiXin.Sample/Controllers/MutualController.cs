@@ -40,7 +40,7 @@ namespace Rabbit.WeiXin.Sample.Controllers
             context
                 .SetMessageHandlerBaseInfo(new MessageHandlerBaseInfo(
                     "wxa4ab3e636e2eb702",
-                    "zhRjo19GUoReVbuC4b3HrWADbTcQlOnt7qe1wmDmg4T",
+                    "q0OlAOdGzpmm5B8HEqycylcn17nUp25HG04dr7KD6ET",
                     "weixin"));
 
             IWeiXinHandler weiXinHandler = new DefaultWeiXinHandler(builder);

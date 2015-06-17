@@ -6,9 +6,15 @@ namespace Rabbit.WeiXin.Tests
     {
         #region Field
 
-        private const string AppId = "wxa4ab3e636e2eb702";
-        private const string AppSecret = "554a35de9372234868b24b3f084a41bd";
+        //请自行配置。
+        private const string AppId = "xxxxxxxxxx";
+
+        //请自行配置。
+        private const string AppSecret = "xxxxxxxxxx";
+
+        //请自行配置。
         protected const string OpenId = "oaCoeuN63wMFydbjuZdoV6aPgqm4";
+
         protected readonly ICommonService CommonService;
 
         protected AccountModel AccountModel;

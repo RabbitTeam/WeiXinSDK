@@ -5,6 +5,7 @@ using Rabbit.WeiXin.Messages.Request;
 using Rabbit.WeiXin.Messages.Response;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace Rabbit.WeiXin.Sample.Handlers
 {
@@ -80,7 +81,16 @@ namespace Rabbit.WeiXin.Sample.Handlers
         /// </summary>
         public override IResponseMessage OnEvent_SubscribeRequest(SubscribeEventMessage requestMessage)
         {
-            return new ResponseMessageText("欢迎关注我！");
+            var builder = new StringBuilder();
+            builder
+                .AppendLine("欢迎关注 RabbitHub：")
+                .AppendLine("发送 \"news\" 文本，系统将会发送一条图文消息。")
+                .AppendLine("发送 \"music\" 文本，系统将会发送一条音乐消息。")
+                .AppendLine("发送任意图片，系统将会发送一条图片消息。")
+                .AppendLine("发送任意视频，系统将会发送一条视频消息。")
+                .AppendLine("发送任意语音，系统将会发送一条语音消息。")
+                .AppendLine("发送其它文本，系统将会回复一样的内容。");
+            return new ResponseMessageText(builder.ToString());
         }
 
         #endregion Overrides of MessageHandlerMiddleware

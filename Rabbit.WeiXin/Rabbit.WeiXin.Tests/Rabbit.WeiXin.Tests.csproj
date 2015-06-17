@@ -75,12 +75,12 @@
     <Compile Include="Utility\ApiTestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resoueces\1.amr" />
+    <EmbeddedResource Include="Resoueces\1.amr" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resoueces\1.jpg" />
-    <Content Include="Resoueces\1.mp3" />
-    <Content Include="Resoueces\1.mp4" />
+    <EmbeddedResource Include="Resoueces\1.jpg" />
+    <EmbeddedResource Include="Resoueces\1.mp3" />
+    <EmbeddedResource Include="Resoueces\1.mp4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SDK\Rabbit.WeiXin\Rabbit.WeiXin.csproj">
