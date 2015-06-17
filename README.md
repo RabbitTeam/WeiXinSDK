@@ -110,7 +110,8 @@ https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.Wei
 > 地址：<https://www.nuget.org/packages/Rabbit.WeiXin.MvcExtension/>  
 > 命令：Install-Package Rabbit.WeiXin.MvcExtension
 
-
+#测试的微信号
+![](http://images0.cnblogs.com/blog/384997/201506/171501158108793.jpg)
 # 交流方式
 QQ群：384413261  
 Email：<majian159@live.com>
