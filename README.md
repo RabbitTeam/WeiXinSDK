@@ -99,6 +99,18 @@ https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.Wei
 ![](http://images0.cnblogs.com/blog/384997/201506/150932135138749.png)
 ## 消息格式化器
 ![](http://images0.cnblogs.com/blog/384997/201506/150932167955148.png)
+# Get By Nuget
+主要分为两个组件
+
+> **Rabbit.Web**  
+> 地址：<https://www.nuget.org/packages/Rabbit.WeiXin/>  
+> 命令：Install-Package Rabbit.WeiXin
+
+> **Rabbit.WeiXin.MvcExtension**  
+> 地址：<https://www.nuget.org/packages/Rabbit.WeiXin.MvcExtension/>  
+> 命令：Install-Package Rabbit.WeiXin.MvcExtension
+
+
 # 交流方式
 QQ群：384413261  
 Email：<majian159@live.com>
