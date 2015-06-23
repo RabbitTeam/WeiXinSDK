@@ -1,6 +1,7 @@
 ﻿using Rabbit.WeiXin.Handlers.Impl;
 using Rabbit.WeiXin.MP.Messages;
 using Rabbit.WeiXin.MP.Serialization;
+using Rabbit.WeiXin.Open.Api;
 using System;
 using System.Collections.Generic;
 
@@ -22,6 +23,8 @@ namespace Rabbit.WeiXin.DependencyInjection
         private static readonly IRequestMessageFactory RequestMessageFactory = new RequestMessageFactory(MessageFormatterFactory);
         private static readonly IResponseMessageFactory ResponseMessageFactory = new ResponseMessageFactory(MessageFormatterFactory);
 
+        private static readonly IVerifyTicketService VerifyTicketService = new VerifyTicketService();
+
         //局部单例。
         private readonly IUserSessionCollection _userSessionCollection = new UserSessionCollection(TimeSpan.FromMinutes(20));
 
@@ -29,7 +32,8 @@ namespace Rabbit.WeiXin.DependencyInjection
         {
             {typeof (ISignatureService), () => SignatureService},
             {typeof (IRequestMessageFactory), () => RequestMessageFactory},
-            {typeof (IResponseMessageFactory), () => ResponseMessageFactory}
+            {typeof (IResponseMessageFactory), () => ResponseMessageFactory},
+            {typeof(IVerifyTicketService), ()=> VerifyTicketService}
         };
 
         #endregion Field

@@ -53,7 +53,7 @@ namespace Rabbit.WeiXin.MP.Api
     }
 
     /// <summary>
-    /// 一个通过的服务接口。
+    /// 一个通用的服务接口。
     /// </summary>
     public interface ICommonService
     {

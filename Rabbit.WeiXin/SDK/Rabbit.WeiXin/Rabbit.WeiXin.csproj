@@ -128,6 +128,11 @@
     <Compile Include="MP\Messages\Response\ResponseMessageTransferCustomerService.cs" />
     <Compile Include="MP\Messages\Response\ResponseMessageVideo.cs" />
     <Compile Include="MP\Messages\Response\ResponseMessageVoice.cs" />
+    <Compile Include="Open\Api\AccountModel.cs" />
+    <Compile Include="Open\Api\CommonService.cs" />
+    <Compile Include="Open\Api\VerifyTicketService.cs" />
+    <Compile Include="Open\Messages\Events\CancelAuthorizeMessage.cs" />
+    <Compile Include="Open\Messages\Events\ComponentVerifyTicketPush.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MP\Serialization\MessageFormatter.cs" />
     <Compile Include="MP\Serialization\MessageFormatterFactory.cs" />
