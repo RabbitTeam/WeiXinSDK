@@ -1,6 +1,6 @@
 using Rabbit.WeiXin.DependencyInjection;
-using Rabbit.WeiXin.Messages.Request;
-using Rabbit.WeiXin.Messages.Response;
+using Rabbit.WeiXin.MP.Messages.Request;
+using Rabbit.WeiXin.MP.Messages.Response;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Collections.Concurrent;

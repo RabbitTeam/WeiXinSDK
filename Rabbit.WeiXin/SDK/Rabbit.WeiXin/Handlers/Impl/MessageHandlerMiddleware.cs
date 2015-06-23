@@ -1,8 +1,8 @@
-﻿using Rabbit.WeiXin.Messages.Events;
-using Rabbit.WeiXin.Messages.Events.CustomMenu;
-using Rabbit.WeiXin.Messages.Events.CustomService;
-using Rabbit.WeiXin.Messages.Request;
-using Rabbit.WeiXin.Messages.Response;
+﻿using Rabbit.WeiXin.MP.Messages.Events;
+using Rabbit.WeiXin.MP.Messages.Events.CustomMenu;
+using Rabbit.WeiXin.MP.Messages.Events.CustomService;
+using Rabbit.WeiXin.MP.Messages.Request;
+using Rabbit.WeiXin.MP.Messages.Response;
 using System;
 using System.Threading.Tasks;
 

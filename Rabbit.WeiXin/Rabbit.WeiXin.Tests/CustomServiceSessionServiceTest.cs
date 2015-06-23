@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.CustomService;
+using Rabbit.WeiXin.MP.Api.CustomService;
 using System;
 using System.Linq;
 

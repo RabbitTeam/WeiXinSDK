@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rabbit.WeiXin;
-using Rabbit.WeiXin.Api.CustomMenu;
+using Rabbit.WeiXin.MP.Api.CustomMenu;
 using System.Linq;
 
 namespace Rabbit.WeiXin.Tests

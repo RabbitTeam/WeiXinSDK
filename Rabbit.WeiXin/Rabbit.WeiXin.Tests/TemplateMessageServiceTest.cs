@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.TemplateMessage;
+using Rabbit.WeiXin.MP.Api.TemplateMessage;
 
 namespace Rabbit.WeiXin.Tests
 {

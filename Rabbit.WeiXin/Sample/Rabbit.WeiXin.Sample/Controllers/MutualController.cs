@@ -4,6 +4,7 @@ using Rabbit.WeiXin.Handlers.Impl;
 using Rabbit.WeiXin.MvcExtension.Results;
 using Rabbit.WeiXin.Sample.Handlers;
 using System;
+using System.Text;
 using System.Web.Mvc;
 
 namespace Rabbit.WeiXin.Sample.Controllers

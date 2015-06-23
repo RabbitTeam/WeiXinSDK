@@ -1,8 +1,8 @@
 ﻿using Rabbit.WeiXin.Handlers;
 using Rabbit.WeiXin.Handlers.Impl;
-using Rabbit.WeiXin.Messages.Events;
-using Rabbit.WeiXin.Messages.Request;
-using Rabbit.WeiXin.Messages.Response;
+using Rabbit.WeiXin.MP.Messages.Events;
+using Rabbit.WeiXin.MP.Messages.Request;
+using Rabbit.WeiXin.MP.Messages.Response;
 using System;
 using System.Linq;
 using System.Text;

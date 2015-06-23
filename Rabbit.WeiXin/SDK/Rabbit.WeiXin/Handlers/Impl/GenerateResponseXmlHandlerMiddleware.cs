@@ -1,5 +1,5 @@
 ﻿using Rabbit.WeiXin.DependencyInjection;
-using Rabbit.WeiXin.Messages;
+using Rabbit.WeiXin.MP.Messages;
 using System.Threading.Tasks;
 using Tencent;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.User;
+using Rabbit.WeiXin.MP.Api.User;
 using System;
 using System.Linq;
 using System.Threading;

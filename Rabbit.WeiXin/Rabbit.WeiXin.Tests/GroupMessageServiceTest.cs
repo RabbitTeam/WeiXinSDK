@@ -1,7 +1,7 @@
 ﻿using Rabbit.WeiXin.Tests.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.GroupMessage;
-using Rabbit.WeiXin.Api.Material;
+using Rabbit.WeiXin.MP.Api.GroupMessage;
+using Rabbit.WeiXin.MP.Api.Material;
 
 namespace Rabbit.WeiXin.Tests
 {

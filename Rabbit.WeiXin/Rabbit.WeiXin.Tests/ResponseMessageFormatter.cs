@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rabbit.WeiXin.DependencyInjection;
-using Rabbit.WeiXin.Messages;
-using Rabbit.WeiXin.Messages.Response;
+using Rabbit.WeiXin.MP.Messages;
+using Rabbit.WeiXin.MP.Messages.Response;
 using System;
 using System.Linq;
 

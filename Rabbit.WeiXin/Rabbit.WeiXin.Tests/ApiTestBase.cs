@@ -1,4 +1,4 @@
-﻿using Rabbit.WeiXin.Api;
+﻿using Rabbit.WeiXin.MP.Api;
 
 namespace Rabbit.WeiXin.Tests
 {

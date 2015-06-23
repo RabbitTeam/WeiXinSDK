@@ -1,6 +1,6 @@
 ﻿using Rabbit.WeiXin.Tests.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.Store;
+using Rabbit.WeiXin.MP.Api.Store;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;

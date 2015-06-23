@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rabbit.WeiXin.DependencyInjection;
-using Rabbit.WeiXin.Messages;
-using Rabbit.WeiXin.Messages.Events;
-using Rabbit.WeiXin.Messages.Events.CustomMenu;
-using Rabbit.WeiXin.Messages.Events.CustomService;
-using Rabbit.WeiXin.Messages.Request;
+using Rabbit.WeiXin.MP.Messages;
+using Rabbit.WeiXin.MP.Messages.Events;
+using Rabbit.WeiXin.MP.Messages.Events.CustomMenu;
+using Rabbit.WeiXin.MP.Messages.Events.CustomService;
+using Rabbit.WeiXin.MP.Messages.Request;
 using Rabbit.WeiXin.Utility;
 using System;
 using System.Linq;

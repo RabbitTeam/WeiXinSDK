@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.QrCode;
+using Rabbit.WeiXin.MP.Api.QrCode;
 using System;
 using System.Web;
 

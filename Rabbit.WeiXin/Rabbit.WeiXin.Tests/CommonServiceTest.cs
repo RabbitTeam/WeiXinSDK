@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api;
+using Rabbit.WeiXin.MP.Api;
 using System;
 using System.Net;
 

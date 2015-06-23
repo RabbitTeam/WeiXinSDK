@@ -1,6 +1,6 @@
 ﻿using Rabbit.WeiXin.Handlers.Impl;
-using Rabbit.WeiXin.Messages;
-using Rabbit.WeiXin.Serialization;
+using Rabbit.WeiXin.MP.Messages;
+using Rabbit.WeiXin.MP.Serialization;
 using System;
 using System.Collections.Generic;
 

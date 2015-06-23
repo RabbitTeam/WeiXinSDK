@@ -1,6 +1,6 @@
 ﻿using Rabbit.WeiXin.Tests.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.Material;
+using Rabbit.WeiXin.MP.Api.Material;
 using System;
 
 namespace Rabbit.WeiXin.Tests

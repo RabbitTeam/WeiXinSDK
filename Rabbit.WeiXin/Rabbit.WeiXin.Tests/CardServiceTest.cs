@@ -1,6 +1,6 @@
 ﻿using Rabbit.WeiXin.Tests.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin.Api.Card;
+using Rabbit.WeiXin.MP.Api.Card;
 using System;
 
 namespace Rabbit.WeiXin.Tests
