@@ -10,6 +10,13 @@ namespace Rabbit.WeiXin.Open.Api
     public interface ICommonService
     {
         /// <summary>
+        /// 获取授权Url。
+        /// </summary>
+        /// <param name="returnUrl">授权成功返回的Url。</param>
+        /// <returns>授权的Url地址。</returns>
+        string GetAuthorizeUrl(string returnUrl);
+
+        /// <summary>
         /// 获取第三方平台的全局唯一票据。
         /// </summary>
         /// <param name="ignoreCached">是否忽略缓存。</param>
@@ -76,6 +83,18 @@ namespace Rabbit.WeiXin.Open.Api
         #endregion Constructor
 
         #region Implementation of ICommonService
+
+        /// <summary>
+        /// 获取授权Url。
+        /// </summary>
+        /// <param name="returnUrl">授权成功返回的Url。</param>
+        /// <returns>授权的Url地址。</returns>
+        public string GetAuthorizeUrl(string returnUrl)
+        {
+            return string.Format(
+                "https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=xxxx&pre_auth_code={0}&redirect_uri={1}",
+                GetAuthorizeCode(), returnUrl);
+        }
 
         /// <summary>
         /// 获取第三方平台的全局唯一票据。
