@@ -201,8 +201,6 @@ namespace Rabbit.WeiXin.Handlers
         public static IResponseMessage GetResponseMessage(this IHandlerContext context)
         {
             var responseMessage = context.Environment["Rabbit.WeiXin.ResponseMessage"] as IResponseMessage;
-            if (responseMessage == null)
-                throw new Exception("在当前上下文中找不到响应消息，请确保注册的处理中间件中有包含对响应消息创建的处理动作。");
             return responseMessage;
         }
 
@@ -212,11 +210,10 @@ namespace Rabbit.WeiXin.Handlers
         /// <param name="context">处理上下文。</param>
         /// <param name="responseMessage">响应消息。</param>
         /// <exception cref="ArgumentNullException"><paramref name="context"/> 为 null。</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="responseMessage"/> 为 null。</exception>
         /// <returns>处理上下文。</returns>
         public static IHandlerContext SetResponseMessage(this IHandlerContext context, IResponseMessage responseMessage)
         {
-            context.NotNull("context").Environment["Rabbit.WeiXin.ResponseMessage"] = responseMessage.NotNull("responseMessage");
+            context.NotNull("context").Environment["Rabbit.WeiXin.ResponseMessage"] = responseMessage;
 
             return context;
         }

@@ -70,7 +70,7 @@ namespace Rabbit.WeiXin.DependencyInjection
         /// <returns>服务实例。</returns>
         public virtual object GetService(Type serviceType)
         {
-            return ServiceDictionary[serviceType]();
+            return !ServiceDictionary.ContainsKey(serviceType) ? null : ServiceDictionary[serviceType]();
         }
 
         /// <summary>

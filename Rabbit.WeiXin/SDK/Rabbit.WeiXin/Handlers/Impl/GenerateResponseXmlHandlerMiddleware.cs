@@ -1,5 +1,6 @@
 ﻿using Rabbit.WeiXin.DependencyInjection;
 using Rabbit.WeiXin.MP.Messages;
+using System;
 using System.Threading.Tasks;
 using Tencent;
 
@@ -30,35 +31,49 @@ namespace Rabbit.WeiXin.Handlers.Impl
         {
             var responseMessage = context.GetResponseMessage();
 
-            var dependencyResolver = context.GetDependencyResolver();
-            var responseMessageFactory = dependencyResolver.GetService<IResponseMessageFactory>();
-            var content = responseMessage == null ? string.Empty : responseMessageFactory.GetXmlByReponseMessage(responseMessage);
-
-            #region Encrypt
-
-            if (!string.IsNullOrWhiteSpace(content))
+            if (responseMessage == null)
             {
-                var request = context.Request;
-                var encryptType = request.QueryString["encrypt_type"];
-
-                if (encryptType != null)
-                {
-                    var nonce = request.QueryString["nonce"];
-                    var timestamp = request.QueryString["timestamp"];
-
-                    var baseInfo = context.GetMessageHandlerBaseInfo();
-                    var appId = baseInfo.AppId;
-                    var encodingAesKey = baseInfo.EncodingAesKey;
-                    var token = baseInfo.Token;
-
-                    var wxBizMsgCrypt = new WXBizMsgCrypt(token, encodingAesKey, appId);
-                    wxBizMsgCrypt.EncryptMsg(content, timestamp, nonce, ref content);
-                }
+                context.ResponseXml = string.Empty;
             }
+            else
+            {
+                var requestMessage = context.GetRequestMessage();
 
-            #endregion Encrypt
+                //基本信息初始化。
+                responseMessage.CreateTime = DateTime.Now;
+                responseMessage.FromUserName = requestMessage.ToUserName;
+                responseMessage.ToUserName = requestMessage.FromUserName;
 
-            context.ResponseXml = content;
+                var dependencyResolver = context.GetDependencyResolver();
+                var responseMessageFactory = dependencyResolver.GetService<IResponseMessageFactory>();
+                var content = responseMessageFactory.GetXmlByReponseMessage(responseMessage);
+
+                #region Encrypt
+
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    var request = context.Request;
+                    var encryptType = request.QueryString["encrypt_type"];
+
+                    if (encryptType != null)
+                    {
+                        var nonce = request.QueryString["nonce"];
+                        var timestamp = request.QueryString["timestamp"];
+
+                        var baseInfo = context.GetMessageHandlerBaseInfo();
+                        var appId = baseInfo.AppId;
+                        var encodingAesKey = baseInfo.EncodingAesKey;
+                        var token = baseInfo.Token;
+
+                        var wxBizMsgCrypt = new WXBizMsgCrypt(token, encodingAesKey, appId);
+                        wxBizMsgCrypt.EncryptMsg(content, timestamp, nonce, ref content);
+                    }
+                }
+
+                #endregion Encrypt
+
+                context.ResponseXml = content;
+            }
 
             return Next.Invoke(context);
         }
