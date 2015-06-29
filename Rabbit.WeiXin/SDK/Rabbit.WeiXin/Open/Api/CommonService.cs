@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.MP.Api.Utility;
 using System;
+using System.Linq;
 
 namespace Rabbit.WeiXin.Open.Api
 {
@@ -47,18 +49,41 @@ namespace Rabbit.WeiXin.Open.Api
         /// <summary>
         /// 获取选项值。
         /// </summary>
-        /// <param name="optionName">选项名称。</param>
+        /// <param name="optionName">
+        /// 选项名称。
+        /// location_report(地理位置上报选项)（0	无上报 1	进入会话时上报2	每5s上报）
+        /// voice_recognize（语音识别开关选项）（0	关闭语音识别 1	开启语音识别）
+        /// customer_service（客服开关选项）（0	关闭多客服1	开启多客服）
+        /// </param>
         /// <param name="authorizerAppId">授权者AppId。</param>
         /// <returns>选项值。</returns>
+        /// <remarks>
+        /// location_report(地理位置上报选项)（0	无上报 1	进入会话时上报2	每5s上报）
+        /// voice_recognize（语音识别开关选项）（0	关闭语音识别 1	开启语音识别）
+        /// customer_service（客服开关选项）（0	关闭多客服1	开启多客服）
+        /// </remarks>
         string GetOptionValue(string optionName, string authorizerAppId);
 
         /// <summary>
         /// 设置选项值。
         /// </summary>
-        /// <param name="optionName">选项名称。</param>
+        /// <param name="optionName">
+        /// 选项名称。
+        /// location_report(地理位置上报选项)（0	无上报 1	进入会话时上报2	每5s上报）
+        /// voice_recognize（语音识别开关选项）（0	关闭语音识别 1	开启语音识别）
+        /// customer_service（客服开关选项）（0	关闭多客服1	开启多客服）
+        /// </param>
         /// <param name="optionValue">选项值。</param>
         /// <param name="authorizerAppId">授权者AppId。</param>
         void SetOptionValue(string optionName, string optionValue, string authorizerAppId);
+
+        /// <summary>
+        /// 刷新授权公众号令牌。
+        /// </summary>
+        /// <param name="authorizerAppId">授权方appid。</param>
+        /// <param name="authorizerRefreshToken">授权方的刷新令牌，刷新令牌主要用于公众号第三方平台获取和刷新已授权用户的access_token，只会在授权时刻提供，请妥善保存。 一旦丢失，只能让用户重新授权，才能再次拿到新的刷新令牌。</param>
+        /// <returns>刷新令牌模型。</returns>
+        RefreshAccessToken RefreshToken(string authorizerAppId, string authorizerRefreshToken);
     }
 
     /// <summary>
@@ -92,8 +117,8 @@ namespace Rabbit.WeiXin.Open.Api
         public string GetAuthorizeUrl(string returnUrl)
         {
             return string.Format(
-                "https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=xxxx&pre_auth_code={0}&redirect_uri={1}",
-                GetAuthorizeCode(), returnUrl);
+                "https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={0}&pre_auth_code={1}&redirect_uri={2}",
+                _accountModel.AppId, GetAuthorizeCode().AuthCode, returnUrl);
         }
 
         /// <summary>
@@ -103,21 +128,19 @@ namespace Rabbit.WeiXin.Open.Api
         /// <returns>第三方用户唯一凭证密钥，即appsecret。</returns>
         public AccessTokenModel GetAccessToken(bool ignoreCached = false)
         {
-            if (_accessTokenModel == null)
-                return _accessTokenModel =
-                    WeiXinHttpHelper.PostResultByJson<AccessTokenModel>(
-                        "https://api.weixin.qq.com/cgi-bin/component/api_component_token",
-                        new
-                        {
-                            component_appid = _accountModel.AppId,
-                            component_appsecret = _accountModel.AppSecret,
-                            component_verify_ticket = _accountModel.GetVerifyTicket()
-                        });
+            Func<AccessTokenModel> get = () => WeiXinHttpHelper.PostResultByJson<AccessTokenModel>(
+                "https://api.weixin.qq.com/cgi-bin/component/api_component_token",
+                new
+                {
+                    component_appid = _accountModel.AppId,
+                    component_appsecret = _accountModel.AppSecret,
+                    component_verify_ticket = _accountModel.GetVerifyTicket()
+                });
 
-            if (!_accessTokenModel.IsExpired())
-                return _accessTokenModel;
+            if (_accessTokenModel == null || _accessTokenModel.IsExpired() || ignoreCached)
+                return _accessTokenModel = get();
 
-            return _accessTokenModel = RefreshToken(_accessTokenModel.AccessToken);
+            return _accessTokenModel;
         }
 
         /// <summary>
@@ -129,7 +152,7 @@ namespace Rabbit.WeiXin.Open.Api
         {
             return WeiXinHttpHelper.PostResultByJson<AuthorizeCodeResult>(
                 "https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=" +
-                GetAccessToken(), new { component_appid = _accountModel.AppId });
+                GetAccessToken().AccessToken, new { component_appid = _accountModel.AppId });
         }
 
         /// <summary>
@@ -140,13 +163,18 @@ namespace Rabbit.WeiXin.Open.Api
         public PublicAccountAuthorizerInfo GetPublicAccountAuthorizerInfo(string authorizationCode)
         {
             var content = WeiXinHttpHelper.PostString(
-                "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=" + GetAccessToken(),
+                "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=" + GetAccessToken().AccessToken,
                 new
                 {
                     component_appid = _accountModel.AppId,
                     authorization_code = authorizationCode
                 });
-            throw new NotImplementedException();
+            var obj = JObject.Parse(content)["authorization_info"];
+
+            var model = JsonConvert.DeserializeObject<PublicAccountAuthorizerInfo>(obj.ToString());
+            model.Rights = GetRights(obj);
+
+            return model;
         }
 
         /// <summary>
@@ -158,12 +186,34 @@ namespace Rabbit.WeiXin.Open.Api
         {
             var content = WeiXinHttpHelper.PostString(
                 "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=" +
-                GetAccessToken(), new
+                GetAccessToken().AccessToken, new
                 {
                     component_appid = _accountModel.AppId,
                     authorizer_appid = authorizerAppId
                 });
-            throw new NotImplementedException();
+
+            var obj = JObject.Parse(content);
+            var authorizerInfo = obj["authorizer_info"];
+            var authorizationInfo = obj["authorization_info"];
+            var model = new PublicAccountInfo
+            {
+                Authorizer =
+                    JsonConvert.DeserializeObject<PublicAccountInfo.AuthorizerInfo>(authorizerInfo.ToString()),
+                Authorization =
+                    JsonConvert.DeserializeObject<PublicAccountInfo.AuthorizationInfo>(authorizationInfo.ToString()),
+            };
+
+            model.Authorization.Rights = GetRights(authorizationInfo);
+            model.Authorizer.ServiceType =
+                (PublicAccountInfo.ServiceTypeEnum)
+                    Enum.Parse(typeof(PublicAccountInfo.ServiceTypeEnum),
+                        authorizerInfo.SelectToken("service_type_info.id").Value<string>());
+            model.Authorizer.AuthenticateType =
+                (PublicAccountInfo.AuthenticateTypeEnum)
+                    Enum.Parse(typeof(PublicAccountInfo.AuthenticateTypeEnum),
+                        authorizerInfo.SelectToken("verify_type_info.id").Value<string>());
+
+            return model;
         }
 
         /// <summary>
@@ -172,18 +222,23 @@ namespace Rabbit.WeiXin.Open.Api
         /// <param name="optionName">选项名称。</param>
         /// <param name="authorizerAppId">授权者AppId。</param>
         /// <returns>选项值。</returns>
+        /// <remarks>
+        /// location_report(地理位置上报选项)（0	无上报 1	进入会话时上报2	每5s上报）
+        /// voice_recognize（语音识别开关选项）（0	关闭语音识别 1	开启语音识别）
+        /// customer_service（客服开关选项）（0	关闭多客服1	开启多客服）
+        /// </remarks>
         public string GetOptionValue(string optionName, string authorizerAppId)
         {
             var content = WeiXinHttpHelper.PostString(
-                "https://api.weixin.qq.com/cgi-bin/component/ api_get_authorizer_option?component_access_token=" +
-                GetAccessToken(), new
+                "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_option?component_access_token=" +
+                GetAccessToken().AccessToken, new
                 {
                     component_appid = _accountModel.AppId,
                     authorizer_appid = authorizerAppId,
                     option_name = optionName
                 });
 
-            throw new NotImplementedException();
+            return JObject.Parse(content).Value<string>("option_value");
         }
 
         /// <summary>
@@ -192,35 +247,55 @@ namespace Rabbit.WeiXin.Open.Api
         /// <param name="optionName">选项名称。</param>
         /// <param name="optionValue">选项值。</param>
         /// <param name="authorizerAppId">授权者AppId。</param>
+        /// <remarks>
+        /// location_report(地理位置上报选项)（0	无上报 1	进入会话时上报2	每5s上报）
+        /// voice_recognize（语音识别开关选项）（0	关闭语音识别 1	开启语音识别）
+        /// customer_service（客服开关选项）（0	关闭多客服1	开启多客服）
+        /// </remarks>
         public void SetOptionValue(string optionName, string optionValue, string authorizerAppId)
         {
-            var content = WeiXinHttpHelper.PostString(
-                "https://api.weixin.qq.com/cgi-bin/component/ api_set_authorizer_option?component_access_token=" +
-                GetAccessToken(), new
+            WeiXinHttpHelper.PostString(
+                "https://api.weixin.qq.com/cgi-bin/component/api_set_authorizer_option?component_access_token=" +
+                GetAccessToken().AccessToken, new
                 {
                     component_appid = _accountModel.AppId,
                     authorizer_appid = authorizerAppId,
                     option_name = optionName,
                     option_value = optionValue
                 });
-            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 刷新授权公众号令牌。
+        /// </summary>
+        /// <param name="authorizerAppId">授权方appid。</param>
+        /// <param name="authorizerRefreshToken">授权方的刷新令牌，刷新令牌主要用于公众号第三方平台获取和刷新已授权用户的access_token，只会在授权时刻提供，请妥善保存。 一旦丢失，只能让用户重新授权，才能再次拿到新的刷新令牌。</param>
+        /// <returns>刷新令牌模型。</returns>
+        public RefreshAccessToken RefreshToken(string authorizerAppId, string authorizerRefreshToken)
+        {
+            var model =
+                WeiXinHttpHelper.PostResultByJson<RefreshAccessToken>(
+                    "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=" + GetAccessToken().AccessToken,
+                    new
+                    {
+                        component_appid = _accountModel.AppId,
+                        authorizer_appid = authorizerAppId,
+                        authorizer_refresh_token = authorizerRefreshToken
+                    });
+            return model;
         }
 
         #endregion Implementation of ICommonService
 
         #region Private Method
 
-        private AccessTokenModel RefreshToken(string accessToken)
+        private static RightEnum[] GetRights(JToken obj)
         {
-            return
-                WeiXinHttpHelper.PostResultByJson<AccessTokenModel>(
-                    "https:// api.weixin.qq.com /cgi-bin/component/api_authorizer_token?component_access_token=" + accessToken,
-                    new
-                    {
-                        component_appid = _accountModel.AppId,
-                        component_appsecret = _accountModel.AppSecret,
-                        component_verify_ticket = _accountModel.GetVerifyTicket()
-                    });
+            return obj["func_info"].Select(i =>
+            {
+                var value = i.SelectToken("funcscope_category.id").Value<string>();
+                return (RightEnum)Enum.Parse(typeof(RightEnum), value);
+            }).ToArray();
         }
 
         #endregion Private Method
@@ -250,6 +325,57 @@ namespace Rabbit.WeiXin.Open.Api
         /// </summary>
         [JsonProperty("component_access_token")]
         public string AccessToken { get; set; }
+
+        /// <summary>
+        /// 凭证有效时间（秒）。
+        /// </summary>
+        [JsonProperty("expires_in")]
+        public int ExpiresIn { get; set; }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        [JsonIgnore]
+        public DateTime CreateTime { get; private set; }
+
+        /// <summary>
+        /// 是否过期。
+        /// </summary>
+        /// <returns>如果过期返回true，否则返回false。</returns>
+        public bool IsExpired()
+        {
+            return CreateTime.AddSeconds(ExpiresIn - 20/*不采用最后的期限作为判断，防止在很少的时间内到期导致后续的逻辑无法执行*/) <= DateTime.Now;
+        }
+    }
+
+    /// <summary>
+    /// 刷新访问票据模型。
+    /// </summary>
+    public sealed class RefreshAccessToken
+    {
+        #region Constructor
+
+        /// <summary>
+        /// 初始化一个新的第三方平台的全局唯一票据。
+        /// </summary>
+        internal RefreshAccessToken()
+        {
+            CreateTime = DateTime.Now;
+        }
+
+        #endregion Constructor
+
+        /// <summary>
+        /// 授权方令牌。
+        /// </summary>
+        [JsonProperty("authorizer_access_token")]
+        public string AuthorizerAccessToken { get; set; }
+
+        /// <summary>
+        /// 刷新令牌。
+        /// </summary>
+        [JsonProperty("authorizer_refresh_token")]
+        public string AuthorizerRefreshToken { get; set; }
 
         /// <summary>
         /// 凭证有效时间（秒）。
@@ -316,9 +442,75 @@ namespace Rabbit.WeiXin.Open.Api
     }
 
     /// <summary>
-    /// 授权信息。
+    /// 权限集枚举。
     /// </summary>
-    public sealed class AuthorizationInfo
+    public enum RightEnum
+    {
+        /// <summary>
+        /// 消息与菜单权限集（帮助公众号向用户回复消息、创建菜单）
+        /// </summary>
+        MessageAndMenu = 1,
+
+        /// <summary>
+        /// 用户管理权限集（帮助公众号进行用户管理）
+        /// </summary>
+        UserManager = 2,
+
+        /// <summary>
+        /// 帐号管理权限集（帮助公众号进行帐号管理）
+        /// </summary>
+        AccountManager = 3,
+
+        /// <summary>
+        /// 网页授权权限集（帮助公众号进行网页开发）
+        /// </summary>
+        WebPageAuthorizer = 4,
+
+        /// <summary>
+        /// 微信小店权限集（帮助公众号管理微信小店）
+        /// </summary>
+        WeiXinShop = 5,
+
+        /// <summary>
+        /// 多客服权限集（帮助公众号管理多客服系统）
+        /// </summary>
+        TransferCustomerService = 6,
+
+        /// <summary>
+        /// 业务通知权限集（帮助公众号通知用户）
+        /// </summary>
+        BusinessNotification = 7,
+
+        /// <summary>
+        /// 微信卡券权限集（帮助公众号管理微信卡券）
+        /// </summary>
+        WeiXinCard = 8,
+
+        /// <summary>
+        /// 素材管理权限集（帮助公众号管理图文消息、图片等素材）。
+        /// </summary>
+        MaterialManager = 9,
+
+        /// <summary>
+        /// 摇一摇周边权限集（帮助公众号管理摇一摇周边）。
+        /// </summary>
+        ShakePeriphery = 10,
+
+        /// <summary>
+        /// 线下门店权限集（帮助公众号管理线下门店数据）
+        /// </summary>
+        OfflineStore = 11,
+
+        /// <summary>
+        /// 微信连WIFI权限集（帮助公众号配置管理WIFI）
+        /// </summary>
+        WeiXinConnectionWifi = 12,
+    }
+
+    /// <summary>
+    /// 公众号授权信息。
+    /// </summary>
+    public sealed class PublicAccountAuthorizerInfo
     {
         /// <summary>
         /// 授权方appid
@@ -343,67 +535,11 @@ namespace Rabbit.WeiXin.Open.Api
         /// </summary>
         [JsonProperty("authorizer_refresh_token")]
         public string RefreshToken { get; set; }
-    }
-
-    /// <summary>
-    /// 权限集枚举。
-    /// </summary>
-    public enum RightEnum
-    {
-        /// <summary>
-        /// 消息与菜单权限集。
-        /// </summary>
-        MessageAndMenu = 1,
-
-        /// <summary>
-        /// 用户管理权限集。
-        /// </summary>
-        UserManager = 2,
-
-        /// <summary>
-        /// 帐号管理权限集。
-        /// </summary>
-        AccountManager = 3,
-
-        /// <summary>
-        /// 网页授权权限集。
-        /// </summary>
-        WebPageAuthorizer = 4,
-
-        /// <summary>
-        /// 微信小店权限集。
-        /// </summary>
-        WeiXinShop = 5,
-
-        /// <summary>
-        /// 多客服权限集。
-        /// </summary>
-        TransferCustomerService = 6,
-
-        /// <summary>
-        /// 业务通知权限集。
-        /// </summary>
-        BusinessNotification = 7,
-
-        /// <summary>
-        /// 微信卡券权限集。
-        /// </summary>
-        WeiXinCard
-    }
-
-    /// <summary>
-    /// 公众号授权信息。
-    /// </summary>
-    public sealed class PublicAccountAuthorizerInfo
-    {
-        /// <summary>
-        /// 授权信息。
-        /// </summary>
-        public AuthorizationInfo Authorization { get; set; }
 
         /// <summary>
         /// 权限集。
         /// </summary>
+        [JsonIgnore]
         public RightEnum[] Rights { get; set; }
     }
 
@@ -472,11 +608,13 @@ namespace Rabbit.WeiXin.Open.Api
             /// <summary>
             /// 授权方appid
             /// </summary>
+            [JsonProperty("authorizer_appid")]
             public string AppId { get; set; }
 
             /// <summary>
             /// 权限集。
             /// </summary>
+            [JsonIgnore]
             public RightEnum[] Rights { get; set; }
         }
 
@@ -485,23 +623,47 @@ namespace Rabbit.WeiXin.Open.Api
         /// </summary>
         public sealed class AuthorizerInfo
         {
+            /// <summary>
+            /// 昵称。
+            /// </summary>
             [JsonProperty("nick_name")]
             public string NickName { get; set; }
 
-            [JsonProperty("service_type_info")]
+            /// <summary>
+            /// 服务类型。
+            /// </summary>
+            [JsonIgnore]
             public ServiceTypeEnum ServiceType { get; set; }
 
-            [JsonProperty("verify_type_info")]
+            /// <summary>
+            /// 授权类型。
+            /// </summary>
+            [JsonIgnore]
             public AuthenticateTypeEnum AuthenticateType { get; set; }
 
+            /// <summary>
+            /// 头像Url。
+            /// </summary>
             [JsonProperty("head_img")]
             public string HeadPicture { get; set; }
 
+            /// <summary>
+            /// 用户名。
+            /// </summary>
             [JsonProperty("user_name")]
             public string UserName { get; set; }
 
+            /// <summary>
+            /// 别名。
+            /// </summary>
             [JsonProperty("alias")]
             public string Alias { get; set; }
+
+            /// <summary>
+            /// 二维码图片Url。
+            /// </summary>
+            [JsonProperty("qrcode_url")]
+            public string QrCode { get; set; }
         }
 
         /// <summary>
@@ -513,9 +675,6 @@ namespace Rabbit.WeiXin.Open.Api
         /// 授权者信心。
         /// </summary>
         public AuthorizerInfo Authorizer { get; set; }
-
-        [JsonProperty("qrcode_url")]
-        public string QrCode { get; set; }
     }
 
     #endregion Help Class
