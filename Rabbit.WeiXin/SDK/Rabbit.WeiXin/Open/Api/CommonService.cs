@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.MP.Api.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 
 namespace Rabbit.WeiXin.Open.Api
@@ -36,8 +37,9 @@ namespace Rabbit.WeiXin.Open.Api
         /// 获取公众账号授权信息。
         /// </summary>
         /// <param name="authorizationCode">授权码。</param>
+        /// <param name="ignoreCached">是否忽略缓存。</param>
         /// <returns>公众账号授权信息。</returns>
-        PublicAccountAuthorizerInfo GetPublicAccountAuthorizerInfo(string authorizationCode);
+        PublicAccountAuthorizerInfo GetPublicAccountAuthorizerInfo(string authorizationCode, bool ignoreCached = false);
 
         /// <summary>
         /// 获取公众账号信息。
@@ -82,8 +84,9 @@ namespace Rabbit.WeiXin.Open.Api
         /// </summary>
         /// <param name="authorizerAppId">授权方appid。</param>
         /// <param name="authorizerRefreshToken">授权方的刷新令牌，刷新令牌主要用于公众号第三方平台获取和刷新已授权用户的access_token，只会在授权时刻提供，请妥善保存。 一旦丢失，只能让用户重新授权，才能再次拿到新的刷新令牌。</param>
+        /// <param name="ignoreCached">是否忽略缓存。</param>
         /// <returns>刷新令牌模型。</returns>
-        RefreshAccessToken RefreshToken(string authorizerAppId, string authorizerRefreshToken);
+        RefreshAccessToken RefreshToken(string authorizerAppId, string authorizerRefreshToken, bool ignoreCached = false);
     }
 
     /// <summary>
@@ -95,6 +98,8 @@ namespace Rabbit.WeiXin.Open.Api
 
         private readonly AccountModel _accountModel;
         private AccessTokenModel _accessTokenModel;
+        private AuthorizeCodeResult _authorizeCodeResult;
+        private readonly ConcurrentDictionary<string, object> _objectCacheDictionary = new ConcurrentDictionary<string, object>();
 
         #endregion Field
 
@@ -150,31 +155,51 @@ namespace Rabbit.WeiXin.Open.Api
         /// <returns>授权码结果。</returns>
         public AuthorizeCodeResult GetAuthorizeCode(bool ignoreCached = false)
         {
-            return WeiXinHttpHelper.PostResultByJson<AuthorizeCodeResult>(
+            Func<AuthorizeCodeResult> get = () => WeiXinHttpHelper.PostResultByJson<AuthorizeCodeResult>(
                 "https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=" +
                 GetAccessToken().AccessToken, new { component_appid = _accountModel.AppId });
+
+            if (_authorizeCodeResult == null || _authorizeCodeResult.IsExpired() || ignoreCached)
+            {
+                return _authorizeCodeResult = get();
+            }
+            return _authorizeCodeResult;
         }
 
         /// <summary>
         /// 获取公众账号授权信息。
         /// </summary>
         /// <param name="authorizationCode">授权码。</param>
+        /// <param name="ignoreCached">是否忽略缓存。</param>
         /// <returns>公众账号授权信息。</returns>
-        public PublicAccountAuthorizerInfo GetPublicAccountAuthorizerInfo(string authorizationCode)
+        public PublicAccountAuthorizerInfo GetPublicAccountAuthorizerInfo(string authorizationCode, bool ignoreCached = false)
         {
-            var content = WeiXinHttpHelper.PostString(
-                "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=" + GetAccessToken().AccessToken,
-                new
-                {
-                    component_appid = _accountModel.AppId,
-                    authorization_code = authorizationCode
-                });
-            var obj = JObject.Parse(content)["authorization_info"];
+            var get = new Lazy<PublicAccountAuthorizerInfo>(() =>
+            {
+                var content = WeiXinHttpHelper.PostString(
+                    "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=" +
+                    GetAccessToken().AccessToken,
+                    new
+                    {
+                        component_appid = _accountModel.AppId,
+                        authorization_code = authorizationCode
+                    });
+                var obj = JObject.Parse(content)["authorization_info"];
 
-            var model = JsonConvert.DeserializeObject<PublicAccountAuthorizerInfo>(obj.ToString());
-            model.Rights = GetRights(obj);
+                var model = JsonConvert.DeserializeObject<PublicAccountAuthorizerInfo>(obj.ToString());
+                model.Rights = GetRights(obj);
 
-            return model;
+                return model;
+            });
+
+            return _objectCacheDictionary.AddOrUpdate("GetPublicAccountAuthorizerInfo_" + authorizationCode, k => get.Value, (k, v) =>
+            {
+                var model = v as PublicAccountAuthorizerInfo;
+                //无效、过期、忽略缓存则重新获取。
+                if (model == null || model.IsExpired() || ignoreCached)
+                    return get.Value;
+                return model;
+            }) as PublicAccountAuthorizerInfo;
         }
 
         /// <summary>
@@ -270,19 +295,27 @@ namespace Rabbit.WeiXin.Open.Api
         /// </summary>
         /// <param name="authorizerAppId">授权方appid。</param>
         /// <param name="authorizerRefreshToken">授权方的刷新令牌，刷新令牌主要用于公众号第三方平台获取和刷新已授权用户的access_token，只会在授权时刻提供，请妥善保存。 一旦丢失，只能让用户重新授权，才能再次拿到新的刷新令牌。</param>
+        /// <param name="ignoreCached">是否忽略缓存。</param>
         /// <returns>刷新令牌模型。</returns>
-        public RefreshAccessToken RefreshToken(string authorizerAppId, string authorizerRefreshToken)
+        public RefreshAccessToken RefreshToken(string authorizerAppId, string authorizerRefreshToken, bool ignoreCached = false)
         {
-            var model =
-                WeiXinHttpHelper.PostResultByJson<RefreshAccessToken>(
-                    "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=" + GetAccessToken().AccessToken,
-                    new
-                    {
-                        component_appid = _accountModel.AppId,
-                        authorizer_appid = authorizerAppId,
-                        authorizer_refresh_token = authorizerRefreshToken
-                    });
-            return model;
+            var get = new Lazy<RefreshAccessToken>(() => WeiXinHttpHelper.PostResultByJson<RefreshAccessToken>(
+                "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=" +
+                GetAccessToken().AccessToken,
+                new
+                {
+                    component_appid = _accountModel.AppId,
+                    authorizer_appid = authorizerAppId,
+                    authorizer_refresh_token = authorizerRefreshToken
+                }));
+
+            return _objectCacheDictionary.AddOrUpdate("RefreshToken_" + authorizerAppId, k => get.Value, (k, v) =>
+            {
+                var token = v as RefreshAccessToken;
+                if (token == null || token.IsExpired() || ignoreCached)
+                    return get.Value;
+                return v;
+            }) as RefreshAccessToken;
         }
 
         #endregion Implementation of ICommonService
@@ -513,6 +546,14 @@ namespace Rabbit.WeiXin.Open.Api
     public sealed class PublicAccountAuthorizerInfo
     {
         /// <summary>
+        /// 初始化一个新的公众号授权信息。
+        /// </summary>
+        public PublicAccountAuthorizerInfo()
+        {
+            CreateTime = DateTime.Now;
+        }
+
+        /// <summary>
         /// 授权方appid
         /// </summary>
         [JsonProperty("authorizer_appid")]
@@ -529,6 +570,21 @@ namespace Rabbit.WeiXin.Open.Api
         /// </summary>
         [JsonProperty("expires_in")]
         public int ExpiresIn { get; set; }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        [JsonIgnore]
+        public DateTime CreateTime { get; private set; }
+
+        /// <summary>
+        /// 是否过期。
+        /// </summary>
+        /// <returns>如果过期返回true，否则返回false。</returns>
+        public bool IsExpired()
+        {
+            return CreateTime.AddSeconds(ExpiresIn - 20/*不采用最后的期限作为判断，防止在很少的时间内到期导致后续的逻辑无法执行*/) <= DateTime.Now;
+        }
 
         /// <summary>
         /// 刷新令牌（在授权的公众号具备API权限时，才有此返回值），刷新令牌主要用于公众号第三方平台获取和刷新已授权用户的access_token，只会在授权时刻提供，请妥善保存。 一旦丢失，只能让用户重新授权，才能再次拿到新的刷新令牌
