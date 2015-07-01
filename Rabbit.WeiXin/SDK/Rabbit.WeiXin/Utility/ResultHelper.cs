@@ -2,7 +2,7 @@
 using Rabbit.WeiXin.MP.Api.Model;
 using System.Text;
 
-namespace Rabbit.WeiXin.MP.Api.Utility
+namespace Rabbit.WeiXin.Utility
 {
     internal static class ResultHelper
     {

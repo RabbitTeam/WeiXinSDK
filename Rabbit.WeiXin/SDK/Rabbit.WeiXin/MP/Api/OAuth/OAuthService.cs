@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Rabbit.WeiXin.MP.Api.User;
-using Rabbit.WeiXin.MP.Api.Utility;
+using Rabbit.WeiXin.Utility;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Globalization;
-using System.Net;
-using System.Text;
 
 namespace Rabbit.WeiXin.MP.Api.OAuth
 {
@@ -55,14 +53,21 @@ namespace Rabbit.WeiXin.MP.Api.OAuth
         #region Field
 
         private readonly AccountModel _accountModel;
+        private readonly Open.Api.AccountModel _openAccountModel;
 
         #endregion Field
 
         #region Constructor
 
         public OAuthService(AccountModel accountModel)
+            : this(accountModel, null)
+        {
+        }
+
+        public OAuthService(AccountModel accountModel, Open.Api.AccountModel openAccountModel)
         {
             _accountModel = accountModel;
+            _openAccountModel = openAccountModel;
         }
 
         #endregion Constructor
@@ -79,8 +84,16 @@ namespace Rabbit.WeiXin.MP.Api.OAuth
         public string GetAuthorizeUrl(string url, OAuthScope scope, string state = null)
         {
             var appId = _accountModel.AppId;
-            var redirectUrl = string.Format("https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#wechat_redirect", appId, url, "snsapi_" + scope.ToString().ToLower(), state);
-            return redirectUrl;
+            var redirectUrl =
+                string.Format(
+                    "https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}",
+                    appId, url, "snsapi_" + scope.ToString().ToLower(), state);
+
+            if (_openAccountModel != null)
+            {
+                redirectUrl = redirectUrl + "&component_appid=" + _openAccountModel.AppId;
+            }
+            return redirectUrl + "#wechat_redirect";
         }
 
         /// <summary>
@@ -90,12 +103,9 @@ namespace Rabbit.WeiXin.MP.Api.OAuth
         /// <returns>结果模型。</returns>
         public GetOAuthAccessTokenResult GetAccessToken(string code)
         {
-            var url = string.Format("https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code", _accountModel.AppId, _accountModel.AppSecret, code);
-            using (var client = new WebClient { Encoding = Encoding.UTF8 })
-            {
-                var content = client.DownloadString(url);
-                return GetOAuthAccessTokenResult.CreateResult(content);
-            }
+            var url = _openAccountModel != null ? string.Format("https://api.weixin.qq.com/sns/oauth2/component/access_token?appid={0}&code={1}&grant_type=authorization_code&component_appid={2}&component_access_token={3}", _accountModel.AppId, code, _openAccountModel.AppId, _openAccountModel.GetAccessToken()) : string.Format("https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code", _accountModel.AppId, _accountModel.AppSecret, code);
+
+            return GetOAuthAccessTokenResult.CreateResult(WeiXinHttpHelper.GetString(url));
         }
 
         /// <summary>
@@ -105,12 +115,9 @@ namespace Rabbit.WeiXin.MP.Api.OAuth
         /// <returns>结果模型。</returns>
         public GetOAuthAccessTokenResult RefreshToken(string refreshToken)
         {
-            var url = string.Format("https://api.weixin.qq.com/sns/oauth2/refresh_token?appid={0}&grant_type=refresh_token&refresh_token={1}", _accountModel.AppId, refreshToken);
-            using (var client = new WebClient { Encoding = Encoding.UTF8 })
-            {
-                var content = client.DownloadString(url);
-                return GetOAuthAccessTokenResult.CreateResult(content);
-            }
+            var url = _openAccountModel == null ? string.Format("https://api.weixin.qq.com/sns/oauth2/refresh_token?appid={0}&grant_type=refresh_token&refresh_token={1}", _accountModel.AppId, refreshToken) : string.Format("https://api.weixin.qq.com/sns/oauth2/component/refresh_token?appid={0}&grant_type=refresh_token&component_appid={1}&component_access_token={2}&refresh_token={3}", _accountModel.AppId, _openAccountModel.AppId, _openAccountModel.GetAccessToken(), refreshToken);
+
+            return GetOAuthAccessTokenResult.CreateResult(WeiXinHttpHelper.GetString(url));
         }
 
         /// <summary>

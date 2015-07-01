@@ -23,8 +23,18 @@ namespace Rabbit.WeiXin.Open.Api
         public string EncodingAesKey { get; set; }
 
         /// <summary>
+        /// 检验票据。
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
         /// 获取核实票据信息。
         /// </summary>
         public Func<string> GetVerifyTicket { get; set; }
+
+        /// <summary>
+        /// 获取访问票据。
+        /// </summary>
+        public Func<string> GetAccessToken { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Rabbit.WeiXin.MP.Api.Utility;
+﻿using Rabbit.WeiXin.Utility;
 using System;
 
 namespace Rabbit.WeiXin.MP.Api.Material

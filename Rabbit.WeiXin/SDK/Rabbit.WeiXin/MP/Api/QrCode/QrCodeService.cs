@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Rabbit.WeiXin.MP.Api.Utility;
+using Rabbit.WeiXin.Utility;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Collections.Generic;
@@ -185,10 +185,19 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
         /// 初始化一个新的创建二维码模型。
         /// </summary>
         /// <param name="qrCodeType">二维码类型。</param>
-        /// <param name="sceneId">数字型的场景Id。</param>
-        protected CreateQrCodeModel(QrCodeType qrCodeType, uint sceneId)
+        protected CreateQrCodeModel(QrCodeType qrCodeType)
         {
             Type = qrCodeType;
+        }
+
+        /// <summary>
+        /// 初始化一个新的创建二维码模型。
+        /// </summary>
+        /// <param name="qrCodeType">二维码类型。</param>
+        /// <param name="sceneId">数字型的场景Id。</param>
+        protected CreateQrCodeModel(QrCodeType qrCodeType, uint sceneId)
+            : this(qrCodeType)
+        {
             SceneId = sceneId;
         }
 
@@ -218,12 +227,18 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
         [JsonProperty("action_name")]
         internal string ActionName { get; set; }
 
+        /// <summary>
+        /// 二维码详细信息。
+        /// </summary>
+        [JsonProperty("action_info")]
+        public string ActionInfo { get; set; }
+
         private uint? _sceneId;
 
         /// <summary>
         /// 场景值ID，临时二维码时为32位非0整型，永久二维码时最大值为100000（目前参数只支持1--100000）
         /// </summary>
-        [Range(1, 100000)]
+        [Range(1, 100000), JsonProperty("scene_id")]
         public uint? SceneId
         {
             get { return _sceneId; }
@@ -307,6 +322,23 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
             SceneId = sceneId;
             Type = QrCodeType.Forever;
         }
+
+        /// <summary>
+        /// 初始化一个新的创建永久二维码模型。
+        /// </summary>
+        /// <param name="sceneString">字符串型的场景Id。</param>
+        public CreateForeverQrCodeModel(string sceneString)
+            : base(QrCodeType.Forever)
+        {
+            SceneString = sceneString;
+            Type = QrCodeType.Forever;
+        }
+
+        /// <summary>
+        /// 场景值ID（字符串形式的ID），字符串类型，长度限制为1到64，仅永久二维码支持此字段。
+        /// </summary>
+        [JsonProperty("scene_str")]
+        public string SceneString { get; set; }
     }
 
     /// <summary>

@@ -3,7 +3,7 @@ using Rabbit.WeiXin.Utility.Extensions;
 using System.Net;
 using System.Text;
 
-namespace Rabbit.WeiXin.MP.Api.Utility
+namespace Rabbit.WeiXin.Utility
 {
     internal static class WeiXinHttpHelper
     {

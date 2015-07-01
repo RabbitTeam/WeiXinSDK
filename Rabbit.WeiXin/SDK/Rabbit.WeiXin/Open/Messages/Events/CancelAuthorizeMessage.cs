@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rabbit.WeiXin.Utility;
+using System;
+using System.Xml.Linq;
 
 namespace Rabbit.WeiXin.Open.Messages.Events
 {
@@ -7,6 +9,13 @@ namespace Rabbit.WeiXin.Open.Messages.Events
     /// </summary>
     public class CancelAuthorizeMessage
     {
+        public CancelAuthorizeMessage(XContainer container)
+        {
+            AppId = container.Element("AppId").Value;
+            CreateTime = DateTimeHelper.GetTimeByTimeStampString(container.Element("CreateTime").Value);
+            AuthorizerAppId = container.Element("AuthorizerAppid").Value;
+        }
+
         /// <summary>
         /// 第三方平台appid。
         /// </summary>
@@ -20,6 +29,6 @@ namespace Rabbit.WeiXin.Open.Messages.Events
         /// <summary>
         /// 取消授权的公众号。
         /// </summary>
-        public string AuthorizerAppid { get; set; }
+        public string AuthorizerAppId { get; set; }
     }
 }

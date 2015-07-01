@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using Rabbit.WeiXin.MP.Api.Utility;
+using Rabbit.WeiXin.Utility;
 
 namespace Rabbit.WeiXin.MP.Api.TemplateMessage
 {

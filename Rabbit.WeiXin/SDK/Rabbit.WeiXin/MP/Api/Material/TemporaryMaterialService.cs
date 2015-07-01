@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Rabbit.WeiXin.MP.Api.Utility;
 using Rabbit.WeiXin.Utility;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;

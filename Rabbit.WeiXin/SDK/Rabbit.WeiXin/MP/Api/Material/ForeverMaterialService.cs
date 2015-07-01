@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Rabbit.WeiXin.MP.Api.Utility;
+using Rabbit.WeiXin.Utility;
 using Rabbit.WeiXin.Utility.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Text;

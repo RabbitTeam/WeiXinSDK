@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Tencent
 {
-    internal class Cryptography
+    public class Cryptography
     {
         public static UInt32 HostToNetworkOrder(UInt32 inval)
         {

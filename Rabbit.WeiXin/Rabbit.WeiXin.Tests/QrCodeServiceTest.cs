@@ -39,7 +39,7 @@ namespace Rabbit.WeiXin.Tests
         [TestMethod]
         public void CreateForeverTest()
         {
-            var result = _qrCodeService.CreateForever(new CreateForeverQrCodeModel(1234));
+            var result = _qrCodeService.CreateForever(new CreateForeverQrCodeModel("1234") { SceneId = 12 });
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Ticket);
         }

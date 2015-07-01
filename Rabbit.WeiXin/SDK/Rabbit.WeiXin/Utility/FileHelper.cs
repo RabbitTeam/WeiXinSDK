@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace Rabbit.WeiXin.MP.Api.Utility
+namespace Rabbit.WeiXin.Utility
 {
     /// <summary>
     /// 文件帮助类

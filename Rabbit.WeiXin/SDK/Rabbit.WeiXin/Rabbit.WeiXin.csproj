@@ -62,7 +62,6 @@
     <Compile Include="MP\Api\Material\MaterialServiceBase.cs" />
     <Compile Include="MP\Api\Material\MaterialType.cs" />
     <Compile Include="MP\Api\Material\TemporaryMaterialService.cs" />
-    <Compile Include="MP\Api\Model\IJsonResult.cs" />
     <Compile Include="MP\Api\Model\JsonResultError.cs" />
     <Compile Include="MP\Api\OAuth\OAuthService.cs" />
     <Compile Include="MP\Api\QrCode\QrCodeService.cs" />
@@ -70,10 +69,6 @@
     <Compile Include="MP\Api\TemplateMessage\TemplateMessageService.cs" />
     <Compile Include="MP\Api\User\UserGroupService.cs" />
     <Compile Include="MP\Api\User\UserService.cs" />
-    <Compile Include="MP\Api\Utility\CreateBytes.cs" />
-    <Compile Include="MP\Api\Utility\FileHelper.cs" />
-    <Compile Include="MP\Api\Utility\HttpHelper.cs" />
-    <Compile Include="MP\Api\Utility\ResultHelper.cs" />
     <Compile Include="DependencyInjection\DefaultDependencyResolver.cs" />
     <Compile Include="Handlers\HandlerBuilder.cs" />
     <Compile Include="Handlers\HandlerContext.cs" />
@@ -172,10 +167,14 @@
     <Compile Include="SignatureService.cs" />
     <Compile Include="Tencent\Cryptography.cs" />
     <Compile Include="Tencent\WXBizMsgCrypt.cs" />
+    <Compile Include="Utility\CreateBytes.cs" />
     <Compile Include="Utility\DateTimeHelper.cs" />
     <Compile Include="Utility\EnumParseCacheHelper.cs" />
     <Compile Include="Utility\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utility\Extensions\StreamExtensions.cs" />
+    <Compile Include="Utility\FileHelper.cs" />
+    <Compile Include="Utility\HttpHelper.cs" />
+    <Compile Include="Utility\ResultHelper.cs" />
     <Compile Include="WeiXinException.cs" />
   </ItemGroup>
   <ItemGroup>

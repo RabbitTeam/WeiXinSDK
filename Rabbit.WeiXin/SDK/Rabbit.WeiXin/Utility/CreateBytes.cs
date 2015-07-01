@@ -2,12 +2,18 @@
 using System.Linq;
 using System.Text;
 
-namespace Rabbit.WeiXin.MP.Api.Utility
+namespace Rabbit.WeiXin.Utility
 {
+    /// <summary>
+    /// 创建提交字节组。
+    /// </summary>
     public sealed class CreateBytes
     {
         private readonly Encoding _encoding = Encoding.UTF8;
 
+        /// <summary>
+        /// 分隔符。
+        /// </summary>
         public string Boundary
         {
             get
@@ -29,6 +35,9 @@ namespace Rabbit.WeiXin.MP.Api.Utility
             }
         }
 
+        /// <summary>
+        /// 内容类型。
+        /// </summary>
         public string ContentType
         {
             get

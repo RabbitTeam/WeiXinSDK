@@ -1,7 +1,6 @@
 ﻿using Rabbit.WeiXin.Handlers.Impl;
 using Rabbit.WeiXin.MP.Messages;
 using Rabbit.WeiXin.MP.Serialization;
-using Rabbit.WeiXin.Open.Api;
 using System;
 using System.Collections.Generic;
 
@@ -23,13 +22,6 @@ namespace Rabbit.WeiXin.DependencyInjection
         private static readonly IRequestMessageFactory RequestMessageFactory = new RequestMessageFactory(MessageFormatterFactory);
         private static readonly IResponseMessageFactory ResponseMessageFactory = new ResponseMessageFactory(MessageFormatterFactory);
 
-        private static readonly IVerifyTicketService VerifyTicketService = new VerifyTicketService(new AccountModel
-        {
-            AppId = "xxxxxx",
-            AppSecret = "xxxxxx",
-            EncodingAesKey = "xxxxxx"
-        });
-
         //局部单例。
         private readonly IUserSessionCollection _userSessionCollection = new UserSessionCollection(TimeSpan.FromMinutes(20));
 
@@ -37,17 +29,7 @@ namespace Rabbit.WeiXin.DependencyInjection
         {
             {typeof (ISignatureService), () => SignatureService},
             {typeof (IRequestMessageFactory), () => RequestMessageFactory},
-            {typeof (IResponseMessageFactory), () => ResponseMessageFactory},
-            {typeof(IVerifyTicketService), ()=> VerifyTicketService},
-            {typeof(ICommonService), () =>
-            {
-                return new CommonService(new AccountModel
-                {
-                    AppId = "xxxxxx",
-                    AppSecret = "xxxxxx",
-                    GetVerifyTicket = () => VerifyTicketService.Get().ComponentVerifyTicket
-                });
-            }}
+            {typeof (IResponseMessageFactory), () => ResponseMessageFactory}
         };
 
         #endregion Field
@@ -59,6 +41,9 @@ namespace Rabbit.WeiXin.DependencyInjection
             DependencyResolver = new DefaultDependencyResolver();
         }
 
+        /// <summary>
+        /// 初始化一个新的默认的依赖解析器。
+        /// </summary>
         public DefaultDependencyResolver()
         {
             ServiceDictionary[typeof(IUserSessionCollection)] = () => _userSessionCollection;
