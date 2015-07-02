@@ -28,18 +28,18 @@ namespace Rabbit.WeiXin.Tests
         [TestMethod]
         public void CreateTemporaryTest()
         {
-            var result = _qrCodeService.CreateTemporary(new CreateTemporaryQrCodeModel());
+            var result = _qrCodeService.CreateTemporary(new CreateTemporaryQrCodeModel(1));
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Ticket);
             Assert.AreEqual((uint)604800, result.ExpireSeconds);
-            result = _qrCodeService.CreateTemporary(new CreateTemporaryQrCodeModel { ExpireSeconds = 61 });
+            result = _qrCodeService.CreateTemporary(new CreateTemporaryQrCodeModel(1, 61));
             Assert.AreEqual((uint)61, result.ExpireSeconds);
         }
 
         [TestMethod]
         public void CreateForeverTest()
         {
-            var result = _qrCodeService.CreateForever(new CreateForeverQrCodeModel("1234") { SceneId = 12 });
+            var result = _qrCodeService.CreateForever(new CreateForeverQrCodeModel("abcd"));
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Ticket);
         }

@@ -50,6 +50,10 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个二维码服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public QrCodeService(AccountModel accountModel)
         {
             _accountModel = accountModel;
@@ -190,22 +194,12 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
             Type = qrCodeType;
         }
 
-        /// <summary>
-        /// 初始化一个新的创建二维码模型。
-        /// </summary>
-        /// <param name="qrCodeType">二维码类型。</param>
-        /// <param name="sceneId">数字型的场景Id。</param>
-        protected CreateQrCodeModel(QrCodeType qrCodeType, uint sceneId)
-            : this(qrCodeType)
-        {
-            SceneId = sceneId;
-        }
-
         #endregion Constructor
 
         /// <summary>
         /// 二维码类型。
         /// </summary>
+        [JsonIgnore]
         public QrCodeType Type
         {
             get
@@ -227,32 +221,52 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
         [JsonProperty("action_name")]
         internal string ActionName { get; set; }
 
+        internal sealed class QrCodeInfo
+        {
+            public sealed class SceneIdInfo
+            {
+                [JsonProperty("scene_id")]
+                public uint SceneId { get; set; }
+            }
+
+            public sealed class SceneStringInfo
+            {
+                [JsonProperty("scene_str")]
+                public string SceneString { get; set; }
+            }
+
+            [JsonProperty("scene")]
+            public object Scene { get; set; }
+        }
+
         /// <summary>
         /// 二维码详细信息。
         /// </summary>
         [JsonProperty("action_info")]
-        public string ActionInfo { get; set; }
-
-        private uint? _sceneId;
+        internal QrCodeInfo ActionInfo { get; set; }
 
         /// <summary>
         /// 场景值ID，临时二维码时为32位非0整型，永久二维码时最大值为100000（目前参数只支持1--100000）
         /// </summary>
-        [Range(1, 100000), JsonProperty("scene_id")]
-        public uint? SceneId
+        [JsonIgnore]
+        public virtual uint SceneId
         {
-            get { return _sceneId; }
-            set
+            get
             {
-                if (!value.HasValue)
-                {
-                    _sceneId = null;
-                    return;
-                }
-                if (value <= 0 || value > 100000)
-                    throw new ArgumentException("SceneId 必需在 1~100000 之间。");
-                _sceneId = value;
+                return ((QrCodeInfo.SceneIdInfo)ActionInfo.Scene).SceneId;
             }
+            /*            set
+                        {
+                            if (value <= 0 || value > 100000)
+                                throw new ArgumentException("SceneId 必需在 1~100000 之间。");
+
+                            if (this is CreateForeverQrCodeModel)
+                            {
+                                Type = QrCodeType.Forever;
+                            }
+
+                            ((QrCodeInfo.SceneIdInfo)ActionInfo.Scene).SceneId = value;
+                        }*/
         }
     }
 
@@ -264,20 +278,16 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
         /// <summary>
         /// 初始化一个新的创建临时二维码模型。
         /// </summary>
-        public CreateTemporaryQrCodeModel()
-        {
-            Type = QrCodeType.Temporary;
-            ExpireSeconds = 604800;
-        }
-
-        /// <summary>
-        /// 初始化一个新的创建临时二维码模型。
-        /// </summary>
         /// <param name="sceneId">数字型的场景Id。</param>
         /// <param name="expireSeconds">该二维码有效时间，以秒为单位。 最大不超过604800（即7天）。</param>
-        public CreateTemporaryQrCodeModel(uint sceneId = 0, uint expireSeconds = 604800)
-            : base(QrCodeType.Temporary, sceneId)
+        public CreateTemporaryQrCodeModel(uint sceneId, uint expireSeconds = 604800)
+            : base(QrCodeType.Temporary)
         {
+            ActionInfo = new QrCodeInfo
+            {
+                Scene = new QrCodeInfo.SceneIdInfo { SceneId = sceneId }
+            };
+            Type = QrCodeType.Temporary;
             ExpireSeconds = expireSeconds;
         }
 
@@ -307,20 +317,14 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
         /// <summary>
         /// 初始化一个新的创建永久二维码模型。
         /// </summary>
-        public CreateForeverQrCodeModel()
-        {
-            Type = QrCodeType.Forever;
-        }
-
-        /// <summary>
-        /// 初始化一个新的创建永久二维码模型。
-        /// </summary>
         /// <param name="sceneId">数字型的场景Id。</param>
         public CreateForeverQrCodeModel(uint sceneId)
-            : base(QrCodeType.Forever, sceneId)
+            : base(QrCodeType.Forever)
         {
-            SceneId = sceneId;
-            Type = QrCodeType.Forever;
+            ActionInfo = new QrCodeInfo
+            {
+                Scene = new QrCodeInfo.SceneIdInfo { SceneId = sceneId }
+            };
         }
 
         /// <summary>
@@ -328,17 +332,27 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
         /// </summary>
         /// <param name="sceneString">字符串型的场景Id。</param>
         public CreateForeverQrCodeModel(string sceneString)
-            : base(QrCodeType.Forever)
+            : base(QrCodeType.ForeverString)
         {
-            SceneString = sceneString;
-            Type = QrCodeType.Forever;
+            ActionInfo = new QrCodeInfo
+            {
+                Scene = new QrCodeInfo.SceneStringInfo { SceneString = sceneString }
+            };
         }
 
         /// <summary>
         /// 场景值ID（字符串形式的ID），字符串类型，长度限制为1到64，仅永久二维码支持此字段。
         /// </summary>
-        [JsonProperty("scene_str")]
-        public string SceneString { get; set; }
+        [JsonIgnore]
+        public string SceneString
+        {
+            get { return ((QrCodeInfo.SceneStringInfo)ActionInfo.Scene).SceneString; }
+            /*            set
+                        {
+                            Type = QrCodeType.ForeverString;
+                            ((QrCodeInfo.SceneStringInfo)ActionInfo.Scene).SceneString = value;
+                        }*/
+        }
     }
 
     /// <summary>
