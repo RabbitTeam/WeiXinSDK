@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="MP\Api\AccountModel.cs" />
     <Compile Include="MP\Api\Card\CardService.cs" />
+    <Compile Include="MP\Api\Card\ICardService.cs" />
     <Compile Include="MP\Api\CommonService.cs" />
     <Compile Include="MP\Api\CustomMenu\CustomMenuService.cs" />
     <Compile Include="MP\Api\CustomService\CustomServiceMessageService.cs" />

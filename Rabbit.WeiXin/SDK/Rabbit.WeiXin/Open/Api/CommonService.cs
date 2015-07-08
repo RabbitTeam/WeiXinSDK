@@ -123,7 +123,7 @@ namespace Rabbit.WeiXin.Open.Api
         {
             return string.Format(
                 "https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={0}&pre_auth_code={1}&redirect_uri={2}",
-                _accountModel.AppId, GetAuthorizeCode().AuthCode, returnUrl);
+                _accountModel.AppId, GetAuthorizeCode(true).AuthCode, returnUrl);
         }
 
         /// <summary>

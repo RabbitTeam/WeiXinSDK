@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin", "SDK\Rabbit.WeiXin\Rabbit.WeiXin.csproj", "{3F244F68-3C83-47CF-A733-8E75567202B3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.MvcExtension", "SDK\Rabbit.WeiXin.MvcExtension\Rabbit.WeiXin.MvcExtension.csproj", "{7AF00BC0-3381-4817-BE91-FA7413811526}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A063200D-803B-4DA8-A374-88EECF220823}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.Tests", "Rabbit.WeiXin.Tests\Rabbit.WeiXin.Tests.csproj", "{AE979F9B-3CF0-43B2-8205-7BDFE1143B7E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{F919AD5B-2909-4C28-905A-86E89E6E00F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{671722EA-C752-47C3-9442-09B2E1673CCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin", "SDK\Rabbit.WeiXin\Rabbit.WeiXin.csproj", "{3F244F68-3C83-47CF-A733-8E75567202B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.MvcExtension", "SDK\Rabbit.WeiXin.MvcExtension\Rabbit.WeiXin.MvcExtension.csproj", "{7AF00BC0-3381-4817-BE91-FA7413811526}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.Tests", "Rabbit.WeiXin.Tests\Rabbit.WeiXin.Tests.csproj", "{AE979F9B-3CF0-43B2-8205-7BDFE1143B7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.Sample", "Sample\Rabbit.WeiXin.Sample\Rabbit.WeiXin.Sample.csproj", "{A67AFEFC-3261-4A58-8B86-24DAA1A8CC98}"
 EndProject

@@ -426,8 +426,8 @@ namespace Rabbit.WeiXin.MP.Api.Store
 
             return array.Select(i =>
             {
-                var model = JsonConvert.DeserializeObject<StoreInfoModel>(i.ToString());
                 var baseInfo = i["base_info"];
+                var model = JsonConvert.DeserializeObject<StoreInfoModel>(baseInfo.ToString());
                 var photoList = (JArray)baseInfo["photo_list"];
                 model.PhotoList = photoList.Select(z => z["photo_url"].Value<string>()).ToArray();
                 return model;

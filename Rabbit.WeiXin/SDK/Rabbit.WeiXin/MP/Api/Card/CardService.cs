@@ -3,37 +3,11 @@ using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.Utility;
 using System;
 using System.Collections;
-using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 
 namespace Rabbit.WeiXin.MP.Api.Card
 {
-    /// <summary>
-    /// 一个抽象的卡券服务。
-    /// </summary>
-    public interface ICardService
-    {
-        /// <summary>
-        /// 上传卡券Logo。
-        /// </summary>
-        /// <param name="bytes">文件字节组（大小限制1MB，像素为300*300，支持JPG格式。）。</param>
-        /// <returns></returns>
-        string UploadLogo(byte[] bytes);
-
-        /// <summary>
-        /// 创建卡券。
-        /// </summary>
-        /// <param name="model">卡券模型。</param>
-        /// <returns>卡券Id。</returns>
-        string Create(CardModel model);
-
-        /// <summary>
-        /// 获取卡券可用颜色。
-        /// </summary>
-        /// <returns>可用颜色数组。</returns>
-        CardColorItem[] GetCardColors();
-    }
-
     /// <summary>
     /// 卡券服务实现。
     /// </summary>
@@ -90,9 +64,10 @@ namespace Rabbit.WeiXin.MP.Api.Card
             };
             var postJson = JsonConvert.SerializeObject(postData);
             var postObj = JObject.Parse(postJson);
-            postObj[type] = JObject.Parse(JsonConvert.SerializeObject(model));
+            postObj["card"][type.ToLower()] = JObject.Parse(JsonConvert.SerializeObject(model));
+            var content = postObj.ToString();
 
-            var json = WeiXinHttpHelper.PostString(url, Encoding.UTF8.GetBytes(postObj.ToString()));
+            var json = WeiXinHttpHelper.PostString(url, Encoding.UTF8.GetBytes(content));
 
             return JObject.Parse(json)["card_id"].Value<string>();
         }
@@ -109,9 +84,388 @@ namespace Rabbit.WeiXin.MP.Api.Card
             return JsonConvert.DeserializeObject<CardColorItem[]>(JObject.Parse(json)["colors"].ToString());
         }
 
+        /// <summary>
+        /// 批量查询卡列表。
+        /// </summary>
+        /// <param name="skip">查询卡列表的起始偏移量，从0开始，即offset: 5是指从从列表里的第六个开始读取。</param>
+        /// <param name="take">需要查询的卡片的数量（数量最大50）。</param>
+        /// <param name="status">支持开发者拉出指定状态的卡券列表，例：仅拉出通过审核的卡券。</param>
+        /// <returns>卡券信息。</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="take"/> 等于0或者大于50。</exception>
+        public CardListResult GetCardList(uint skip, ushort take, CardStatusEnum[] status = null)
+        {
+            if (take > 50 || take == 0)
+                throw new ArgumentOutOfRangeException(nameof(take), "查询的数量必须大于0小等于50。");
+
+            var url = "https://api.weixin.qq.com/card/batchget?access_token=" + _accountModel.GetAccessToken();
+
+            object postData;
+            if (status == null)
+            {
+                postData = new { offset = skip, count = take };
+            }
+            else
+            {
+                postData = new { offset = skip, count = take, status_list = status.Select(GetStatusString).ToArray() };
+            }
+
+            return WeiXinHttpHelper.PostResultByJson<CardListResult>(url, postData);
+        }
+
+        /// <summary>
+        /// 根据卡券Id获取卡券信息。
+        /// </summary>
+        /// <param name="cardId">卡券Id。</param>
+        /// <returns>卡券信息。</returns>
+        public CardModel Get(string cardId)
+        {
+            var url = "https://api.weixin.qq.com/card/get?access_token=" + _accountModel.GetAccessToken();
+
+            var content = WeiXinHttpHelper.PostString(url, new { card_id = cardId });
+
+            var cardObj = JObject.Parse(content)["card"];
+
+            var type = cardObj.Value<string>("card_type");
+            var contentObj = cardObj[type.ToLower()];
+            var baseInfoObj = contentObj["base_info"];
+            var cardType = GetCardByString(type);
+
+            CardModel card;
+
+            switch (cardType)
+            {
+                case CardType.Cash:
+                    card = new CashCardModel
+                    {
+                        LeastCost = contentObj.Value<uint>("least_cost"),
+                        ReduceCost = contentObj.Value<uint>("reduce_cost")
+                    };
+                    break;
+
+                case CardType.Coupon:
+                    card = new CouponCardModel
+                    {
+                        Detail = contentObj.Value<string>("deal_detail")
+                    };
+                    break;
+
+                case CardType.Discount:
+                    card = new DiscountCardModel
+                    {
+                        Discount = contentObj.Value<ushort>("discount")
+                    };
+                    break;
+
+                case CardType.Gift:
+                    card = new GiftCardModel
+                    {
+                        Gift = contentObj.Value<string>("gift")
+                    };
+                    break;
+
+                case CardType.Group:
+                    card = new GroupCardModel
+                    {
+                        Detail = contentObj.Value<string>("deal_detail")
+                    };
+                    break;
+
+                default:
+                    throw new NotSupportedException("不支持的卡券类型：" + cardType);
+            }
+
+            var baseInfo = new CardBaseInfo
+            {
+                LogoUrl = baseInfoObj.Value<string>("logo_url"),
+                ViewTypeString = baseInfoObj.Value<string>("code_type"),
+                Id = baseInfoObj.Value<string>("id"),
+                BrandName = baseInfoObj.Value<string>("brand_name"),
+                Title = baseInfoObj.Value<string>("title"),
+                SubTitle = baseInfoObj.Value<string>("sub_title"),
+                Color = baseInfoObj.Value<string>("color"),
+                Notice = baseInfoObj.Value<string>("notice"),
+                Description = baseInfoObj.Value<string>("description"),
+                Product = new CardBaseInfoBase.ProductInfo
+                {
+                    Quantity = baseInfoObj.SelectToken("sku.quantity").Value<uint>()
+                },
+                UseTime = GetUseTime(baseInfoObj["date_info"]),
+                UseCustomCode = baseInfoObj.Value<bool>("use_custom_code"),
+                BindOpenid = baseInfoObj.Value<bool>("bind_openid"),
+                ServicePhone = baseInfoObj.Value<string>("service_phone"),
+                LocationIdList = ((JArray)baseInfoObj["location_id_list"]).Select(i => i.Value<long>()).ToArray(),
+                Source = baseInfoObj.Value<string>("source"),
+                CustomUrlName = baseInfoObj.Value<string>("custom_url_name"),
+                CustomUrl = baseInfoObj.Value<string>("custom_url"),
+                CustomUrlSubTitle = baseInfoObj.Value<string>("custom_url_sub_title"),
+                PromotionUrlName = baseInfoObj.Value<string>("promotion_url_name"),
+                PromotionUrl = baseInfoObj.Value<string>("promotion_url"),
+                PromotionUrlSubTitle = baseInfoObj.Value<string>("promotion_url_sub_title"),
+                GetLimit = baseInfoObj.Value<uint>("get_limit"),
+                AllowShare = baseInfoObj.Value<bool>("can_share"),
+                AllowGive = baseInfoObj.Value<bool>("can_give_friend"),
+                Status = GetStatusByString(baseInfoObj.Value<string>("status"))
+            };
+
+            card.BaseInfo = baseInfo;
+
+            return card;
+        }
+
+        /// <summary>
+        /// 删除卡券。
+        /// </summary>
+        /// <param name="cardId">卡券Id。</param>
+        public void Delete(string cardId)
+        {
+            var url = "https://api.weixin.qq.com/card/delete?access_token=" + _accountModel.GetAccessToken();
+
+            WeiXinHttpHelper.PostString(url, new { card_id = cardId });
+        }
+
+        /// <summary>
+        /// 设置卡券失效。
+        /// </summary>
+        /// <param name="cardId">卡券ID。</param>
+        /// <param name="code">设置失效的Code码。</param>
+        /// <remarks>
+        /// 为满足改票、退款等异常情况，可调用卡券失效接口将用户的卡券设置为失效状态。 注：设置卡券失效的操作不可逆，即无法将设置为失效的卡券调回有效状态，商家须慎重调用该接口。
+        /// </remarks>
+        public void Invalid(string cardId, string code)
+        {
+            var url = "https://api.weixin.qq.com/card/code/unavailable?access_token=" + _accountModel.GetAccessToken();
+
+            object postData;
+            if (string.IsNullOrWhiteSpace(cardId))
+            {
+                postData = new { code };
+            }
+            else
+            {
+                postData = new { code, card_id = cardId };
+            }
+
+            WeiXinHttpHelper.PostString(url, postData);
+        }
+
+        /// <summary>
+        /// 查询code。
+        /// </summary>
+        /// <param name="code">单张卡券的唯一标识。</param>
+        /// <param name="cardId">卡券ID代表一类卡券。</param>
+        /// <remarks>调用查询code接口可获取code的有效性（非自定义code），该code对应的用户openid、卡券有效期等信息。 自定义code（use_custom_code为true）的卡券调用接口时，post数据中需包含card_id，非自定义code不需上报。</remarks>
+        /// <returns>查询结果。</returns>
+        public SearchCodeResult SearchCode(string code, string cardId)
+        {
+            var url = "https://api.weixin.qq.com/card/code/get?access_token=" + _accountModel.GetAccessToken();
+
+            object postData;
+            if (string.IsNullOrWhiteSpace(cardId))
+            {
+                postData = new { code };
+            }
+            else
+            {
+                postData = new { code, card_id = cardId };
+            }
+            var content = WeiXinHttpHelper.PostString(url, postData);
+            var obj = JObject.Parse(content);
+
+            return new SearchCodeResult
+            {
+                BeginTime = DateTimeHelper.GetTimeByTimeStamp(obj.Value<ulong>("begin_time")),
+                CardId = obj.Value<string>("card_id"),
+                EndTime = DateTimeHelper.GetTimeByTimeStamp(obj.Value<ulong>("end_time")),
+                OpenId = obj.Value<string>("openid")
+            };
+        }
+
+        /// <summary>
+        /// 获取用户的卡券列表。
+        /// </summary>
+        /// <param name="openId">用户Id。</param>
+        /// <param name="cardId">卡券Id。</param>
+        /// <returns></returns>
+        public UserCardModel[] GetUserCardList(string openId, string cardId = null)
+        {
+            var url = "https://api.weixin.qq.com/card/user/getcardlist?access_token=" + _accountModel.GetAccessToken();
+
+            object postData;
+            if (string.IsNullOrWhiteSpace(cardId))
+            {
+                postData = new { openid = openId };
+            }
+            else
+            {
+                postData = new { openid = openId, card_id = cardId };
+            }
+
+            var content = WeiXinHttpHelper.PostString(url, postData);
+            var obj = JObject.Parse(content);
+            return ((JArray)obj["card_list"]).Select(
+                i => new UserCardModel { CardId = i.Value<string>("card_id"), Code = i.Value<string>("code") }).ToArray();
+        }
+
+        /// <summary>
+        /// 修改库存。
+        /// </summary>
+        /// <param name="cardId">卡券Id。</param>
+        /// <param name="increaseValue">增加的值。</param>
+        /// <param name="reduceValue">减少的值。</param>
+        /// <remarks>调用修改库存接口增减某张卡券的库存。</remarks>
+        public void UpdateStock(string cardId, uint? increaseValue, uint? reduceValue)
+        {
+            var url = "https://api.weixin.qq.com/card/modifystock?access_token=" + _accountModel.GetAccessToken();
+
+            object postData = null;
+
+            if (!increaseValue.HasValue && !reduceValue.HasValue)
+                throw new ArgumentException("增加库存的值与减少库存的值不能都为null");
+            if (!increaseValue.HasValue)
+                increaseValue = 0;
+            if (!reduceValue.HasValue)
+                reduceValue = 0;
+
+            if (increaseValue.Value == reduceValue.Value)
+                throw new ArgumentException("增加库存的值不能等于减少库存的值，因为这样没有任何意义。");
+
+            if (increaseValue.Value > 0 && reduceValue.Value > 0)
+                postData = new { increase_stock_value = increaseValue.Value, reduce_stock_value = reduceValue.Value };
+            else if (increaseValue.Value > 0)
+                postData = new { increase_stock_value = increaseValue.Value };
+            else if (reduceValue.Value > 0)
+                postData = new { reduce_stock_value = reduceValue.Value };
+
+            if (postData == null)
+                throw new ArgumentException("无效的参数值，请检查。");
+
+            WeiXinHttpHelper.PostString(url, postData);
+        }
+
+        /// <summary>
+        /// 更新卡券。
+        /// </summary>
+        /// <param name="cardId">卡券Id。</param>
+        /// <param name="model">卡券更新模型。</param>
+        /// <returns>此次更新是否需要审核。</returns>
+        public bool Update(string cardId, CardUpdateModel model)
+        {
+            var url = "https://api.weixin.qq.com/card/update?access_token=" + _accountModel.GetAccessToken();
+            var obj = new JObject
+            {
+                ["card_id"] = cardId,
+                ["member_card"] = JObject.Parse(JsonConvert.SerializeObject(model))
+            };
+
+            var content = WeiXinHttpHelper.PostString(url, Encoding.UTF8.GetBytes(obj.ToString()));
+            return JObject.Parse(content).Value<bool>("send_check");
+        }
+
         #endregion Implementation of ICardService
 
         #region Private Method
+
+        private static CardBaseInfoBase.UseTimeInfo GetUseTime(JToken token)
+        {
+            var type = token.Value<string>("type");
+            switch (GetTimeTypeByString(type))
+            {
+                case CardUseTimeType.FixedLong:
+                    return new CardBaseInfoBase.UseTimeFixedLongInfo
+                    {
+                        FixedBeginTerm = token.Value<uint>("fixed_begin_term"),
+                        FixedTerm = token.Value<uint>("fixed_term")
+                    };
+
+                case CardUseTimeType.FixedTimeSpan:
+                    return new CardBaseInfoBase.UseTimeFixedTimeSpanInfo
+                    {
+                        BeginTimestamp = token.Value<ulong>("begin_timestamp"),
+                        EndTimestamp = token.Value<ulong>("end_timestamp")
+                    };
+            }
+            throw new NotSupportedException("不支持的时间类型：" + type);
+        }
+
+        private static CardUseTimeType GetTimeTypeByString(string type)
+        {
+            switch (type)
+            {
+                case "DATE_TYPE_FIX_TIME_RANGE":
+                    return CardUseTimeType.FixedTimeSpan;
+
+                case "DATE_TYPE_FIX_TERM":
+                    return CardUseTimeType.FixedLong;
+            }
+            throw new NotSupportedException("不支持的时间类型：" + type);
+        }
+
+        private static CardStatusEnum GetStatusByString(string status)
+        {
+            switch (status)
+            {
+                case "CARD_STATUS_NOT_VERIFY":
+                    return CardStatusEnum.NotVerify;
+
+                case "CARD_STATUS_VERIFY_FALL":
+                    return CardStatusEnum.VerifyFall;
+
+                case "CARD_STATUS_VERIFY_OK":
+                    return CardStatusEnum.VerifyOk;
+
+                case "CARD_STATUS_USER_DELETE":
+                case "CARD_STATUS_DELETE":
+                    return CardStatusEnum.Delete;
+
+                case "CARD_STATUS_USER_DISPATCH":
+                    return CardStatusEnum.Dispatch;
+            }
+            throw new NotSupportedException("不支持的卡券状态类型：" + status);
+        }
+
+        private static string GetStatusString(CardStatusEnum status)
+        {
+            switch (status)
+            {
+                case CardStatusEnum.NotVerify:
+                    return "CARD_STATUS_NOT_VERIFY";
+
+                case CardStatusEnum.VerifyFall:
+                    return "CARD_STATUS_VERIFY_FALL";
+
+                case CardStatusEnum.VerifyOk:
+                    return "CARD_STATUS_VERIFY_OK";
+
+                case CardStatusEnum.Delete:
+                    return "CARD_STATUS_USER_DELETE";
+
+                case CardStatusEnum.Dispatch:
+                    return "CARD_STATUS_USER_DISPATCH";
+            }
+            throw new NotSupportedException("不支持的卡券状态类型：" + status);
+        }
+
+        private static CardType GetCardByString(string type)
+        {
+            switch (type)
+            {
+                case "GROUPON":
+                    return CardType.Group;
+
+                case "CASH":
+                    return CardType.Cash;
+
+                case "DISCOUNT":
+                    return CardType.Discount;
+
+                case "GIFT":
+                    return CardType.Gift;
+
+                case "GENERAL_COUPON":
+                    return CardType.Coupon;
+            }
+            throw new NotSupportedException("不支持的卡券类型：" + type);
+        }
 
         private static string GetCardTypeString(CardType type)
         {
@@ -137,503 +491,4 @@ namespace Rabbit.WeiXin.MP.Api.Card
 
         #endregion Private Method
     }
-
-    #region Help Class
-
-    /// <summary>
-    /// 卡券颜色项。
-    /// </summary>
-    public sealed class CardColorItem
-    {
-        /// <summary>
-        /// 颜色名称。
-        /// </summary>
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 颜色值（如：#55bd47）。
-        /// </summary>
-        [JsonProperty("value")]
-        public string Value { get; set; }
-    }
-
-    /// <summary>
-    /// 卡券类型。
-    /// </summary>
-    public enum CardType
-    {
-        /// <summary>
-        /// 团购。
-        /// </summary>
-        Group = 0,
-
-        /// <summary>
-        /// 代金券。
-        /// </summary>
-        Cash = 1,
-
-        /// <summary>
-        /// 折扣。
-        /// </summary>
-        Discount = 2,
-
-        /// <summary>
-        /// 礼品。
-        /// </summary>
-        Gift = 3,
-
-        /// <summary>
-        /// 优惠券。
-        /// </summary>
-        Coupon = 4
-    }
-
-    /// <summary>
-    /// 卡券展示类型。
-    /// </summary>
-    public enum CardViewType
-    {
-        /// <summary>
-        /// 文本。
-        /// </summary>
-        Text = 0,
-
-        /// <summary>
-        /// 一维码。
-        /// </summary>
-        BarCode = 1,
-
-        /// <summary>
-        /// 二维码。
-        /// </summary>
-        QrCode = 2,
-
-        /// <summary>
-        /// 二维码无Code。
-        /// </summary>
-        OnlyQrCode = 3,
-
-        /// <summary>
-        /// 一维码无Code。
-        /// </summary>
-        OnlyBarCode = 4
-    }
-
-    /// <summary>
-    /// 卡券使用时间类型。
-    /// </summary>
-    public enum CardUseTimeType
-    {
-        /// <summary>
-        /// 固定日期区间。
-        /// </summary>
-        FixedTimeSpan = 1,
-
-        /// <summary>
-        /// 固定时常。
-        /// </summary>
-        FixedLong = 2
-    }
-
-    public sealed class CardBaseInfo
-    {
-        /// <summary>
-        /// 商品信息。
-        /// </summary>
-        public sealed class ProductInfo
-        {
-            /// <summary>
-            /// 卡券库存的数量，不支持填写0，上限为100000000。
-            /// </summary>
-            [Range(0, 100000), JsonProperty("quantity")]
-            public uint? Quantity { get; set; }
-        }
-
-        public abstract class UseTimeInfo
-        {
-            /// <summary>
-            /// 使用时间的类型。
-            /// </summary>
-            [JsonProperty("type")]
-            public abstract CardUseTimeType Type { get; }
-        }
-
-        public sealed class UseTimeFixedTimeSpanInfo : UseTimeInfo
-        {
-            /// <summary>
-            /// Type为FixedTimeSpan时专用，表示起用时间。从1970年1月1日00:00:00至起用时间的秒数，最终需转换为字符串形态传入。（东八区时间，单位为秒）
-            /// </summary>
-            [JsonProperty("begin_timestamp")]
-            internal ulong BeginTimestamp { get; set; }
-
-            /// <summary>
-            /// Type为FixedTimeSpan时专用，表示结束时间，建议设置为截止日期的23:59:59过期。（东八区时间，单位为秒）
-            /// </summary>
-            [JsonProperty("end_timestamp")]
-            internal ulong EndTimestamp { get; set; }
-
-            #region Overrides of UseTimeInfo
-
-            /// <summary>
-            /// 使用时间的类型。
-            /// </summary>
-            public override CardUseTimeType Type
-            {
-                get { return CardUseTimeType.FixedTimeSpan; }
-            }
-
-            #endregion Overrides of UseTimeInfo
-        }
-
-        public sealed class UseTimeFixedLongInfo : UseTimeInfo
-        {
-            /// <summary>
-            /// Type为FixedLong时专用，表示自领取后多少天内有效，领取后当天有效填写0。（单位为天）
-            /// </summary>
-            [JsonProperty("fixed_term")]
-            public uint FixedTerm { get; set; }
-
-            /// <summary>
-            /// Type为FixedLong时专用，表示自领取后多少天开始生效。（单位为天）
-            /// </summary>
-            [JsonProperty("fixed_begin_term")]
-            public uint FixedBeginTerm { get; set; }
-
-            #region Overrides of UseTimeInfo
-
-            /// <summary>
-            /// 使用时间的类型。
-            /// </summary>
-            public override CardUseTimeType Type
-            {
-                get { return CardUseTimeType.FixedLong; }
-            }
-
-            #endregion Overrides of UseTimeInfo
-        }
-
-        /// <summary>
-        /// 卡券的商户logo，建议像素为300*300。
-        /// </summary>
-        [Required, StringLength(128), JsonProperty("logo_url")]
-        public string LogoUrl { get; set; }
-
-        /// <summary>
-        /// 展示类型。
-        /// </summary>
-        public CardViewType ViewType { get; set; }
-
-        [JsonProperty("code_type")]
-        internal string ViewTypeString
-        {
-            get
-            {
-                switch (ViewType)
-                {
-                    case CardViewType.Text:
-                        return "CODE_TYPE_TEXT";
-
-                    case CardViewType.BarCode:
-                        return "CODE_TYPE_BARCODE";
-
-                    case CardViewType.OnlyBarCode:
-                        return "CODE_TYPE_ONLY_BARCODE";
-
-                    case CardViewType.OnlyQrCode:
-                        return "CODE_TYPE_ONLY_QRCODE";
-
-                    case CardViewType.QrCode:
-                        return "CODE_TYPE_QRCODE";
-                }
-                throw new NotSupportedException("不支持的类型：" + ViewType);
-            }
-            set
-            {
-                switch (value)
-                {
-                    case "CODE_TYPE_TEXT":
-                        ViewType = CardViewType.Text;
-                        break;
-
-                    case "CODE_TYPE_BARCODE":
-                        ViewType = CardViewType.BarCode;
-                        break;
-
-                    case "CODE_TYPE_ONLY_BARCODE":
-                        ViewType = CardViewType.OnlyBarCode;
-                        break;
-
-                    case "CODE_TYPE_ONLY_QRCODE":
-                        ViewType = CardViewType.OnlyQrCode;
-                        break;
-
-                    case "CODE_TYPE_QRCODE":
-                        ViewType = CardViewType.QrCode;
-                        break;
-                }
-                throw new NotSupportedException("不支持的类型：" + value);
-            }
-        }
-
-        /// <summary>
-        /// 商户名字,字数上限为12个汉字。
-        /// </summary>
-        [Required, StringLength(36), JsonProperty("brand_name")]
-        public string BrandName { get; set; }
-
-        /// <summary>
-        /// 卡券名，字数上限为9个汉字。(建议涵盖卡券属性、服务及金额)。
-        /// </summary>
-        [Required, StringLength(27), JsonProperty("title")]
-        public string Title { get; set; }
-
-        /// <summary>
-        /// 券名，字数上限为18个汉字。
-        /// </summary>
-        [StringLength(54), JsonProperty("sub_title")]
-        public string SubTitle { get; set; }
-
-        /// <summary>
-        /// 券颜色。按色彩规范标注填写Color010-Color100。
-        /// </summary>
-        /// <remarks>可用颜色介绍：[http://mp.weixin.qq.com/wiki/8/b7e310e7943f7763450eced91fa793b0.html]</remarks>
-        [Required, StringLength(16), JsonProperty("color")]
-        public string Color { get; set; }
-
-        /// <summary>
-        /// 卡券使用提醒，字数上限为16个汉字。
-        /// </summary>
-        [Required, StringLength(48), JsonProperty("notice")]
-        public string Notice { get; set; }
-
-        /// <summary>
-        /// 卡券使用说明，字数上限为1024个汉字。
-        /// </summary>
-        [Required, StringLength(3072), JsonProperty("description")]
-        public string Description { get; set; }
-
-        /// <summary>
-        /// 商品信息。
-        /// </summary>
-        [JsonProperty("sku")]
-        public ProductInfo Product { get; set; }
-
-        /// <summary>
-        /// 使用日期，有效期的信息。
-        /// </summary>
-        [Required, JsonProperty("date_info")]
-        public UseTimeInfo UseTime { get; set; }
-
-        /// <summary>
-        /// 是否自定义Code码。填写true或false，默认为false。通常自有优惠码系统的开发者选择自定义Code码，在卡券投放时带入。
-        /// </summary>
-        [JsonProperty("use_custom_code")]
-        public bool UseCustomCode { get; set; }
-
-        /// <summary>
-        /// 是否指定用户领取，填写true或false。默认为false。
-        /// </summary>
-        [JsonProperty("bind_openid")]
-        public bool BindOpenid { get; set; }
-
-        /// <summary>
-        /// 客服电话。
-        /// </summary>
-        [StringLength(24), JsonProperty("service_phone")]
-        public string ServicePhone { get; set; }
-
-        /// <summary>
-        /// 门店位置ID。调用POI门店管理接口获取门店位置ID。
-        /// </summary>
-        [JsonProperty("location_id_list")]
-        public double[] LocationIdList { get; set; }
-
-        /// <summary>
-        /// 第三方来源名，例如同程旅游、大众点评。
-        /// </summary>
-        [StringLength(36), JsonProperty("source")]
-        public string Source { get; set; }
-
-        /// <summary>
-        /// 自定义跳转外链的入口名字。
-        /// </summary>
-        [StringLength(15), JsonProperty("custom_url_name")]
-        public string CustomUrlName { get; set; }
-
-        /// <summary>
-        /// 自定义跳转的URL。
-        /// </summary>
-        [StringLength(128), JsonProperty("custom_url")]
-        public string CustomUrl { get; set; }
-
-        /// <summary>
-        /// 显示在入口右侧的提示语。
-        /// </summary>
-        [StringLength(18), JsonProperty("custom_url_sub_title")]
-        public string CustomUrlSubTitle { get; set; }
-
-        /// <summary>
-        /// 营销场景的自定义入口名称。
-        /// </summary>
-        [StringLength(15), JsonProperty("promotion_url_name")]
-        public string PromotionUrlName { get; set; }
-
-        /// <summary>
-        /// 入口跳转外链的地址链接。
-        /// </summary>
-        [StringLength(128), JsonProperty("promotion_url")]
-        public string PromotionUrl { get; set; }
-
-        /// <summary>
-        /// 显示在营销入口右侧的提示语。
-        /// </summary>
-        [StringLength(18), JsonProperty("promotion_url_sub_title")]
-        public string PromotionUrlSubTitle { get; set; }
-
-        /// <summary>
-        /// 每人可领券的数量限制。
-        /// </summary>
-        [JsonProperty("get_limit")]
-        public uint GetLimit { get; set; }
-
-        /// <summary>
-        /// 卡券领取页面是否可分享。
-        /// </summary>
-        [JsonProperty("can_share")]
-        public bool AllowShare { get; set; }
-
-        /// <summary>
-        /// 卡券是否可转赠。
-        /// </summary>
-        [JsonProperty("can_give_friend")]
-        public bool AllowGive { get; set; }
-    }
-
-    public abstract class CardModel
-    {
-        /// <summary>
-        /// 卡券基本信息。
-        /// </summary>
-        [JsonProperty("base_info")]
-        public CardBaseInfo BaseInfo { get; set; }
-
-        /// <summary>
-        /// 卡券类型。
-        /// </summary>
-        public abstract CardType Type { get; }
-    }
-
-    public sealed class GroupCardModel : CardModel
-    {
-        /// <summary>
-        /// 团购券专用，团购详情。
-        /// </summary>
-        [Required, StringLength(24), JsonProperty("deal_detail")]
-        public string Detail { get; set; }
-
-        #region Overrides of CardModel
-
-        /// <summary>
-        /// 卡券类型。
-        /// </summary>
-        public override CardType Type
-        {
-            get { return CardType.Group; }
-        }
-
-        #endregion Overrides of CardModel
-    }
-
-    public sealed class CashCardModel : CardModel
-    {
-        #region Overrides of CardModel
-
-        /// <summary>
-        /// 卡券类型。
-        /// </summary>
-        public override CardType Type
-        {
-            get { return CardType.Cash; }
-        }
-
-        #endregion Overrides of CardModel
-
-        /// <summary>
-        /// 表示起用金额。（单位为分）
-        /// </summary>
-        [JsonProperty("least_cost")]
-        public uint LeastCost { get; set; }
-
-        /// <summary>
-        /// 表示减免金额。（单位为分）
-        /// </summary>
-        [JsonProperty("reduce_cost")]
-        public uint ReduceCost { get; set; }
-    }
-
-    public sealed class DiscountCardModel : CardModel
-    {
-        #region Overrides of CardModel
-
-        /// <summary>
-        /// 卡券类型。
-        /// </summary>
-        public override CardType Type
-        {
-            get { return CardType.Discount; }
-        }
-
-        #endregion Overrides of CardModel
-
-        /// <summary>
-        /// 折扣券专用，表示打折额度（百分比）。填30就是七折。
-        /// </summary>
-        [JsonProperty("discount")]
-        public ushort Discount { get; set; }
-    }
-
-    public sealed class GiftCardModel : CardModel
-    {
-        #region Overrides of CardModel
-
-        /// <summary>
-        /// 卡券类型。
-        /// </summary>
-        public override CardType Type
-        {
-            get { return CardType.Gift; }
-        }
-
-        #endregion Overrides of CardModel
-
-        /// <summary>
-        /// 填写礼品的名称。
-        /// </summary>
-        [Required, StringLength(3072), JsonProperty("gift")]
-        public string Gift { get; set; }
-    }
-
-    public sealed class CouponCardModel : CardModel
-    {
-        #region Overrides of CardModel
-
-        /// <summary>
-        /// 卡券类型。
-        /// </summary>
-        public override CardType Type
-        {
-            get { return CardType.Coupon; }
-        }
-
-        #endregion Overrides of CardModel
-
-        /// <summary>
-        /// 填写优惠详情。
-        /// </summary>
-        [Required, StringLength(3072), JsonProperty("default_detail")]
-        public string Detail { get; set; }
-    }
-
-    #endregion Help Class
 }

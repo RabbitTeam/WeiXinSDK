@@ -1,6 +1,6 @@
-﻿using Rabbit.WeiXin.Tests.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rabbit.WeiXin.MP.Api.Store;
+using Rabbit.WeiXin.Tests.Utility;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -65,7 +65,7 @@ namespace Rabbit.WeiXin.Tests
         [TestMethod]
         public void GetTest()
         {
-            var store = _storeService.Get(289123561);
+            var store = _storeService.Get(282428816);
             Assert.IsNotNull(store);
             Assert.IsNotNull(store.PhotoList);
             Assert.IsTrue(store.PhotoList.Any());
@@ -81,7 +81,7 @@ namespace Rabbit.WeiXin.Tests
         [TestMethod]
         public void UpdateTest()
         {
-            _storeService.Update(new UpdateStoreModel { StoreId = 289123561, Introduction = "简介" });
+            _storeService.Update(new UpdateStoreModel { StoreId = 282428816, Introduction = "简介" });
         }
 
         [TestMethod]
