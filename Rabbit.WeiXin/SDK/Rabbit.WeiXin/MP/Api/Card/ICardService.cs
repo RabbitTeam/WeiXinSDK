@@ -70,7 +70,7 @@ namespace Rabbit.WeiXin.MP.Api.Card
         /// <param name="cardId">卡券ID代表一类卡券。</param>
         /// <remarks>调用查询code接口可获取code的有效性（非自定义code），该code对应的用户openid、卡券有效期等信息。 自定义code（use_custom_code为true）的卡券调用接口时，post数据中需包含card_id，非自定义code不需上报。</remarks>
         /// <returns>查询结果。</returns>
-        SearchCodeResult SearchCode(string code, string cardId);
+        SearchCodeResult SearchCode(string code, string cardId = null);
 
         /// <summary>
         /// 获取用户的卡券列表。
@@ -111,6 +111,14 @@ namespace Rabbit.WeiXin.MP.Api.Card
         /// <param name="encryptCode">编码的Code值。</param>
         /// <returns>解码的Code值。</returns>
         string DecryptCode(string encryptCode);
+
+        /// <summary>
+        /// 更新卡券Code。
+        /// </summary>
+        /// <param name="code">需变更的Code码。</param>
+        /// <param name="newCode">变更后的有效Code码。</param>
+        /// <param name="cardId">卡券ID。自定义Code码卡券为必填。</param>
+        void UpdateCode(string code, string newCode, string cardId = null);
     }
 
     /// <summary>

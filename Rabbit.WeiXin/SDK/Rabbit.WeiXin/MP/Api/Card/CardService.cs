@@ -255,7 +255,7 @@ namespace Rabbit.WeiXin.MP.Api.Card
         /// <param name="cardId">卡券ID代表一类卡券。</param>
         /// <remarks>调用查询code接口可获取code的有效性（非自定义code），该code对应的用户openid、卡券有效期等信息。 自定义code（use_custom_code为true）的卡券调用接口时，post数据中需包含card_id，非自定义code不需上报。</remarks>
         /// <returns>查询结果。</returns>
-        public SearchCodeResult SearchCode(string code, string cardId)
+        public SearchCodeResult SearchCode(string code, string cardId = null)
         {
             var url = "https://api.weixin.qq.com/card/code/get?access_token=" + _accountModel.GetAccessToken();
 
@@ -271,11 +271,12 @@ namespace Rabbit.WeiXin.MP.Api.Card
             var content = WeiXinHttpHelper.PostString(url, postData);
             var obj = JObject.Parse(content);
 
+            var card = obj["card"];
             return new SearchCodeResult
             {
-                BeginTime = DateTimeHelper.GetTimeByTimeStamp(obj.Value<ulong>("begin_time")),
-                CardId = obj.Value<string>("card_id"),
-                EndTime = DateTimeHelper.GetTimeByTimeStamp(obj.Value<ulong>("end_time")),
+                BeginTime = DateTimeHelper.GetTimeByTimeStamp(card.Value<ulong>("begin_time")),
+                CardId = card.Value<string>("card_id"),
+                EndTime = DateTimeHelper.GetTimeByTimeStamp(card.Value<ulong>("end_time")),
                 OpenId = obj.Value<string>("openid")
             };
         }
@@ -330,11 +331,11 @@ namespace Rabbit.WeiXin.MP.Api.Card
                 throw new ArgumentException("增加库存的值不能等于减少库存的值，因为这样没有任何意义。");
 
             if (increaseValue.Value > 0 && reduceValue.Value > 0)
-                postData = new { increase_stock_value = increaseValue.Value, reduce_stock_value = reduceValue.Value };
+                postData = new { card_id = cardId, increase_stock_value = increaseValue.Value, reduce_stock_value = reduceValue.Value };
             else if (increaseValue.Value > 0)
-                postData = new { increase_stock_value = increaseValue.Value };
+                postData = new { card_id = cardId, increase_stock_value = increaseValue.Value };
             else if (reduceValue.Value > 0)
-                postData = new { reduce_stock_value = reduceValue.Value };
+                postData = new { card_id = cardId, reduce_stock_value = reduceValue.Value };
 
             if (postData == null)
                 throw new ArgumentException("无效的参数值，请检查。");
@@ -379,7 +380,7 @@ namespace Rabbit.WeiXin.MP.Api.Card
             }
             else
             {
-                postData = new { code = code, card_id = cardId };
+                postData = new { code, card_id = cardId };
             }
 
             var content = WeiXinHttpHelper.PostString(url, postData);
@@ -404,6 +405,28 @@ namespace Rabbit.WeiXin.MP.Api.Card
             var content = WeiXinHttpHelper.PostString(url, new { encrypt_code = encryptCode });
 
             return JObject.Parse(content).Value<string>("code");
+        }
+
+        /// <summary>
+        /// 更新卡券Code。
+        /// </summary>
+        /// <param name="code">需变更的Code码。</param>
+        /// <param name="newCode">变更后的有效Code码。</param>
+        /// <param name="cardId">卡券ID。自定义Code码卡券为必填。</param>
+        public void UpdateCode(string code, string newCode, string cardId = null)
+        {
+            var url = "https://api.weixin.qq.com/card/code/update?access_token=" + _accountModel.GetAccessToken();
+            object postData;
+            if (string.IsNullOrWhiteSpace(cardId))
+            {
+                postData = new { code, new_code = newCode };
+            }
+            else
+            {
+                postData = new { card_id = cardId, code, new_code = newCode };
+            }
+
+            WeiXinHttpHelper.Post(url, postData);
         }
 
         #endregion Implementation of ICardService
