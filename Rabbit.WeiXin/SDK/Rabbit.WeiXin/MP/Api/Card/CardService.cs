@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.Utility;
 using System;
 using System.Collections;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 
@@ -427,6 +428,36 @@ namespace Rabbit.WeiXin.MP.Api.Card
             }
 
             WeiXinHttpHelper.Post(url, postData);
+        }
+
+        /// <summary>
+        /// 创建领取卡券的二维码。
+        /// </summary>
+        /// <param name="model">创建领取卡券二维码模型。</param>
+        /// <returns>创建领取卡券二维码结果。</returns>
+        public CreateCardQrCodeResult CreateQrCode(CreateCardQrCodeModel model)
+        {
+            var url = "https://api.weixin.qq.com/card/qrcode/create?access_token=" + _accountModel.GetAccessToken();
+
+            dynamic postData = new ExpandoObject();
+
+            if (!string.IsNullOrWhiteSpace(model.OpenId))
+                postData.openid = model.OpenId;
+            if (!string.IsNullOrWhiteSpace(model.Code))
+                postData.code = model.Code;
+            postData.card_id = model.CardId;
+            if (model.ExpireSeconds.HasValue)
+                postData.expire_seconds = model.ExpireSeconds.Value;
+            postData.is_unique_code = model.IsUniqueCode;
+            postData.outer_id = model.OuterId;
+
+            var content = WeiXinHttpHelper.PostString(url, postData);
+            var ticket = JObject.Parse(content).Value<string>("ticket");
+            return new CreateCardQrCodeResult
+            {
+                QrCodeUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + ticket,
+                Ticket = ticket
+            };
         }
 
         #endregion Implementation of ICardService

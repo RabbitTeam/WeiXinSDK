@@ -119,6 +119,13 @@ namespace Rabbit.WeiXin.MP.Api.Card
         /// <param name="newCode">变更后的有效Code码。</param>
         /// <param name="cardId">卡券ID。自定义Code码卡券为必填。</param>
         void UpdateCode(string code, string newCode, string cardId = null);
+
+        /// <summary>
+        /// 创建领取卡券的二维码。
+        /// </summary>
+        /// <param name="model">创建领取卡券二维码模型。</param>
+        /// <returns>创建领取卡券二维码结果。</returns>
+        CreateCardQrCodeResult CreateQrCode(CreateCardQrCodeModel model);
     }
 
     /// <summary>
@@ -150,6 +157,77 @@ namespace Rabbit.WeiXin.MP.Api.Card
     }
 
     #region Help Class
+
+    /// <summary>
+    /// 创建领取卡券二维码结果。
+    /// </summary>
+    public sealed class CreateCardQrCodeResult
+    {
+        /// <summary>
+        /// 获取的二维码ticket。
+        /// </summary>
+        public string Ticket { get; set; }
+
+        /// <summary>
+        /// 二维码访问地址。
+        /// </summary>
+        public string QrCodeUrl { get; set; }
+    }
+
+    /// <summary>
+    /// 创建领取卡券二维码模型。
+    /// </summary>
+    public sealed class CreateCardQrCodeModel
+    {
+        #region Constructor
+
+        /// <summary>
+        /// 创建一个新的创建领取卡券二维码模型。
+        /// </summary>
+        /// <param name="cardId">卡券Id。</param>
+        public CreateCardQrCodeModel(string cardId)
+        {
+            CardId = cardId;
+        }
+
+        #endregion Constructor
+
+        /// <summary>
+        /// 卡券ID。
+        /// </summary>
+        [JsonProperty("card_id")]
+        public string CardId { get; set; }
+
+        /// <summary>
+        /// use_custom_code字段为true的卡券必须填写，非自定义code不必填写。
+        /// </summary>
+        [JsonProperty("code")]
+        public string Code { get; set; }
+
+        /// <summary>
+        /// 指定领取者的openid，只有该用户能领取。bind_openid字段为true的卡券必须填写，非指定openid不必填写。
+        /// </summary>
+        [JsonProperty("openid")]
+        public string OpenId { get; set; }
+
+        /// <summary>
+        /// 指定二维码的有效时间，范围是60 ~ 1800秒。不填默认为永久有效。
+        /// </summary>
+        [JsonProperty("expire_seconds")]
+        public ushort? ExpireSeconds { get; set; }
+
+        /// <summary>
+        /// 指定下发二维码，生成的二维码随机分配一个code，领取后不可再次扫描。填写true或false。默认false。
+        /// </summary>
+        [JsonProperty("is_unique_code")]
+        public bool IsUniqueCode { get; set; }
+
+        /// <summary>
+        /// 领取场景值，用于领取渠道的数据统计，默认值为0，字段类型为整型，长度限制为60位数字。用户领取卡券后触发的事件推送中会带上此自定义场景值。
+        /// </summary>
+        [JsonProperty("outer_id")]
+        public int OuterId { get; set; }
+    }
 
     /// <summary>
     /// 消费结果。

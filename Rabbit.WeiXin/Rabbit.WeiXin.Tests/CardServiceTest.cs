@@ -313,6 +313,19 @@ namespace Rabbit.WeiXin.Tests
             Assert.AreEqual(userCard.CardId, result.CardId);
         }
 
+        [TestMethod]
+        public void CreateQrCodeTest()
+        {
+            var cardId = _cardService.GetCardList().List.FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(cardId))
+                Assert.Inconclusive("没有卡券信息。");
+
+            var result = _cardService.CreateQrCode(new CreateCardQrCodeModel(cardId) { OpenId = OpenId });
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Ticket);
+            Assert.IsNotNull(result.QrCodeUrl);
+        }
+
         #endregion Test Method
 
         #region Private Method
