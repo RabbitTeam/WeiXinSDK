@@ -361,6 +361,51 @@ namespace Rabbit.WeiXin.MP.Api.Card
             return JObject.Parse(content).Value<bool>("send_check");
         }
 
+        /// <summary>
+        /// 核销卡券。
+        /// </summary>
+        /// <param name="code">需核销的Code码。</param>
+        /// <param name="cardId">卡券ID。创建卡券时use_custom_code填写true时必填。非自定义Code不必填写。</param>
+        /// <returns>核销卡券结果。</returns>
+        public ConsumeResult Consume(string code, string cardId = null)
+        {
+            var url = "https://api.weixin.qq.com/card/code/consume?access_token=" + _accountModel.GetAccessToken();
+
+            object postData;
+
+            if (string.IsNullOrWhiteSpace(cardId))
+            {
+                postData = new { code };
+            }
+            else
+            {
+                postData = new { code = code, card_id = cardId };
+            }
+
+            var content = WeiXinHttpHelper.PostString(url, postData);
+            var obj = JObject.Parse(content);
+
+            return new ConsumeResult
+            {
+                CardId = obj.SelectToken("card.card_id").Value<string>(),
+                OpenId = obj.Value<string>("openid")
+            };
+        }
+
+        /// <summary>
+        /// 解码Code。
+        /// </summary>
+        /// <param name="encryptCode">编码的Code值。</param>
+        /// <returns>解码的Code值。</returns>
+        public string DecryptCode(string encryptCode)
+        {
+            var url = "https://api.weixin.qq.com/card/code/decrypt?access_token=" + _accountModel.GetAccessToken();
+
+            var content = WeiXinHttpHelper.PostString(url, new { encrypt_code = encryptCode });
+
+            return JObject.Parse(content).Value<string>("code");
+        }
+
         #endregion Implementation of ICardService
 
         #region Private Method

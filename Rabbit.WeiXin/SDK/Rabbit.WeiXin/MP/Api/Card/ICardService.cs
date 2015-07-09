@@ -96,6 +96,21 @@ namespace Rabbit.WeiXin.MP.Api.Card
         /// <param name="model">卡券更新模型。</param>
         /// <returns>此次更新是否需要审核。</returns>
         bool Update(string cardId, CardUpdateModel model);
+
+        /// <summary>
+        /// 核销卡券。
+        /// </summary>
+        /// <param name="code">需核销的Code码。</param>
+        /// <param name="cardId">卡券ID。创建卡券时use_custom_code填写true时必填。非自定义Code不必填写。</param>
+        /// <returns>核销卡券结果。</returns>
+        ConsumeResult Consume(string code, string cardId = null);
+
+        /// <summary>
+        /// 解码Code。
+        /// </summary>
+        /// <param name="encryptCode">编码的Code值。</param>
+        /// <returns>解码的Code值。</returns>
+        string DecryptCode(string encryptCode);
     }
 
     /// <summary>
@@ -127,6 +142,22 @@ namespace Rabbit.WeiXin.MP.Api.Card
     }
 
     #region Help Class
+
+    /// <summary>
+    /// 消费结果。
+    /// </summary>
+    public sealed class ConsumeResult
+    {
+        /// <summary>
+        /// 用户Id。
+        /// </summary>
+        public string OpenId { get; set; }
+
+        /// <summary>
+        /// 卡券Id。
+        /// </summary>
+        public string CardId { get; set; }
+    }
 
     /// <summary>
     /// 卡券更新模型。
