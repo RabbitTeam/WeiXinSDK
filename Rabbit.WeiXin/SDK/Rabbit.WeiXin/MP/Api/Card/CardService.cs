@@ -22,6 +22,10 @@ namespace Rabbit.WeiXin.MP.Api.Card
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个卡券服务。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public CardService(AccountModel accountModel)
         {
             _accountModel = accountModel;
@@ -439,19 +443,26 @@ namespace Rabbit.WeiXin.MP.Api.Card
         {
             var url = "https://api.weixin.qq.com/card/qrcode/create?access_token=" + _accountModel.GetAccessToken();
 
-            dynamic postData = new ExpandoObject();
+            dynamic cardData = new ExpandoObject();
 
             if (!string.IsNullOrWhiteSpace(model.OpenId))
-                postData.openid = model.OpenId;
+                cardData.openid = model.OpenId;
             if (!string.IsNullOrWhiteSpace(model.Code))
-                postData.code = model.Code;
-            postData.card_id = model.CardId;
+                cardData.code = model.Code;
+            cardData.card_id = model.CardId;
             if (model.ExpireSeconds.HasValue)
-                postData.expire_seconds = model.ExpireSeconds.Value;
-            postData.is_unique_code = model.IsUniqueCode;
-            postData.outer_id = model.OuterId;
+                cardData.expire_seconds = 60;
+            cardData.is_unique_code = model.IsUniqueCode;
+            cardData.outer_id = model.OuterId;
 
-            var content = WeiXinHttpHelper.PostString(url, postData);
+            var content = WeiXinHttpHelper.PostString(url, new
+            {
+                action_name = "QR_CARD",
+                action_info = new
+                {
+                    card = cardData
+                }
+            });
             var ticket = JObject.Parse(content).Value<string>("ticket");
             return new CreateCardQrCodeResult
             {

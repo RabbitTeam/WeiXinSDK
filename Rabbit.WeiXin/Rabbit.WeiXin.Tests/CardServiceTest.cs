@@ -320,7 +320,7 @@ namespace Rabbit.WeiXin.Tests
             if (string.IsNullOrWhiteSpace(cardId))
                 Assert.Inconclusive("没有卡券信息。");
 
-            var result = _cardService.CreateQrCode(new CreateCardQrCodeModel(cardId) { OpenId = OpenId });
+            var result = _cardService.CreateQrCode(new CreateCardQrCodeModel(cardId));
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Ticket);
             Assert.IsNotNull(result.QrCodeUrl);
