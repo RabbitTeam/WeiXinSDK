@@ -440,7 +440,7 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         /// </summary>
         public override GroupMessageType Type
         {
-            get { return GroupMessageType.Video; }
+            get { return GroupMessageType.Card; }
         }
 
         #endregion Overrides of GroupMessage

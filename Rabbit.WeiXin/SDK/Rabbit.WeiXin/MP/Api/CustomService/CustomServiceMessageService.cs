@@ -580,7 +580,8 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         internal override string GetJson()
         {
-            var obj = GetBasicJsonObject();
+            var obj = GetBasicJsonObject(false);
+            obj["msgtype"] = "wxcard";
             obj["wxcard"] = JObject.FromObject(new
             {
                 card_id = Id,
