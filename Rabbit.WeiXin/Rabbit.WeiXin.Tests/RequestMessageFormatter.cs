@@ -2,6 +2,7 @@
 using Rabbit.WeiXin.DependencyInjection;
 using Rabbit.WeiXin.MP.Messages;
 using Rabbit.WeiXin.MP.Messages.Events;
+using Rabbit.WeiXin.MP.Messages.Events.Card;
 using Rabbit.WeiXin.MP.Messages.Events.CustomMenu;
 using Rabbit.WeiXin.MP.Messages.Events.CustomService;
 using Rabbit.WeiXin.MP.Messages.Request;
@@ -475,7 +476,7 @@ namespace Rabbit.WeiXin.Tests
 </SendPicsInfo>
 </xml>";
 
-            var model = _requestMessageFactory.CreateRequestMessage<PicWeiXinMessage>(xmlContent);
+            var model = _requestMessageFactory.CreateRequestMessage<PicPhotoOrAlbumMessage>(xmlContent);
             Assert.AreEqual("gh_e136c6e50636", model.ToUserName);
             Assert.AreEqual("oMgHVjngRipVsoxg6TuX3vz6glDg", model.FromUserName);
             Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(1408090816), model.CreateTime);
@@ -504,7 +505,7 @@ namespace Rabbit.WeiXin.Tests
 </SendPicsInfo>
 </xml>";
 
-            var model = _requestMessageFactory.CreateRequestMessage<PicPhotoOrAlbumMessage>(xmlContent);
+            var model = _requestMessageFactory.CreateRequestMessage<PicWeiXinMessage>(xmlContent);
             Assert.AreEqual("gh_e136c6e50636", model.ToUserName);
             Assert.AreEqual("oMgHVjngRipVsoxg6TuX3vz6glDg", model.FromUserName);
             Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(1408090816), model.CreateTime);
@@ -623,6 +624,176 @@ namespace Rabbit.WeiXin.Tests
         }
 
         #endregion CustomService
+
+        #region Card
+
+        [TestMethod]
+        public void CardEventPassCheckMessageTest()
+        {
+            const string xmlContent = @"<xml> <ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[card_pass_check]]></Event>  //不通过为card_not_pass_check
+<CardId><![CDATA[cardid]]></CardId>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<CardEventPassCheckMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.Card_Pass_Check, model.EventType);
+
+            Assert.AreEqual("cardid", model.CardId);
+        }
+
+        [TestMethod]
+        public void CardEventNotPassCheckMessageTest()
+        {
+            const string xmlContent = @"<xml> <ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[card_not_pass_check]]></Event>
+<CardId><![CDATA[cardid]]></CardId>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<CardEventNotPassCheckMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.Card_Not_Pass_Check, model.EventType);
+
+            Assert.AreEqual("cardid", model.CardId);
+        }
+
+        [TestMethod]
+        public void CardEventUserGetMessageTest()
+        {
+            const string xmlContent = @"<xml> <ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<FriendUserName><![CDATA[FriendUser]]></FriendUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[user_get_card]]></Event>
+<CardId><![CDATA[cardid]]></CardId>
+<IsGiveByFriend>1</IsGiveByFriend>
+<UserCardCode><![CDATA[12312312]]></UserCardCode>
+<OuterId>3</OuterId>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<CardEventUserGetMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.Card_User_Get, model.EventType);
+
+            Assert.AreEqual("cardid", model.CardId);
+            Assert.AreEqual("FriendUser", model.FriendUserName);
+            Assert.AreEqual(true, model.IsGiveByFriend);
+            Assert.AreEqual("12312312", model.UserCardCode);
+            Assert.AreEqual(null, model.OldUserCardCode);
+            Assert.AreEqual(3, model.OuterId);
+        }
+
+        [TestMethod]
+        public void CardEventUserDeleteMessageTest()
+        {
+            const string xmlContent = @"<xml> <ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[user_del_card]]></Event>
+<CardId><![CDATA[cardid]]></CardId>
+<UserCardCode><![CDATA[12312312]]></UserCardCode>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<CardEventUserDeleteMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.Card_User_Delete, model.EventType);
+
+            Assert.AreEqual("cardid", model.CardId);
+            Assert.AreEqual("12312312", model.UserCardCode);
+        }
+
+        [TestMethod]
+        public void CardEventUserConsumeCardMessageTest()
+        {
+            const string xmlContent = @"<xml> <ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[user_consume_card]]></Event>
+<CardId><![CDATA[cardid]]></CardId>
+<UserCardCode><![CDATA[12312312]]></UserCardCode>
+<ConsumeSource><![CDATA[(FROM_API)]]></ConsumeSource>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<CardEventUserConsumeCardMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.Card_User_Consume, model.EventType);
+
+            Assert.AreEqual("cardid", model.CardId);
+            Assert.AreEqual("12312312", model.UserCardCode);
+            Assert.AreEqual(CardEventUserConsumeCardMessage.CardConsumeSource.Api, model.ConsumeSource);
+        }
+
+        [TestMethod]
+        public void CardEventUserViewMessageTest()
+        {
+            const string xmlContent = @"<xml> <ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[user_view_card]]></Event>
+<CardId><![CDATA[cardid]]></CardId>
+<UserCardCode><![CDATA[12312312]]></UserCardCode>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<CardEventUserViewMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.Card_User_View, model.EventType);
+
+            Assert.AreEqual("cardid", model.CardId);
+            Assert.AreEqual("12312312", model.UserCardCode);
+        }
+
+        [TestMethod]
+        public void CardEventUserEnterSessionMessageTest()
+        {
+            const string xmlContent = @"<xml> <ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[user_enter_session_from_card]]></Event>
+<CardId><![CDATA[cardid]]></CardId>
+<UserCardCode><![CDATA[12312312]]></UserCardCode>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<CardEventUserEnterSessionMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.Card_UserEnterSession, model.EventType);
+
+            Assert.AreEqual("cardid", model.CardId);
+            Assert.AreEqual("12312312", model.UserCardCode);
+        }
+
+        #endregion Card
 
         #endregion Event
     }

@@ -342,6 +342,10 @@ namespace Rabbit.WeiXin.MP.Api.Store
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的门店服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public StoreService(AccountModel accountModel)
         {
             _accountModel = accountModel;

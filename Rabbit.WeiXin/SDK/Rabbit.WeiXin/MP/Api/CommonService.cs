@@ -8,51 +8,6 @@ using System.Linq;
 namespace Rabbit.WeiXin.MP.Api
 {
     /// <summary>
-    /// 获取公众号的全局唯一票据结果模型。
-    /// </summary>
-    public sealed class AccessTokenModel
-    {
-        #region Constructor
-
-        /// <summary>
-        /// 初始化一个新的公众号的全局唯一票据。
-        /// </summary>
-        public AccessTokenModel()
-        {
-            CreateTime = DateTime.Now;
-        }
-
-        #endregion Constructor
-
-        /// <summary>
-        /// 公众号的全局唯一票据。
-        /// </summary>
-        [JsonProperty("access_token")]
-        public string AccessToken { get; set; }
-
-        /// <summary>
-        /// 凭证有效时间（秒）。
-        /// </summary>
-        [JsonProperty("expires_in")]
-        public int ExpiresIn { get; set; }
-
-        /// <summary>
-        /// 创建时间。
-        /// </summary>
-        [JsonIgnore]
-        public DateTime CreateTime { get; private set; }
-
-        /// <summary>
-        /// 是否过期。
-        /// </summary>
-        /// <returns>如果过期返回true，否则返回false。</returns>
-        public bool IsExpired()
-        {
-            return CreateTime.AddSeconds(ExpiresIn - 20/*不采用最后的期限作为判断，防止在很少的时间内到期导致后续的逻辑无法执行*/) <= DateTime.Now;
-        }
-    }
-
-    /// <summary>
     /// 一个通用的服务接口。
     /// </summary>
     public interface ICommonService
@@ -78,6 +33,9 @@ namespace Rabbit.WeiXin.MP.Api
         string[] GetServerIpList();
     }
 
+    /// <summary>
+    /// 通用的服务接口实现。
+    /// </summary>
     public sealed class CommonService : ICommonService
     {
         #region Field
@@ -89,6 +47,10 @@ namespace Rabbit.WeiXin.MP.Api
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的通用服务实例。
+        /// </summary>
+        /// <param name="accountModel"></param>
         public CommonService(AccountModel accountModel)
         {
             _accountModel = accountModel;
@@ -154,4 +116,53 @@ namespace Rabbit.WeiXin.MP.Api
 
         #endregion Implementation of ICommonService
     }
+
+    #region Help Class
+
+    /// <summary>
+    /// 获取公众号的全局唯一票据结果模型。
+    /// </summary>
+    public sealed class AccessTokenModel
+    {
+        #region Constructor
+
+        /// <summary>
+        /// 初始化一个新的公众号的全局唯一票据。
+        /// </summary>
+        public AccessTokenModel()
+        {
+            CreateTime = DateTime.Now;
+        }
+
+        #endregion Constructor
+
+        /// <summary>
+        /// 公众号的全局唯一票据。
+        /// </summary>
+        [JsonProperty("access_token")]
+        public string AccessToken { get; set; }
+
+        /// <summary>
+        /// 凭证有效时间（秒）。
+        /// </summary>
+        [JsonProperty("expires_in")]
+        public int ExpiresIn { get; set; }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        [JsonIgnore]
+        public DateTime CreateTime { get; private set; }
+
+        /// <summary>
+        /// 是否过期。
+        /// </summary>
+        /// <returns>如果过期返回true，否则返回false。</returns>
+        public bool IsExpired()
+        {
+            return CreateTime.AddSeconds(ExpiresIn - 20/*不采用最后的期限作为判断，防止在很少的时间内到期导致后续的逻辑无法执行*/) <= DateTime.Now;
+        }
+    }
+
+    #endregion Help Class
 }

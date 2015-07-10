@@ -250,6 +250,9 @@ namespace Rabbit.WeiXin.MP.Api.Card
     /// </summary>
     public sealed class CardUpdateModel
     {
+        /// <summary>
+        /// 卡券基础信息。
+        /// </summary>
         public sealed class BaseInfo
         {
             /// <summary>
@@ -519,6 +522,9 @@ namespace Rabbit.WeiXin.MP.Api.Card
             public uint? Quantity { get; set; }
         }
 
+        /// <summary>
+        /// 卡券使用时间信息基类。
+        /// </summary>
         public abstract class UseTimeInfo
         {
             /// <summary>
@@ -528,7 +534,7 @@ namespace Rabbit.WeiXin.MP.Api.Card
             public abstract CardUseTimeType Type { get; }
 
             [JsonProperty("type")]
-            public string TypeString
+            internal string TypeString
             {
                 get
                 {
@@ -545,6 +551,9 @@ namespace Rabbit.WeiXin.MP.Api.Card
             }
         }
 
+        /// <summary>
+        /// 固定日期区间的使用时间信息。
+        /// </summary>
         public sealed class UseTimeFixedTimeSpanInfo : UseTimeInfo
         {
             /// <summary>
@@ -573,6 +582,9 @@ namespace Rabbit.WeiXin.MP.Api.Card
             #endregion Overrides of UseTimeInfo
         }
 
+        /// <summary>
+        /// 固定时常的使用时间信息。
+        /// </summary>
         public sealed class UseTimeFixedLongInfo : UseTimeInfo
         {
             /// <summary>
@@ -805,12 +817,21 @@ namespace Rabbit.WeiXin.MP.Api.Card
         public bool AllowGive { get; set; }
     }
 
+    /// <summary>
+    /// 创建卡券的基础信息模型。
+    /// </summary>
     public sealed class CreateCardBaseInfo : CardBaseInfoBase
     {
     }
 
+    /// <summary>
+    /// 获取卡券的基础信息模型。
+    /// </summary>
     public sealed class CardBaseInfo : CardBaseInfoBase
     {
+        /// <summary>
+        /// 卡券状态。
+        /// </summary>
         public CardStatusEnum Status { get; set; }
     }
 

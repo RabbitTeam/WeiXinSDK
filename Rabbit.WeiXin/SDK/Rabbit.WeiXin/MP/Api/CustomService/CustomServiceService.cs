@@ -79,6 +79,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的多客服服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public CustomServiceService(AccountModel accountModel)
         {
             _accountModel = accountModel;

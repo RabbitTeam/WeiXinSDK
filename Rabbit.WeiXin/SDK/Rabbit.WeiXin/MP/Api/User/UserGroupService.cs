@@ -72,6 +72,10 @@ namespace Rabbit.WeiXin.MP.Api.User
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的用户群组服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public UserGroupService(AccountModel accountModel)
         {
             _accountModel = accountModel;

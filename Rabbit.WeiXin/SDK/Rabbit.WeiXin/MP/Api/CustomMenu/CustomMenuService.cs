@@ -60,6 +60,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的自定义菜单服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public CustomMenuService(AccountModel accountModel)
         {
             _accountModel = accountModel;

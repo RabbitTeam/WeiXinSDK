@@ -59,11 +59,20 @@ namespace Rabbit.WeiXin.MP.Api.OAuth
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的授权服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public OAuthService(AccountModel accountModel)
             : this(accountModel, null)
         {
         }
 
+        /// <summary>
+        /// 初始化一个新的授权服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
+        /// <param name="openAccountModel">开放平台账号模型。</param>
         public OAuthService(AccountModel accountModel, Open.Api.AccountModel openAccountModel)
         {
             _accountModel = accountModel;

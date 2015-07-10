@@ -64,6 +64,10 @@ namespace Rabbit.WeiXin.MP.Api.Material
     {
         private readonly AccountModel _accountModel;
 
+        /// <summary>
+        /// 初始化一个新的临时素材服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public TemporaryMaterialService(AccountModel accountModel)
         {
             _accountModel = accountModel;

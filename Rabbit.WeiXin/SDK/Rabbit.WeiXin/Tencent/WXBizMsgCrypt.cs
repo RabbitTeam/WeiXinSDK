@@ -77,15 +77,15 @@ namespace Tencent
                 return (int)WXBizMsgCryptErrorCode.WXBizMsgCrypt_ParseXml_Error;
             }
             //verify signature
-            int ret = 0;
+            int ret;
             ret = VerifySignature(m_sToken, sTimeStamp, sNonce, sEncryptMsg, sMsgSignature);
             if (ret != 0)
                 return ret;
             //decrypt
-            string cpid = "";
+            string cpid;
             try
             {
-                sMsg = Cryptography.AES_decrypt(sEncryptMsg, m_sEncodingAESKey, ref cpid);
+                sMsg = Cryptography.AES_decrypt(sEncryptMsg, m_sEncodingAESKey, out cpid);
             }
             catch (FormatException)
             {

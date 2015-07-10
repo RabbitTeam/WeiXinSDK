@@ -53,7 +53,7 @@ namespace Rabbit.WeiXin.MP.Serialization
     /// 一个Xml消息格式化器基类。
     /// </summary>
     /// <typeparam name="T">消息类型。</typeparam>
-    internal abstract class XmlMessageFormatterBase<T> : IMessageFormatter<T> where T : class,IMessageBase
+    internal abstract class XmlMessageFormatterBase<T> : IMessageFormatter<T> where T : class, IMessageBase
     {
         #region Implementation of IMessageFormatter<T>
 
@@ -112,6 +112,49 @@ namespace Rabbit.WeiXin.MP.Serialization
             if (ele == null)
                 throw new ArgumentException(string.Format("找不到名称为 {0} 的元素。", name));
             return ele.Value;
+        }
+
+        protected static bool GetBoolean(XContainer container, string name)
+        {
+            var value = GetValue(container, name);
+
+            #region By String
+
+            if (value.Length > 1)
+            {
+                switch (value.ToLower())
+                {
+                    case "true":
+                        return true;
+
+                    case "false":
+                        return false;
+
+                    default:
+                        throw new ArgumentException(string.Format("无法将 {0} 转换为Boolean类型。", value));
+                }
+            }
+
+            #endregion By String
+
+            #region By Number
+
+            int number;
+            if (!int.TryParse(value, out number))
+                throw new ArgumentException(string.Format("无法将 {0} 转换为Boolean类型。", value));
+            switch (number)
+            {
+                case 0:
+                    return false;
+
+                case 1:
+                    return true;
+
+                default:
+                    throw new ArgumentException(string.Format("无法将 {0} 转换为Boolean类型。", value));
+            }
+
+            #endregion By Number
         }
 
         protected static uint GetUInt(XContainer container, string name)

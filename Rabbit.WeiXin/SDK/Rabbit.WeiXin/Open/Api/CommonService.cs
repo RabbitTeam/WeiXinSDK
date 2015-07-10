@@ -105,6 +105,10 @@ namespace Rabbit.WeiXin.Open.Api
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的通用服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public CommonService(AccountModel accountModel)
         {
             _accountModel = accountModel;

@@ -33,6 +33,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的客服消息服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public CustomServiceMessageService(AccountModel accountModel)
         {
             _accountModel = accountModel;
@@ -104,6 +108,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
     /// </summary>
     public abstract class CustomServiceMessage
     {
+        /// <summary>
+        /// 初始化一个新的自定义客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
         protected CustomServiceMessage(string toUserId)
         {
             ToUserId = toUserId;
@@ -125,8 +133,17 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
         /// </summary>
         public string CustomServiceAccount { get; set; }
 
-        public abstract string GetJson();
+        /// <summary>
+        /// 获取对象的Json文本。
+        /// </summary>
+        /// <returns></returns>
+        internal abstract string GetJson();
 
+        /// <summary>
+        /// 获取基础的Json对象。
+        /// </summary>
+        /// <param name="appendType">是否追加消息类型。</param>
+        /// <returns></returns>
         protected JObject GetBasicJsonObject(bool appendType = true)
         {
             var obj = JObject.Parse("{}");
@@ -148,6 +165,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
     /// </summary>
     public sealed class CustomServiceMessageText : CustomServiceMessage
     {
+        /// <summary>
+        /// 初始化一个新的文本客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
         public CustomServiceMessageText(string toUserId)
             : base(toUserId)
         {
@@ -169,7 +190,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
             get { return CustomServiceMessageType.Text; }
         }
 
-        public override string GetJson()
+        internal override string GetJson()
         {
             var obj = GetBasicJsonObject();
             obj["text"] = JObject.FromObject(new { content = Content });
@@ -184,6 +205,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
     /// </summary>
     public sealed class CustomServiceMessageImage : CustomServiceMessage
     {
+        /// <summary>
+        /// 初始化一个新的图片客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
         public CustomServiceMessageImage(string toUserId)
             : base(toUserId)
         {
@@ -205,7 +230,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
             get { return CustomServiceMessageType.Image; }
         }
 
-        public override string GetJson()
+        internal override string GetJson()
         {
             var obj = GetBasicJsonObject();
             obj["image"] = JObject.FromObject(new { media_id = MediaId });
@@ -220,6 +245,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
     /// </summary>
     public sealed class CustomServiceMessageVoice : CustomServiceMessage
     {
+        /// <summary>
+        /// 初始化一个新的语音客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
         public CustomServiceMessageVoice(string toUserId)
             : base(toUserId)
         {
@@ -243,7 +272,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #endregion Overrides of CustomServiceMessage
 
-        public override string GetJson()
+        internal override string GetJson()
         {
             var obj = GetBasicJsonObject();
             obj["voice"] = JObject.FromObject(new { media_id = MediaId });
@@ -256,6 +285,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
     /// </summary>
     public sealed class CustomServiceMessageVideo : CustomServiceMessage
     {
+        /// <summary>
+        /// 初始化一个新的视频客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
         public CustomServiceMessageVideo(string toUserId)
             : base(toUserId)
         {
@@ -295,7 +328,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #endregion Overrides of CustomServiceMessage
 
-        public override string GetJson()
+        internal override string GetJson()
         {
             var obj = GetBasicJsonObject();
             obj["video"] = JObject.FromObject(new
@@ -314,6 +347,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
     /// </summary>
     public sealed class CustomServiceMessageMusic : CustomServiceMessage
     {
+        /// <summary>
+        /// 初始化一个新的音乐客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
         public CustomServiceMessageMusic(string toUserId)
             : base(toUserId)
         {
@@ -359,7 +396,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #endregion Overrides of CustomServiceMessage
 
-        public override string GetJson()
+        internal override string GetJson()
         {
             var obj = GetBasicJsonObject();
             obj["music"] = JObject.FromObject(new
@@ -387,8 +424,13 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #region Constructor
 
-        public CustomServiceMessageNews(string userId, Article[] articles)
-            : base(userId)
+        /// <summary>
+        /// 初始化一个新的图文客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
+        /// <param name="articles">图文项。</param>
+        public CustomServiceMessageNews(string toUserId, Article[] articles)
+            : base(toUserId)
         {
             if (articles.NotNull("articles").Length > ArticleMaxCount)
                 throw new ArgumentException(string.Format("文章数量不能大于 {0} 条。", ArticleMaxCount), "articles");
@@ -489,7 +531,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #endregion Overrides of CustomServiceMessage
 
-        public override string GetJson()
+        internal override string GetJson()
         {
             var obj = GetBasicJsonObject();
             obj["news"] = JObject.FromObject(new
@@ -505,6 +547,10 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
     /// </summary>
     public sealed class CustomServiceMessageCard : CustomServiceMessage
     {
+        /// <summary>
+        /// 初始化一个新的卡券客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
         public CustomServiceMessageCard(string toUserId)
             : base(toUserId)
         {
@@ -532,7 +578,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
 
         #endregion Overrides of CustomServiceMessage
 
-        public override string GetJson()
+        internal override string GetJson()
         {
             var obj = GetBasicJsonObject();
             obj["wxcard"] = JObject.FromObject(new

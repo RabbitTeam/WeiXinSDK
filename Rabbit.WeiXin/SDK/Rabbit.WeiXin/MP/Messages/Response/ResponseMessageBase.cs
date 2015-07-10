@@ -43,6 +43,9 @@ namespace Rabbit.WeiXin.MP.Messages.Response
         TransferCustomerServic = 42
     }
 
+    /// <summary>
+    /// 一个抽象的响应消息。
+    /// </summary>
     public interface IResponseMessage : IMessageBase
     {
         /// <summary>

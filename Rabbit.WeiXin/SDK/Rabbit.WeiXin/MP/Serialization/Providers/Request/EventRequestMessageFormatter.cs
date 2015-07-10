@@ -1,9 +1,9 @@
 ﻿using Rabbit.WeiXin.MP.Messages;
 using Rabbit.WeiXin.MP.Messages.Events;
 using Rabbit.WeiXin.MP.Serialization.Providers.Event;
+using Rabbit.WeiXin.MP.Serialization.Providers.Event.Card;
 using Rabbit.WeiXin.MP.Serialization.Providers.Event.CustomMenu;
 using Rabbit.WeiXin.MP.Serialization.Providers.Event.CustomService;
-using Rabbit.WeiXin.Utility;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -17,25 +17,32 @@ namespace Rabbit.WeiXin.MP.Serialization.Providers.Request
     {
         #region Field
 
-        private static readonly IDictionary<EventType, IMessageFormatter> Mappings = new Dictionary<EventType, IMessageFormatter>
+        private static readonly IDictionary<string, IMessageFormatter> Mappings = new Dictionary<string, IMessageFormatter>
         {
-            {EventType.UnSubscribe, new UnSubscribeEventMessageFormatter()},
-//            {EventType.Subscribe, new SubscribeEventMessageFormatter()},
-            {EventType.Scan, new QrAlreadySubscribeEventKeyMessageFormatter()},
-            {EventType.Location, new ReportingLocationEventMessageFormatter()},
-            {EventType.Click, new ClickMessageFormatter()},
-            {EventType.View, new ViewMessageFormatter()},
-            {EventType.TemplateSendJobFinish, new TemplateMessageSendPushMessageFormatter()},
-            {EventType.MassSendJobFinish, new MassSendPushMessageFormatter()},
-            {EventType.ScanCode_Push, new ScanCodePushMessageFormatter()},
-            {EventType.ScanCode_WaitMsg, new ScanCodeWaitMessageFormatter()},
-            {EventType.Pic_SysPhoto, new PicSysPhotoMessageFormatter()},
-            {EventType.Pic_Photo_Or_Album, new PicPhotoOrAlbumMessageFormatter()},
-            {EventType.Pic_WeiXin, new PicWeiXinMessageFormatter()},
-            {EventType.Location_Select, new LocationSelectMessageFormatter()},
-            {EventType.KF_Create_Session, new CreateSessionMessageFormatter()},
-            {EventType.KF_Close_Session, new CloseSessionMessageFormatter()},
-            {EventType.KF_Switch_Session, new SwitchSessionMessageFormatter()}
+            {EventType.UnSubscribe.ToString().ToLower(), new UnSubscribeEventMessageFormatter()},
+            //            {EventType.Subscribe, new SubscribeEventMessageFormatter()},
+            {EventType.Scan.ToString().ToLower(), new QrAlreadySubscribeEventKeyMessageFormatter()},
+            {EventType.Location.ToString().ToLower(), new ReportingLocationEventMessageFormatter()},
+            {EventType.Click.ToString().ToLower(), new ClickMessageFormatter()},
+            {EventType.View.ToString().ToLower(), new ViewMessageFormatter()},
+            {EventType.TemplateSendJobFinish.ToString().ToLower(), new TemplateMessageSendPushMessageFormatter()},
+            {EventType.MassSendJobFinish.ToString().ToLower(), new MassSendPushMessageFormatter()},
+            {EventType.ScanCode_Push.ToString().ToLower(), new ScanCodePushMessageFormatter()},
+            {EventType.ScanCode_WaitMsg.ToString().ToLower(), new ScanCodeWaitMessageFormatter()},
+            {EventType.Pic_SysPhoto.ToString().ToLower(), new PicSysPhotoMessageFormatter()},
+            {EventType.Pic_Photo_Or_Album.ToString().ToLower(), new PicPhotoOrAlbumMessageFormatter()},
+            {EventType.Pic_WeiXin.ToString().ToLower(), new PicWeiXinMessageFormatter()},
+            {EventType.Location_Select.ToString().ToLower(), new LocationSelectMessageFormatter()},
+            {EventType.KF_Create_Session.ToString().ToLower(), new CreateSessionMessageFormatter()},
+            {EventType.KF_Close_Session.ToString().ToLower(), new CloseSessionMessageFormatter()},
+            {EventType.KF_Switch_Session.ToString().ToLower(), new SwitchSessionMessageFormatter()},
+            {"card_pass_check", new CardEventPassCheckMessageFormatter()},
+            {"card_not_pass_check", new CardEventNotPassCheckMessageFormatter()},
+            {"user_consume_card", new CardEventUserConsumeCardMessageFormatter()},
+            {"user_del_card", new CardEventUserDeleteMessageFormatter()},
+            {"user_enter_session_from_card", new CardEventUserEnterSessionMessageFormatter()},
+            {"user_get_card", new CardEventUserGetMessageFormatter()},
+            {"user_view_card", new CardEventUserViewMessageFormatter()}
         };
 
         private static readonly SubscribeEventMessageFormatter SubscribeEventMessageFormatter = new SubscribeEventMessageFormatter();
@@ -47,10 +54,10 @@ namespace Rabbit.WeiXin.MP.Serialization.Providers.Request
 
         public IMessageBase Deserialize(XContainer container)
         {
-            var eventType = GetEventType(container);
+            var eventType = GetValue(container, "Event").ToLower();
             switch (eventType)
             {
-                case EventType.Subscribe:
+                case "subscribe":
                     if (container.Element("Ticket") == null)
                         return SubscribeEventMessageFormatter.Deserialize(container);
                     return QrSubscribeEventKeyMessageFormatter.Deserialize(container);
@@ -71,20 +78,13 @@ namespace Rabbit.WeiXin.MP.Serialization.Providers.Request
 
         #region Private Method
 
-        private static EventType GetEventType(XContainer container)
-        {
-            return GetType<EventType>(container, "Event");
-        }
-
-        private static T GetType<T>(XContainer container, string elementName) where T : struct
+        private static string GetValue(XContainer container, string elementName)
         {
             var typeElemment = container.Element(elementName);
             if (typeElemment == null)
                 throw new ArgumentException("找不到元素 MsgType。");
 
-            var type = typeElemment.Value;
-
-            return EnumParseCacheHelper.Parse<T>(type);
+            return typeElemment.Value;
         }
 
         #endregion Private Method

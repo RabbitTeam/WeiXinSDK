@@ -89,6 +89,10 @@ namespace Rabbit.WeiXin.MP.Api.Material
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的永久素材服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public ForeverMaterialService(AccountModel accountModel)
         {
             _accountModel = accountModel;

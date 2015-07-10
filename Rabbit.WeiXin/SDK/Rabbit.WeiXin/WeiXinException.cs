@@ -9,6 +9,11 @@ namespace Rabbit.WeiXin
     [Serializable]
     public class WeiXinException : Exception
     {
+        /// <summary>
+        /// 初始化一个新的微信异常。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        /// <param name="message">错误消息。</param>
         public WeiXinException(int errorCode, string message)
             : base(string.Format("调用接口失败，错误码：{0}，错误信息：{1}", errorCode, message))
         {

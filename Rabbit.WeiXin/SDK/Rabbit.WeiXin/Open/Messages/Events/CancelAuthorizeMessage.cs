@@ -9,6 +9,10 @@ namespace Rabbit.WeiXin.Open.Messages.Events
     /// </summary>
     public class CancelAuthorizeMessage
     {
+        /// <summary>
+        /// 初始化一个新的开放平台取消授权事件消息。
+        /// </summary>
+        /// <param name="container">xml容器。</param>
         public CancelAuthorizeMessage(XContainer container)
         {
             AppId = container.Element("AppId").Value;

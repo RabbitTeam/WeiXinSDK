@@ -48,6 +48,10 @@ namespace Rabbit.WeiXin.MP.Api.User
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的用户服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public UserService(AccountModel accountModel)
         {
             _accountModel = accountModel;

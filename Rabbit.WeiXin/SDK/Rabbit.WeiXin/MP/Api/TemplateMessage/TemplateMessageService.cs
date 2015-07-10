@@ -35,6 +35,10 @@ namespace Rabbit.WeiXin.MP.Api.TemplateMessage
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的模板消息服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public TemplateMessageService(AccountModel accountModel)
         {
             _accountModel = accountModel;
@@ -77,11 +81,20 @@ namespace Rabbit.WeiXin.MP.Api.TemplateMessage
     /// </summary>
     public sealed class TemplateMessageFieldDataItem
     {
+        /// <summary>
+        /// 初始化一个新的模板消息字段数据项。
+        /// </summary>
+        /// <param name="value">字段值。</param>
         public TemplateMessageFieldDataItem(string value)
             : this(value, "#000000")
         {
         }
 
+        /// <summary>
+        /// 初始化一个新的模板消息字段数据项。
+        /// </summary>
+        /// <param name="color">字段颜色。</param>
+        /// <param name="value">字段值。</param>
         public TemplateMessageFieldDataItem(string value, string color)
         {
             Value = value;

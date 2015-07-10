@@ -56,6 +56,11 @@ namespace Rabbit.WeiXin.MP.Api.Card
             return JObject.Parse(json)["url"].Value<string>();
         }
 
+        /// <summary>
+        /// 创建卡券。
+        /// </summary>
+        /// <param name="model">卡券模型。</param>
+        /// <returns>卡券Id。</returns>
         public string Create(CardModel model)
         {
             var url = "https://api.weixin.qq.com/card/create?access_token=" + _accountModel.GetAccessToken();

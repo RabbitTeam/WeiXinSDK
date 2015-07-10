@@ -17,7 +17,7 @@
         /// </summary>
         public override EventType EventType
         {
-            get { return EventType.KF_Create_Session; }
+            get { return EventType.KF_Close_Session; }
         }
 
         #endregion Overrides of EventMessageBase

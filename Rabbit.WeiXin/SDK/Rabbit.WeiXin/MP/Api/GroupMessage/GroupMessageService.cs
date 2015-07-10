@@ -32,6 +32,10 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
 
         #region Constructor
 
+        /// <summary>
+        /// 初始化一个新的群发服务实例。
+        /// </summary>
+        /// <param name="accountModel">账号模型。</param>
         public GroupMessageService(AccountModel accountModel)
         {
             _accountModel = accountModel;
@@ -122,6 +126,9 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
 
     #region Help Class
 
+    /// <summary>
+    /// 群组筛选器。
+    /// </summary>
     public sealed class GroupFilter
     {
         /// <summary>
@@ -171,28 +178,50 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         Card = 6
     }
 
+    /// <summary>
+    /// 群组消息基类。
+    /// </summary>
     public abstract class GroupMessage
     {
+        /// <summary>
+        /// 群组消息类型。
+        /// </summary>
         [JsonIgnore]
         public abstract GroupMessageType Type { get; }
     }
 
+    /// <summary>
+    /// 群组图文消息。
+    /// </summary>
     public sealed class GroupMessageNews : GroupMessage
     {
+        /// <summary>
+        /// 初始化一个新的群组图文消息。
+        /// </summary>
         public GroupMessageNews()
         {
         }
 
+        /// <summary>
+        /// 初始化一个新的群组图文消息。
+        /// </summary>
+        /// <param name="mediaId">媒体Id。</param>
         public GroupMessageNews(string mediaId)
         {
             MediaId = mediaId;
         }
 
+        /// <summary>
+        /// 媒体Id。
+        /// </summary>
         [Required, JsonProperty("media_id")]
         public string MediaId { get; set; }
 
         #region Overrides of GroupMessage
 
+        /// <summary>
+        /// 群组消息类型。
+        /// </summary>
         public override GroupMessageType Type
         {
             get { return GroupMessageType.News; }
@@ -201,22 +230,38 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         #endregion Overrides of GroupMessage
     }
 
+    /// <summary>
+    /// 群组文本消息。
+    /// </summary>
     public sealed class GroupMessageText : GroupMessage
     {
+        /// <summary>
+        /// 初始化一个新的群组文本消息。
+        /// </summary>
         public GroupMessageText()
         {
         }
 
+        /// <summary>
+        /// 初始化一个新的群组文本消息。
+        /// </summary>
+        /// <param name="content">文本内容。</param>
         public GroupMessageText(string content)
         {
             Content = content;
         }
 
+        /// <summary>
+        /// 文本内容。
+        /// </summary>
         [Required, JsonProperty("content")]
         public string Content { get; set; }
 
         #region Overrides of GroupMessage
 
+        /// <summary>
+        /// 群组消息类型。
+        /// </summary>
         public override GroupMessageType Type
         {
             get { return GroupMessageType.Text; }
@@ -225,22 +270,38 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         #endregion Overrides of GroupMessage
     }
 
+    /// <summary>
+    /// 群组语音消息。
+    /// </summary>
     public sealed class GroupMessageVoice : GroupMessage
     {
+        /// <summary>
+        /// 初始化一个新的群组语音消息。
+        /// </summary>
         public GroupMessageVoice()
         {
         }
 
+        /// <summary>
+        /// 初始化一个新的群组语音消息。
+        /// </summary>
+        /// <param name="mediaId">媒体Id。</param>
         public GroupMessageVoice(string mediaId)
         {
             MediaId = mediaId;
         }
 
+        /// <summary>
+        /// 媒体Id。
+        /// </summary>
         [Required, JsonProperty("media_id")]
         public string MediaId { get; set; }
 
         #region Overrides of GroupMessage
 
+        /// <summary>
+        /// 群组消息类型。
+        /// </summary>
         public override GroupMessageType Type
         {
             get { return GroupMessageType.Voice; }
@@ -249,22 +310,38 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         #endregion Overrides of GroupMessage
     }
 
+    /// <summary>
+    /// 群组图文消息。
+    /// </summary>
     public sealed class GroupMessageImage : GroupMessage
     {
+        /// <summary>
+        /// 初始化一个新的群组图文消息。
+        /// </summary>
         public GroupMessageImage()
         {
         }
 
+        /// <summary>
+        /// 初始化一个新的群组图文消息。
+        /// </summary>
+        /// <param name="mediaId">媒体Id。</param>
         public GroupMessageImage(string mediaId)
         {
             MediaId = mediaId;
         }
 
+        /// <summary>
+        /// 媒体Id。
+        /// </summary>
         [Required, JsonProperty("media_id")]
         public string MediaId { get; set; }
 
         #region Overrides of GroupMessage
 
+        /// <summary>
+        /// 群组消息类型。
+        /// </summary>
         public override GroupMessageType Type
         {
             get { return GroupMessageType.Image; }
@@ -273,12 +350,24 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         #endregion Overrides of GroupMessage
     }
 
+    /// <summary>
+    /// 群组视频消息。
+    /// </summary>
     public sealed class GroupMessageVideo : GroupMessage
     {
+        /// <summary>
+        /// 初始化一个新的群组视频消息。
+        /// </summary>
         public GroupMessageVideo()
         {
         }
 
+        /// <summary>
+        /// 初始化一个新的群组视频消息。
+        /// </summary>
+        /// <param name="mediaId">媒体Id。</param>
+        /// <param name="title">标题。</param>
+        /// <param name="description">描述。</param>
         public GroupMessageVideo(string mediaId, string title, string description)
         {
             MediaId = mediaId;
@@ -286,17 +375,29 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
             Description = description;
         }
 
+        /// <summary>
+        /// 标题。
+        /// </summary>
         [JsonProperty("title")]
         public string Title { get; set; }
 
+        /// <summary>
+        /// 描述。
+        /// </summary>
         [JsonProperty("description")]
         public string Description { get; set; }
 
+        /// <summary>
+        /// 媒体Id。
+        /// </summary>
         [Required, JsonProperty("media_id")]
         public string MediaId { get; set; }
 
         #region Overrides of GroupMessage
 
+        /// <summary>
+        /// 群组消息类型。
+        /// </summary>
         public override GroupMessageType Type
         {
             get { return GroupMessageType.Video; }
@@ -305,22 +406,38 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         #endregion Overrides of GroupMessage
     }
 
+    /// <summary>
+    /// 群组卡券消息。
+    /// </summary>
     public sealed class GroupMessageCard : GroupMessage
     {
+        /// <summary>
+        /// 初始化一个新的群组卡券消息。
+        /// </summary>
         public GroupMessageCard()
         {
         }
 
+        /// <summary>
+        /// 初始化一个群组卡券消息。
+        /// </summary>
+        /// <param name="cardId">卡券Id。</param>
         public GroupMessageCard(string cardId)
         {
             CardId = cardId;
         }
 
+        /// <summary>
+        /// 卡券Id。
+        /// </summary>
         [Required, JsonProperty("card_id")]
         public string CardId { get; set; }
 
         #region Overrides of GroupMessage
 
+        /// <summary>
+        /// 群组消息类型。
+        /// </summary>
         public override GroupMessageType Type
         {
             get { return GroupMessageType.Video; }

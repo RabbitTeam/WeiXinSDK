@@ -86,6 +86,14 @@
     <Compile Include="Handlers\MessageHandlerBaseInfo.cs" />
     <Compile Include="Handlers\WeiXinHandler.cs" />
     <Compile Include="DependencyInjection\IDependencyResolver.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventBase.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventNotPassCheckMessage.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventUserConsumeCardMessage.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventUserDeleteMessage.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventUserEnterSessionMessage.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventUserViewMessage.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventPassCheckMessage.cs" />
+    <Compile Include="MP\Messages\Events\Card\CardEventUserGetMessage.cs" />
     <Compile Include="MP\Messages\Events\CustomMenu\ClickMessage.cs" />
     <Compile Include="MP\Messages\Events\CustomMenu\CustomMenuEventKeyMessageBase.cs" />
     <Compile Include="MP\Messages\Events\CustomMenu\LocationSelectMessage.cs" />
@@ -99,6 +107,7 @@
     <Compile Include="MP\Messages\Events\CustomService\CreateSessionMessage.cs" />
     <Compile Include="MP\Messages\Events\CustomService\SwitchSessionMessage.cs" />
     <Compile Include="MP\Messages\Events\EventBase.cs" />
+    <Compile Include="MP\Messages\Events\EventType.cs" />
     <Compile Include="MP\Messages\Events\MassSendPushMessage.cs" />
     <Compile Include="MP\Messages\Events\QrAlreadySubscribeEventKeyMessage.cs" />
     <Compile Include="MP\Messages\Events\QrSubscribeEventKeyMessage.cs" />
@@ -125,6 +134,13 @@
     <Compile Include="MP\Messages\Response\ResponseMessageTransferCustomerService.cs" />
     <Compile Include="MP\Messages\Response\ResponseMessageVideo.cs" />
     <Compile Include="MP\Messages\Response\ResponseMessageVoice.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\Card\CardEventNotPassCheckMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\Card\CardEventPassCheckMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserConsumeCardMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserDeleteMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserEnterSessionMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserGetMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserViewMessageFormatter.cs" />
     <Compile Include="Open\Api\AccountModel.cs" />
     <Compile Include="Open\Api\CommonService.cs" />
     <Compile Include="Open\Api\VerifyTicketService.cs" />
