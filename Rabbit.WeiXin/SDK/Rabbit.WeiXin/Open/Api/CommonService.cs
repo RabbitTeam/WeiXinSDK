@@ -147,7 +147,12 @@ namespace Rabbit.WeiXin.Open.Api
                 });
 
             if (_accessTokenModel == null || _accessTokenModel.IsExpired() || ignoreCached)
+            {
+                var newModel = get();
+                if (_accessTokenModel != null && _accessTokenModel.AccessToken == newModel.AccessToken)
+                    return _accessTokenModel;
                 return _accessTokenModel = get();
+            }
 
             return _accessTokenModel;
         }
@@ -165,7 +170,10 @@ namespace Rabbit.WeiXin.Open.Api
 
             if (_authorizeCodeResult == null || _authorizeCodeResult.IsExpired() || ignoreCached)
             {
-                return _authorizeCodeResult = get();
+                var newModel = get();
+                if (_authorizeCodeResult != null && _authorizeCodeResult.AuthCode == newModel.AuthCode)
+                    return _authorizeCodeResult;
+                return _authorizeCodeResult = newModel;
             }
             return _authorizeCodeResult;
         }
@@ -201,7 +209,11 @@ namespace Rabbit.WeiXin.Open.Api
                 var model = v as PublicAccountAuthorizerInfo;
                 //无效、过期、忽略缓存则重新获取。
                 if (model == null || model.IsExpired() || ignoreCached)
+                {
+                    if (model != null && get.Value.AccessToken == model.AccessToken)
+                        return model;
                     return get.Value;
+                }
                 return model;
             }) as PublicAccountAuthorizerInfo;
         }
@@ -317,7 +329,12 @@ namespace Rabbit.WeiXin.Open.Api
             {
                 var token = v as RefreshAccessToken;
                 if (token == null || token.IsExpired() || ignoreCached)
+                {
+                    var newModel = get.Value;
+                    if (token != null && token.AuthorizerAccessToken == newModel.AuthorizerAccessToken)
+                        return v;
                     return get.Value;
+                }
                 return v;
             }) as RefreshAccessToken;
         }
