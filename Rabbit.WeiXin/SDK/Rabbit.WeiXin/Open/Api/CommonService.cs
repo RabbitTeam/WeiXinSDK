@@ -151,7 +151,7 @@ namespace Rabbit.WeiXin.Open.Api
                 var newModel = get();
                 if (_accessTokenModel != null && _accessTokenModel.AccessToken == newModel.AccessToken)
                     return _accessTokenModel;
-                return _accessTokenModel = get();
+                return _accessTokenModel = newModel;
             }
 
             return _accessTokenModel;

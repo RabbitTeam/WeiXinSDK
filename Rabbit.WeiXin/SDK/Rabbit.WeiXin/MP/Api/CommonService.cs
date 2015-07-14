@@ -78,7 +78,19 @@ namespace Rabbit.WeiXin.MP.Api
                 return WeiXinHttpHelper.GetResultByJson<AccessTokenModel>(url);
             };
 
-            return ignoreCached ? Dictionary.AddOrUpdate(appId, key => get(), (k, m) => get()) : Dictionary.GetOrAdd(appId, key => get());
+            return Dictionary.AddOrUpdate(appId, key => get(), (k, m) =>
+            {
+                //忽略缓存则负担和最新的数据。
+                if (ignoreCached)
+                    return get();
+
+                //没有过期则直接返回。
+                if (!m.IsExpired())
+                    return m;
+
+                var newModel = get();
+                return newModel.AccessToken == m.AccessToken ? m : newModel;
+            });
         }
 
         /// <summary>
