@@ -49,13 +49,15 @@ namespace Rabbit.WeiXin.MP.Messages.Response
     public interface IResponseMessage : IMessageBase
     {
         /// <summary>
-        /// 开发者微信号
+        /// 接收方帐号（收到的OpenID）。
         /// </summary>
+        [Required]
         new string ToUserName { get; set; }
 
         /// <summary>
-        /// 发送方帐号（一个OpenID）
+        /// 开发者微信号。
         /// </summary>
+        [Required]
         new string FromUserName { get; set; }
 
         /// <summary>
@@ -69,17 +71,21 @@ namespace Rabbit.WeiXin.MP.Messages.Response
     /// </summary>
     public abstract class ResponseMessageBase : MessageBase, IResponseMessage
     {
+        #region Overrides of MessageBase
+
         /// <summary>
-        /// 开发者微信号
+        /// 接收方帐号（收到的OpenID）。
         /// </summary>
         [Required]
         public override string ToUserName { get; set; }
 
         /// <summary>
-        /// 发送方帐号（一个OpenID）
+        /// 开发者微信号。
         /// </summary>
         [Required]
         public override string FromUserName { get; set; }
+
+        #endregion Overrides of MessageBase
 
         #region Implementation of IResponseMessage
 

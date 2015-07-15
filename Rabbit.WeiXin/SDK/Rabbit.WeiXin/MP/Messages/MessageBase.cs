@@ -9,14 +9,16 @@ namespace Rabbit.WeiXin.MP.Messages
     public interface IMessageBase
     {
         /// <summary>
-        /// 开发者微信号
+        /// 消息接收方用户名称。
         /// </summary>
+        /// <remarks>如果是请求消息则是开发者微信号，如果是响应消息则是用户的OpenId。</remarks>
         [Required]
         string ToUserName { get; set; }
 
         /// <summary>
-        /// 发送方帐号（一个OpenID）
+        /// 消息发送方用户名称。
         /// </summary>
+        /// <remarks>如果是请求消息则是用户的OpenId，如果是响应消息则是开发者微信号。</remarks>
         [Required]
         string FromUserName { get; set; }
 
@@ -33,14 +35,16 @@ namespace Rabbit.WeiXin.MP.Messages
     public abstract class MessageBase : IMessageBase
     {
         /// <summary>
-        /// 开发者微信号
+        /// 消息接收方用户名称。
         /// </summary>
+        /// <remarks>如果是请求消息则是开发者微信号，如果是响应消息则是用户的OpenId。</remarks>
         [Required]
         public virtual string ToUserName { get; set; }
 
         /// <summary>
-        /// 发送方帐号（一个OpenID）
+        /// 消息发送方用户名称。
         /// </summary>
+        /// <remarks>如果是请求消息则是用户的OpenId，如果是响应消息则是开发者微信号。</remarks>
         [Required]
         public virtual string FromUserName { get; set; }
 

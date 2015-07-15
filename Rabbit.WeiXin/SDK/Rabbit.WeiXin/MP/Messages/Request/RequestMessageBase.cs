@@ -1,4 +1,6 @@
-﻿namespace Rabbit.WeiXin.MP.Messages.Request
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Rabbit.WeiXin.MP.Messages.Request
 {
     /// <summary>
     /// 消息类型。
@@ -63,13 +65,15 @@
     public interface IRequestMessage : IRequestMessageBase, IMessageIdentity
     {
         /// <summary>
-        /// 开发者微信号
+        /// 开发者微信号。
         /// </summary>
+        [Required]
         new string ToUserName { get; set; }
 
         /// <summary>
-        /// 发送方帐号（一个OpenID）
+        /// 发送方帐号（一个OpenID）。
         /// </summary>
+        [Required]
         new string FromUserName { get; set; }
     }
 
@@ -78,6 +82,22 @@
     /// </summary>
     public abstract class RequestMessageBase : MessageBase, IRequestMessage
     {
+        #region Overrides of MessageBase
+
+        /// <summary>
+        /// 开发者微信号。
+        /// </summary>
+        [Required]
+        public override string ToUserName { get; set; }
+
+        /// <summary>
+        /// 发送方帐号（一个OpenID）。
+        /// </summary>
+        [Required]
+        public override string FromUserName { get; set; }
+
+        #endregion Overrides of MessageBase
+
         #region Implementation of IRequestMessage
 
         /// <summary>
