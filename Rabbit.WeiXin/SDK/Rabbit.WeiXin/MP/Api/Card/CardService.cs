@@ -105,7 +105,7 @@ namespace Rabbit.WeiXin.MP.Api.Card
         public CardListResult GetCardList(uint skip, ushort take, CardStatusEnum[] status = null)
         {
             if (take > 50 || take == 0)
-                throw new ArgumentOutOfRangeException(nameof(take), "查询的数量必须大于0小等于50。");
+                throw new ArgumentOutOfRangeException("take", "查询的数量必须大于0小等于50。");
 
             var url = "https://api.weixin.qq.com/card/batchget?access_token=" + _accountModel.GetAccessToken();
 
@@ -362,11 +362,10 @@ namespace Rabbit.WeiXin.MP.Api.Card
         public bool Update(string cardId, CardUpdateModel model)
         {
             var url = "https://api.weixin.qq.com/card/update?access_token=" + _accountModel.GetAccessToken();
-            var obj = new JObject
-            {
-                ["card_id"] = cardId,
-                ["member_card"] = JObject.Parse(JsonConvert.SerializeObject(model))
-            };
+            var obj = new JObject();
+
+            obj["card_id"] = cardId;
+            obj["member_card"] = JObject.Parse(JsonConvert.SerializeObject(model));
 
             var content = WeiXinHttpHelper.PostString(url, Encoding.UTF8.GetBytes(obj.ToString()));
             return JObject.Parse(content).Value<bool>("send_check");
