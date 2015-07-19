@@ -164,13 +164,29 @@ namespace Rabbit.WeiXin.Open.Api
         /// <returns>授权码结果。</returns>
         public AuthorizeCodeResult GetAuthorizeCode(bool ignoreCached = false)
         {
-            Func<AuthorizeCodeResult> get = () => WeiXinHttpHelper.PostResultByJson<AuthorizeCodeResult>(
-                "https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=" +
-                GetAccessToken().AccessToken, new { component_appid = _accountModel.AppId });
+            Func<string, AuthorizeCodeResult> get = accessToken => WeiXinHttpHelper.PostResultByJson<AuthorizeCodeResult>(
+                 "https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=" +
+                 accessToken, new { component_appid = _accountModel.AppId });
 
             if (_authorizeCodeResult == null || _authorizeCodeResult.IsExpired() || ignoreCached)
             {
-                var newModel = get();
+                AuthorizeCodeResult newModel;
+                try
+                {
+                    newModel = get(GetAccessToken().AccessToken);
+                }
+                catch (WeiXinException exception)
+                {
+                    if (exception.ErrorCode == 40001 ||
+                        exception.Message == "invalid credential, access_token is invalid or not latest")
+                    {
+                        newModel = get(GetAccessToken(true).AccessToken);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 if (_authorizeCodeResult != null && _authorizeCodeResult.AuthCode == newModel.AuthCode)
                     return _authorizeCodeResult;
                 return _authorizeCodeResult = newModel;
@@ -186,22 +202,39 @@ namespace Rabbit.WeiXin.Open.Api
         /// <returns>公众账号授权信息。</returns>
         public PublicAccountAuthorizerInfo GetPublicAccountAuthorizerInfo(string authorizationCode, bool ignoreCached = false)
         {
+            Func<string, PublicAccountAuthorizerInfo> getFunc =
+                accessToken =>
+                {
+                    var content = WeiXinHttpHelper.PostString(
+                        "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=" +
+                        accessToken,
+                        new
+                        {
+                            component_appid = _accountModel.AppId,
+                            authorization_code = authorizationCode
+                        });
+                    var obj = JObject.Parse(content)["authorization_info"];
+
+                    var model = JsonConvert.DeserializeObject<PublicAccountAuthorizerInfo>(obj.ToString());
+                    model.Rights = GetRights(obj);
+
+                    return model;
+                };
             var get = new Lazy<PublicAccountAuthorizerInfo>(() =>
             {
-                var content = WeiXinHttpHelper.PostString(
-                    "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=" +
-                    GetAccessToken().AccessToken,
-                    new
+                try
+                {
+                    return getFunc(GetAccessToken().AccessToken);
+                }
+                catch (WeiXinException exception)
+                {
+                    if (exception.ErrorCode == 40001 ||
+                        exception.Message == "invalid credential, access_token is invalid or not latest")
                     {
-                        component_appid = _accountModel.AppId,
-                        authorization_code = authorizationCode
-                    });
-                var obj = JObject.Parse(content)["authorization_info"];
-
-                var model = JsonConvert.DeserializeObject<PublicAccountAuthorizerInfo>(obj.ToString());
-                model.Rights = GetRights(obj);
-
-                return model;
+                        return getFunc(GetAccessToken(true).AccessToken);
+                    }
+                    throw;
+                }
             });
 
             return _objectCacheDictionary.AddOrUpdate("GetPublicAccountAuthorizerInfo_" + authorizationCode, k => get.Value, (k, v) =>
@@ -225,13 +258,32 @@ namespace Rabbit.WeiXin.Open.Api
         /// <returns>公众账号信息。</returns>
         public PublicAccountInfo GetPublicAccountInfo(string authorizerAppId)
         {
-            var content = WeiXinHttpHelper.PostString(
+            Func<string, string> getContent = accessToken => WeiXinHttpHelper.PostString(
                 "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=" +
-                GetAccessToken().AccessToken, new
+                accessToken, new
                 {
                     component_appid = _accountModel.AppId,
                     authorizer_appid = authorizerAppId
                 });
+
+            string content;
+
+            try
+            {
+                content = getContent(GetAccessToken().AccessToken);
+            }
+            catch (WeiXinException exception)
+            {
+                if (exception.ErrorCode == 40001 ||
+                    exception.Message == "invalid credential, access_token is invalid or not latest")
+                {
+                    content = getContent(GetAccessToken(true).AccessToken);
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             var obj = JObject.Parse(content);
             var authorizerInfo = obj["authorizer_info"];
@@ -270,14 +322,32 @@ namespace Rabbit.WeiXin.Open.Api
         /// </remarks>
         public string GetOptionValue(string optionName, string authorizerAppId)
         {
-            var content = WeiXinHttpHelper.PostString(
+            Func<string, string> get = accessToken => WeiXinHttpHelper.PostString(
                 "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_option?component_access_token=" +
-                GetAccessToken().AccessToken, new
+                accessToken, new
                 {
                     component_appid = _accountModel.AppId,
                     authorizer_appid = authorizerAppId,
                     option_name = optionName
                 });
+            string content;
+
+            try
+            {
+                content = get(GetAccessToken().AccessToken);
+            }
+            catch (WeiXinException exception)
+            {
+                if (exception.ErrorCode == 40001 ||
+                    exception.Message == "invalid credential, access_token is invalid or not latest")
+                {
+                    content = get(GetAccessToken(true).AccessToken);
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return JObject.Parse(content).Value<string>("option_value");
         }
@@ -295,15 +365,35 @@ namespace Rabbit.WeiXin.Open.Api
         /// </remarks>
         public void SetOptionValue(string optionName, string optionValue, string authorizerAppId)
         {
-            WeiXinHttpHelper.PostString(
-                "https://api.weixin.qq.com/cgi-bin/component/api_set_authorizer_option?component_access_token=" +
-                GetAccessToken().AccessToken, new
+            Action<string> set = accessToken =>
+            {
+                WeiXinHttpHelper.PostString(
+                    "https://api.weixin.qq.com/cgi-bin/component/api_set_authorizer_option?component_access_token=" +
+                    accessToken, new
+                    {
+                        component_appid = _accountModel.AppId,
+                        authorizer_appid = authorizerAppId,
+                        option_name = optionName,
+                        option_value = optionValue
+                    });
+            };
+
+            try
+            {
+                set(GetAccessToken().AccessToken);
+            }
+            catch (WeiXinException exception)
+            {
+                if (exception.ErrorCode == 40001 ||
+                    exception.Message == "invalid credential, access_token is invalid or not latest")
                 {
-                    component_appid = _accountModel.AppId,
-                    authorizer_appid = authorizerAppId,
-                    option_name = optionName,
-                    option_value = optionValue
-                });
+                    set(GetAccessToken(true).AccessToken);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -315,15 +405,32 @@ namespace Rabbit.WeiXin.Open.Api
         /// <returns>刷新令牌模型。</returns>
         public RefreshAccessToken RefreshToken(string authorizerAppId, string authorizerRefreshToken, bool ignoreCached = false)
         {
-            var get = new Lazy<RefreshAccessToken>(() => WeiXinHttpHelper.PostResultByJson<RefreshAccessToken>(
+            Func<string, RefreshAccessToken> getFunc = accessToken => WeiXinHttpHelper.PostResultByJson<RefreshAccessToken>(
                 "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=" +
-                GetAccessToken().AccessToken,
+                accessToken,
                 new
                 {
                     component_appid = _accountModel.AppId,
                     authorizer_appid = authorizerAppId,
                     authorizer_refresh_token = authorizerRefreshToken
-                }));
+                });
+
+            var get = new Lazy<RefreshAccessToken>(() =>
+            {
+                try
+                {
+                    return getFunc(GetAccessToken().AccessToken);
+                }
+                catch (WeiXinException exception)
+                {
+                    if (exception.ErrorCode == 40001 ||
+                        exception.Message == "invalid credential, access_token is invalid or not latest")
+                    {
+                        return getFunc(GetAccessToken(true).AccessToken);
+                    }
+                    throw;
+                }
+            });
 
             return _objectCacheDictionary.AddOrUpdate("RefreshToken_" + authorizerAppId, k => get.Value, (k, v) =>
             {
