@@ -154,7 +154,8 @@ namespace Rabbit.WeiXin.Handlers
         /// <returns>依赖解析器。</returns>
         public static IDependencyResolver GetDependencyResolver(this IHandlerContext context)
         {
-            var dependencyResolver = context.NotNull("context").Environment["Rabbit.WeiXin.DependencyResolver"] as IDependencyResolver;
+            var dependencyResolver = context.NotNull("context").Get<IDependencyResolver>("Rabbit.WeiXin.DependencyResolver");
+
             if (dependencyResolver == null)
                 throw new Exception("在当前上下文中找不到依赖解析器，您可以通过 SetDependencyResolver 方法设置一个依赖解析器。");
 
@@ -170,7 +171,8 @@ namespace Rabbit.WeiXin.Handlers
         /// <returns>请求消息实例。</returns>
         public static IRequestMessageBase GetRequestMessage(this IHandlerContext context)
         {
-            var requestMessage = context.Environment["Rabbit.WeiXin.RequestMessage"] as IRequestMessageBase;
+            var requestMessage = context.NotNull("content").Get<IRequestMessageBase>("Rabbit.WeiXin.RequestMessage");
+
             if (requestMessage == null)
                 throw new Exception("在当前上下文中找不到请求消息，请确保注册的处理中间件中有包含对请求消息创建的处理动作。");
             return requestMessage;
@@ -200,7 +202,7 @@ namespace Rabbit.WeiXin.Handlers
         /// <returns>响应消息实例。</returns>
         public static IResponseMessage GetResponseMessage(this IHandlerContext context)
         {
-            var responseMessage = context.Environment["Rabbit.WeiXin.ResponseMessage"] as IResponseMessage;
+            var responseMessage = context.NotNull("context").Get<IResponseMessage>("Rabbit.WeiXin.ResponseMessage");
             return responseMessage;
         }
 
@@ -227,7 +229,7 @@ namespace Rabbit.WeiXin.Handlers
         /// <returns>消息处理基本信息。</returns>
         public static MessageHandlerBaseInfo GetMessageHandlerBaseInfo(this IHandlerContext context)
         {
-            var info = context.Environment["Rabbit.WeiXin.MessageHandlerBaseInfo"] as MessageHandlerBaseInfo;
+            var info = context.NotNull("context").Get<MessageHandlerBaseInfo>("Rabbit.WeiXin.MessageHandlerBaseInfo");
             if (info == null)
                 throw new Exception("在当前上下文中找不到消息处理基本信息，请确保向处理上下文注册了消息处理基本信息。");
             return info;
