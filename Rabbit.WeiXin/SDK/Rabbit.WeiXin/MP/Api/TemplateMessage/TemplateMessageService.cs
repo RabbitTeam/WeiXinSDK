@@ -11,6 +11,21 @@ namespace Rabbit.WeiXin.MP.Api.TemplateMessage
     public interface ITemplateMessageService
     {
         /// <summary>
+        /// 设置行业。
+        /// </summary>
+        /// <param name="mainIndustryId">主行业Id。</param>
+        /// <param name="deputyIndustryid">副行业Id。</param>
+        /// <remarks>行业Id参考：http://mp.weixin.qq.com/wiki/17/304c1885ea66dbedf7dc170d84999a9d.html#toc。</remarks>
+        void SetIndustry(uint mainIndustryId, uint deputyIndustryid);
+
+        /// <summary>
+        /// 获取发送模板的Id。
+        /// </summary>
+        /// <param name="templateShortId">模板短Id。</param>
+        /// <returns>发送模板的Id。</returns>
+        string GetTemplateId(string templateShortId);
+
+        /// <summary>
         /// 发送模板消息。
         /// </summary>
         /// <param name="openId">用户Id。</param>
@@ -47,6 +62,30 @@ namespace Rabbit.WeiXin.MP.Api.TemplateMessage
         #endregion Constructor
 
         #region Implementation of ITemplateMessageService
+
+        /// <summary>
+        /// 设置行业。
+        /// </summary>
+        /// <param name="mainIndustryId">主行业Id。</param>
+        /// <param name="deputyIndustryid">副行业Id。</param>
+        /// <remarks>行业Id参考：http://mp.weixin.qq.com/wiki/17/304c1885ea66dbedf7dc170d84999a9d.html#toc。</remarks>
+        public void SetIndustry(uint mainIndustryId, uint deputyIndustryid)
+        {
+            var postUrl = "https://api.weixin.qq.com/cgi-bin/template/api_set_industry?access_token=" + _accountModel.GetAccessToken();
+            WeiXinHttpHelper.Post(postUrl, new { industry_id1 = mainIndustryId, industry_id2 = deputyIndustryid });
+        }
+
+        /// <summary>
+        /// 获取发送模板的Id。
+        /// </summary>
+        /// <param name="templateShortId">模板短Id。</param>
+        /// <returns>发送模板的Id。</returns>
+        public string GetTemplateId(string templateShortId)
+        {
+            var postUrl = "https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token=" + _accountModel.GetAccessToken();
+            var content = WeiXinHttpHelper.PostString(postUrl, new { template_id_short = templateShortId });
+            return JObject.Parse(content).Value<string>("template_id");
+        }
 
         /// <summary>
         /// 发送模板消息。
