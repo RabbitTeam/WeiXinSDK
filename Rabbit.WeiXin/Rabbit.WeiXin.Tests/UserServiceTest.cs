@@ -58,6 +58,14 @@ namespace Rabbit.WeiXin.Tests
             Assert.AreEqual(remarkName, _userService.GetUser(OpenId).Remark);
         }
 
+        [TestMethod]
+        public void GetUserInfoListTest()
+        {
+            var list = _userService.GetUserInfoList(OpenId);
+
+            Assert.IsTrue(list.Any());
+        }
+
         #endregion Test Method
     }
 }

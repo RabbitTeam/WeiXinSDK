@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.Utility;
+using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -33,6 +34,13 @@ namespace Rabbit.WeiXin.MP.Api.User
         /// <param name="startOpenId">第一个拉取的OPENID，不填默认从头开始拉取</param>
         /// <returns>获取用户列表结果模型。</returns>
         GetUserListResultModel GetUserList(string startOpenId = null);
+
+        /// <summary>
+        /// 批量获取用户信息。
+        /// </summary>
+        /// <param name="filters">筛选信息。</param>
+        /// <returns>用户信息集合。</returns>
+        UserInfo[] GetUserInfoList(params GetUserListFilterItem[] filters);
     }
 
     /// <summary>
@@ -106,7 +114,37 @@ namespace Rabbit.WeiXin.MP.Api.User
             return GetUserListResultModel.Create(obj);
         }
 
+        /// <summary>
+        /// 批量获取用户信息。
+        /// </summary>
+        /// <param name="filters">筛选信息。</param>
+        /// <returns>用户信息集合。</returns>
+        public UserInfo[] GetUserInfoList(params GetUserListFilterItem[] filters)
+        {
+            var url = "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=" + _accountModel.GetAccessToken();
+            var content = WeiXinHttpHelper.PostString(url, new { user_list = filters });
+            return JsonConvert.DeserializeObject<UserInfo[]>(JObject.Parse(content)["user_info_list"].ToString());
+        }
+
         #endregion Implementation of IUserService
+    }
+
+    /// <summary>
+    /// 用户服务扩展方法。
+    /// </summary>
+    public static class UserServiceExtensions
+    {
+        /// <summary>
+        /// 批量获取用户信息。
+        /// </summary>
+        /// <param name="userService">用户服务接口。</param>
+        /// <param name="openIds">用户Id集合。</param>
+        /// <returns>用户信息集合。</returns>
+        public static UserInfo[] GetUserInfoList(this IUserService userService, params string[] openIds)
+        {
+            openIds = openIds.NotNull("openIds").Where(i => i != null).ToArray();
+            return userService.GetUserInfoList(openIds.Select(i => new GetUserListFilterItem(i)).ToArray());
+        }
     }
 
     #region Help Class
@@ -256,6 +294,53 @@ namespace Rabbit.WeiXin.MP.Api.User
                 OpenIds = array == null ? new string[0] : array.Select(i => i.Value<string>()).ToArray(),
             };
         }
+    }
+
+    /// <summary>
+    /// 获取用户列表筛选参数。
+    /// </summary>
+    public sealed class GetUserListFilterItem
+    {
+        /// <summary>
+        /// 初始化一个新的筛选参数。
+        /// </summary>
+        /// <param name="openId"></param>
+        public GetUserListFilterItem(string openId) : this(openId, "zh_CN")
+        {
+        }
+
+        /// <summary>
+        /// 初始化一个新的筛选参数。
+        /// </summary>
+        /// <param name="openId">用户的标识，对当前公众号唯一。</param>
+        /// <param name="language">国家地区语言版本，zh_CN 简体，zh_TW 繁体，en 英语，默认为zh-CN。</param>
+        public GetUserListFilterItem(string openId, string language)
+        {
+            if (string.IsNullOrEmpty(openId))
+                throw new ArgumentNullException("openId");
+
+            OpenId = openId;
+            Language = language;
+        }
+
+        /// <summary>
+        /// 初始化一个新的筛选参数。
+        /// </summary>
+        public GetUserListFilterItem()
+        {
+        }
+
+        /// <summary>
+        /// 用户的标识，对当前公众号唯一。
+        /// </summary>
+        [JsonProperty("openid")]
+        public string OpenId { get; set; }
+
+        /// <summary>
+        /// 国家地区语言版本，zh_CN 简体，zh_TW 繁体，en 英语，默认为zh-CN。
+        /// </summary>
+        [JsonProperty("lang")]
+        public string Language { get; set; }
     }
 
     #endregion Help Class
