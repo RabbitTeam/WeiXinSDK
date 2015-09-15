@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.Utility;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace Rabbit.WeiXin.MP.Api.GroupMessage
 {
@@ -16,7 +17,16 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         /// </summary>
         /// <param name="filter">群组的筛选信息。</param>
         /// <param name="message">群组消息。</param>
-        void SendByGroup(GroupFilter filter, GroupMessage message);
+        /// <returns>发送结果。</returns>
+        GroupSendResult SendByGroup(GroupFilter filter, GroupMessage message);
+
+        /// <summary>
+        /// 发送群组消息。
+        /// </summary>
+        /// <param name="userOpenIds">用户Id数组。</param>
+        /// <param name="message">群组消息。</param>
+        /// <returns>发送结果。</returns>
+        GroupSendResult SendByUsers(string[] userOpenIds, GroupMessage message);
     }
 
     /// <summary>
@@ -50,10 +60,9 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
         /// </summary>
         /// <param name="filter">群组的筛选信息。</param>
         /// <param name="message">群组消息。</param>
-        public void SendByGroup(GroupFilter filter, GroupMessage message)
+        /// <returns>发送结果。</returns>
+        public GroupSendResult SendByGroup(GroupFilter filter, GroupMessage message)
         {
-            var url = "https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token=" + _accountModel.GetAccessToken();
-
             object filterObj;
 
             if (filter.GroupId.HasValue)
@@ -64,6 +73,34 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
             {
                 filterObj = new { is_to_all = true };
             }
+
+            return SendMessage(message, obj =>
+            {
+                obj["filter"] = JObject.Parse(JsonConvert.SerializeObject(filterObj));
+            });
+        }
+
+        /// <summary>
+        /// 发送群组消息。
+        /// </summary>
+        /// <param name="userOpenIds">用户Id数组。</param>
+        /// <param name="message">群组消息。</param>
+        /// <returns>发送结果。</returns>
+        public GroupSendResult SendByUsers(string[] userOpenIds, GroupMessage message)
+        {
+            return SendMessage(message, obj =>
+            {
+                obj["touser"] = JArray.Parse(JsonConvert.SerializeObject(userOpenIds));
+            });
+        }
+
+        #endregion Implementation of IGroupMessageService
+
+        #region Private Method
+
+        private GroupSendResult SendMessage(GroupMessage message, Action<JObject> action)
+        {
+            var url = "https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token=" + _accountModel.GetAccessToken();
 
             string msgtype;
 
@@ -110,21 +147,37 @@ namespace Rabbit.WeiXin.MP.Api.GroupMessage
                     throw new NotSupportedException("不支持的消息类型：" + message.Type);
             }
 
-            var postJson = JsonConvert.SerializeObject(new
-            {
-                filter = filterObj,
-                msgtype,
-            });
-            var postObj = JObject.Parse(postJson);
+            var postObj = new JObject();
+            action(postObj);
+            postObj["msgtype"] = msgtype;
             postObj[msgtype] = JObject.Parse(JsonConvert.SerializeObject(message));
 
-            WeiXinHttpHelper.Post(url, postObj.ToString());
+            var content = WeiXinHttpHelper.PostString(url, Encoding.UTF8.GetBytes(postObj.ToString()));
+            return JsonConvert.DeserializeObject<GroupSendResult>(content);
         }
 
-        #endregion Implementation of IGroupMessageService
+        #endregion Private Method
     }
 
     #region Help Class
+
+    /// <summary>
+    /// 群组消息发送结果。
+    /// </summary>
+    public sealed class GroupSendResult
+    {
+        /// <summary>
+        /// 消息发送任务的ID。
+        /// </summary>
+        [JsonProperty("msg_id")]
+        public long MessageId { get; set; }
+
+        /// <summary>
+        /// 消息的数据ID，该字段只有在群发图文消息时，才会出现。可以用于在图文分析数据接口中，获取到对应的图文消息的数据，是图文分析数据接口中的msgid字段中的前半部分，详见图文分析数据接口中的msgid字段的介绍。
+        /// </summary>
+        [JsonProperty("msg_data_id")]
+        public long MessageDataId { get; set; }
+    }
 
     /// <summary>
     /// 群组筛选器。

@@ -1,7 +1,7 @@
-﻿using Rabbit.WeiXin.Tests.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rabbit.WeiXin.MP.Api.GroupMessage;
 using Rabbit.WeiXin.MP.Api.Material;
+using Rabbit.WeiXin.Tests.Utility;
 
 namespace Rabbit.WeiXin.Tests
 {
@@ -91,6 +91,12 @@ namespace Rabbit.WeiXin.Tests
         public void SendCardByGroupTest()
         {
             _groupMessageService.SendByGroup(new GroupFilter(), new GroupMessageCard("cardId"));
+        }
+
+        [TestMethod]
+        public void SendTextByGroupFromOpenIdTest()
+        {
+            _groupMessageService.SendByUsers(new[] { OpenId }, new GroupMessageText("content"));
         }
 
         #endregion Test Method
