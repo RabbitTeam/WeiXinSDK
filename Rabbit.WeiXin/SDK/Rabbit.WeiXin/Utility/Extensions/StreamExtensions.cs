@@ -29,7 +29,7 @@ namespace Rabbit.WeiXin.Utility.Extensions
 
             trySeekBegin();
 
-            var list = new List<byte>();
+            var list = new List<byte>(stream.Length > int.MaxValue ? int.MaxValue : (int)stream.Length);
 
             int b;
 
