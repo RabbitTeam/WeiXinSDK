@@ -123,6 +123,11 @@ namespace Rabbit.WeiXin.MP.Messages.Events
         /// <summary>
         /// 用户在卡券里点击查看公众号进入会话时（需要用户已经关注公众号）。
         /// </summary>
-        Card_UserEnterSession
+        Card_UserEnterSession,
+
+        /// <summary>
+        /// WIFI连接成功时。
+        /// </summary>
+        WifiConnected
     }
 }

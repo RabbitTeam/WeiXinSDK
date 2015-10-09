@@ -115,6 +115,7 @@
     <Compile Include="MP\Messages\Events\SubscribeEventMessage.cs" />
     <Compile Include="MP\Messages\Events\TemplateMessageSendPushMessage.cs" />
     <Compile Include="MP\Messages\Events\UnSubscribeEventMessage.cs" />
+    <Compile Include="MP\Messages\Events\WiFi\ConnectedMessage.cs" />
     <Compile Include="MP\Messages\MessageBase.cs" />
     <Compile Include="MP\Messages\RequestMessageFactory.cs" />
     <Compile Include="MP\Messages\Request\RequestMessageBase.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserEnterSessionMessageFormatter.cs" />
     <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserGetMessageFormatter.cs" />
     <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserViewMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\WiFi\ConnectedMessageFormatter.cs" />
     <Compile Include="Open\Api\AccountModel.cs" />
     <Compile Include="Open\Api\CommonService.cs" />
     <Compile Include="Open\Api\VerifyTicketService.cs" />

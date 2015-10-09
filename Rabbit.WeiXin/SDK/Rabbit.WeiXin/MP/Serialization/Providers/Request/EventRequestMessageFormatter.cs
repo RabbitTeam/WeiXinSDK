@@ -4,6 +4,7 @@ using Rabbit.WeiXin.MP.Serialization.Providers.Event;
 using Rabbit.WeiXin.MP.Serialization.Providers.Event.Card;
 using Rabbit.WeiXin.MP.Serialization.Providers.Event.CustomMenu;
 using Rabbit.WeiXin.MP.Serialization.Providers.Event.CustomService;
+using Rabbit.WeiXin.MP.Serialization.Providers.Event.WiFi;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -42,7 +43,8 @@ namespace Rabbit.WeiXin.MP.Serialization.Providers.Request
             {"user_del_card", new CardEventUserDeleteMessageFormatter()},
             {"user_enter_session_from_card", new CardEventUserEnterSessionMessageFormatter()},
             {"user_get_card", new CardEventUserGetMessageFormatter()},
-            {"user_view_card", new CardEventUserViewMessageFormatter()}
+            {"user_view_card", new CardEventUserViewMessageFormatter()},
+            {EventType.WifiConnected.ToString().ToLower(),new ConnectedMessageFormatter() }
         };
 
         private static readonly SubscribeEventMessageFormatter SubscribeEventMessageFormatter = new SubscribeEventMessageFormatter();

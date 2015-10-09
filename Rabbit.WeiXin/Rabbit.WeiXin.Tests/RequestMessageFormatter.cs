@@ -5,6 +5,7 @@ using Rabbit.WeiXin.MP.Messages.Events;
 using Rabbit.WeiXin.MP.Messages.Events.Card;
 using Rabbit.WeiXin.MP.Messages.Events.CustomMenu;
 using Rabbit.WeiXin.MP.Messages.Events.CustomService;
+using Rabbit.WeiXin.MP.Messages.Events.WiFi;
 using Rabbit.WeiXin.MP.Messages.Request;
 using Rabbit.WeiXin.Utility;
 using System;
@@ -794,6 +795,37 @@ namespace Rabbit.WeiXin.Tests
         }
 
         #endregion Card
+
+        #region WiFi
+
+        [TestMethod]
+        public void WiFiConnectedMessageTest()
+        {
+            const string xmlContent = @"<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[FromUser]]></FromUserName>
+<CreateTime>123456789</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[WifiConnected]]></Event>
+<ConnectTime>0</ConnectTime>
+<ExpireTime>0</ExpireTime>
+<VendorId>![CDATA[3001224419]]</VendorId>
+<PlaceId><![CDATA[PlaceId]]></PlaceId>
+<DeviceNo><![CDATA[DeviceNo]]></DeviceNo>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<ConnectedMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("FromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(123456789), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.WifiConnected, model.EventType);
+
+            Assert.AreEqual("PlaceId", model.PlaceId);
+            Assert.AreEqual("DeviceNo", model.DeviceNo);
+        }
+
+        #endregion WiFi
 
         #endregion Event
     }
