@@ -112,6 +112,7 @@
     <Compile Include="MP\Messages\Events\QrAlreadySubscribeEventKeyMessage.cs" />
     <Compile Include="MP\Messages\Events\QrSubscribeEventKeyMessage.cs" />
     <Compile Include="MP\Messages\Events\ReportingLocationEventMessage.cs" />
+    <Compile Include="MP\Messages\Events\ShakearoundUserShakeMessage.cs" />
     <Compile Include="MP\Messages\Events\SubscribeEventMessage.cs" />
     <Compile Include="MP\Messages\Events\TemplateMessageSendPushMessage.cs" />
     <Compile Include="MP\Messages\Events\UnSubscribeEventMessage.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserEnterSessionMessageFormatter.cs" />
     <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserGetMessageFormatter.cs" />
     <Compile Include="MP\Serialization\Providers\Event\Card\CardEventUserViewMessageFormatter.cs" />
+    <Compile Include="MP\Serialization\Providers\Event\ShakearoundUserShakeMessageFormatter.cs" />
     <Compile Include="MP\Serialization\Providers\Event\WiFi\ConnectedMessageFormatter.cs" />
     <Compile Include="Open\Api\AccountModel.cs" />
     <Compile Include="Open\Api\CommonService.cs" />

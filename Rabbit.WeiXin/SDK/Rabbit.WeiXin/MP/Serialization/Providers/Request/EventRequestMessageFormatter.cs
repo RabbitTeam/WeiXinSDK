@@ -44,7 +44,8 @@ namespace Rabbit.WeiXin.MP.Serialization.Providers.Request
             {"user_enter_session_from_card", new CardEventUserEnterSessionMessageFormatter()},
             {"user_get_card", new CardEventUserGetMessageFormatter()},
             {"user_view_card", new CardEventUserViewMessageFormatter()},
-            {EventType.WifiConnected.ToString().ToLower(),new ConnectedMessageFormatter() }
+            {EventType.WifiConnected.ToString().ToLower(),new ConnectedMessageFormatter() },
+            {EventType.ShakearoundUserShake.ToString().ToLower(),new ShakearoundUserShakeMessageFormatter() }
         };
 
         private static readonly SubscribeEventMessageFormatter SubscribeEventMessageFormatter = new SubscribeEventMessageFormatter();

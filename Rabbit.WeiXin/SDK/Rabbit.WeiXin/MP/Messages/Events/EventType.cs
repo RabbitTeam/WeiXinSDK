@@ -128,6 +128,11 @@ namespace Rabbit.WeiXin.MP.Messages.Events
         /// <summary>
         /// WIFI连接成功时。
         /// </summary>
-        WifiConnected
+        WifiConnected,
+
+        /// <summary>
+        /// 摇一摇。
+        /// </summary>
+        ShakearoundUserShake
     }
 }

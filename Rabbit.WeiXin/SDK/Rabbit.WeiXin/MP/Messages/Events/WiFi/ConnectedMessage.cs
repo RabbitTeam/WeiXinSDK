@@ -24,7 +24,7 @@ namespace Rabbit.WeiXin.MP.Messages.Events.WiFi
         /// <summary>
         /// 连网的门店id。
         /// </summary>
-        public string PlaceId { get; set; }
+        public string ShopId { get; set; }
 
         /// <summary>
         /// 连网的设备无线mac地址，对应bssid。

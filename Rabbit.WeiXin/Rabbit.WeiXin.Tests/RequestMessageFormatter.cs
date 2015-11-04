@@ -810,7 +810,7 @@ namespace Rabbit.WeiXin.Tests
 <ConnectTime>0</ConnectTime>
 <ExpireTime>0</ExpireTime>
 <VendorId>![CDATA[3001224419]]</VendorId>
-<PlaceId><![CDATA[PlaceId]]></PlaceId>
+<ShopId><![CDATA[PlaceId]]></ShopId>
 <DeviceNo><![CDATA[DeviceNo]]></DeviceNo>
 </xml>";
 
@@ -821,11 +821,72 @@ namespace Rabbit.WeiXin.Tests
             Assert.AreEqual(RequestMessageType.Event, model.MessageType);
             Assert.AreEqual(EventType.WifiConnected, model.EventType);
 
-            Assert.AreEqual("PlaceId", model.PlaceId);
+            Assert.AreEqual("PlaceId", model.ShopId);
             Assert.AreEqual("DeviceNo", model.DeviceNo);
         }
 
         #endregion WiFi
+
+        #region Shakearound
+
+        [TestMethod]
+        public void ShakearoundUserShakeMessageTest()
+        {
+            const string xmlContent = @"<xml>
+<ToUserName><![CDATA[toUser]]></ToUserName>
+<FromUserName><![CDATA[fromUser]]></FromUserName>
+<CreateTime>1433332012</CreateTime>
+    <MsgType><![CDATA[event]]></MsgType>
+    <Event><![CDATA[ShakearoundUserShake]]></Event>
+    <ChosenBeacon>
+        <Uuid><![CDATA[uuid]]></Uuid>
+        <Major>major</Major>
+        <Minor>minor</Minor>
+        <Distance>0.057</Distance>
+    </ChosenBeacon>
+    <AroundBeacons>
+        <AroundBeacon>
+            <Uuid><![CDATA[uuid]]></Uuid>
+            <Major>major</Major>
+            <Minor>minor</Minor>
+            <Distance>166.816</Distance>
+        </AroundBeacon>
+        <AroundBeacon>
+            <Uuid><![CDATA[uuid]]></Uuid>
+            <Major>major</Major>
+            <Minor>minor</Minor>
+            <Distance>15.013</Distance>
+        </AroundBeacon>
+    </AroundBeacons>
+</xml>";
+
+            var model = _requestMessageFactory.CreateRequestMessage<ShakearoundUserShakeMessage>(xmlContent);
+            Assert.AreEqual("toUser", model.ToUserName);
+            Assert.AreEqual("fromUser", model.FromUserName);
+            Assert.AreEqual(DateTimeHelper.GetTimeByTimeStamp(1433332012), model.CreateTime);
+            Assert.AreEqual(RequestMessageType.Event, model.MessageType);
+            Assert.AreEqual(EventType.ShakearoundUserShake, model.EventType);
+
+            Assert.IsNotNull(model.ChosenBeacon);
+            Assert.AreEqual("uuid", model.ChosenBeacon.Uuid);
+            Assert.AreEqual("major", model.ChosenBeacon.Major);
+            Assert.AreEqual("minor", model.ChosenBeacon.Minor);
+            Assert.AreEqual(0.057, model.ChosenBeacon.Distance);
+
+            Assert.IsNotNull(model.AroundBeacons);
+            Assert.AreEqual(2, model.AroundBeacons.Length);
+            Assert.AreEqual("uuid", model.AroundBeacons[0].Uuid);
+            Assert.AreEqual("major", model.AroundBeacons[0].Major);
+            Assert.AreEqual("minor", model.AroundBeacons[0].Minor);
+            Assert.AreEqual(166.816, model.AroundBeacons[0].Distance);
+
+            Assert.AreEqual("uuid", model.AroundBeacons[1].Uuid);
+            Assert.AreEqual("major", model.AroundBeacons[1].Major);
+            Assert.AreEqual("minor", model.AroundBeacons[1].Minor);
+            Assert.AreEqual(15.013, model.AroundBeacons[1].Distance);
+        }
+
+        #endregion Shakearound
 
         #endregion Event
     }
