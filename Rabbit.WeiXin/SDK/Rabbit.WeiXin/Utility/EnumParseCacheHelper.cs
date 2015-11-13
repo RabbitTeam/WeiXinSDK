@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Rabbit.WeiXin.Utility
@@ -7,7 +8,7 @@ namespace Rabbit.WeiXin.Utility
     {
         #region Field
 
-        private static readonly IDictionary<string, KeyValuePair<object, bool>> CacheDictionary = new Dictionary<string, KeyValuePair<object, bool>>();
+        private static readonly ConcurrentDictionary<string, KeyValuePair<object, bool>> CacheDictionary = new ConcurrentDictionary<string, KeyValuePair<object, bool>>();
 
         #endregion Field
 
@@ -22,21 +23,16 @@ namespace Rabbit.WeiXin.Utility
 
         public static bool TryParse<T>(string value, out T result) where T : struct
         {
-            KeyValuePair<object, bool> item;
+            var item = CacheDictionary.GetOrAdd(value, key =>
+              {
+                  T temp;
+                  var isSuccess = Enum.TryParse(value, true, out temp);
+                  return new KeyValuePair<object, bool>(temp, isSuccess);
+              });
 
-            //如果缓存中存在则直接返回。
-            if (CacheDictionary.TryGetValue(value, out item))
-            {
-                result = (T)item.Key;
-                return item.Value;
-            }
+            result = (T)item.Key;
 
-            var isSuccess = Enum.TryParse(value, true, out result);
-
-            //添加到缓存中。
-            CacheDictionary[value] = new KeyValuePair<object, bool>(result, isSuccess);
-
-            return isSuccess;
+            return item.Value;
         }
     }
 }
