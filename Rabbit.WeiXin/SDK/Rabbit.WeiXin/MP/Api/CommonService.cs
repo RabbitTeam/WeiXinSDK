@@ -42,6 +42,7 @@ namespace Rabbit.WeiXin.MP.Api
 
         private readonly AccountModel _accountModel;
         private static readonly ConcurrentDictionary<string, AccessTokenModel> Dictionary = new ConcurrentDictionary<string, AccessTokenModel>();
+        private readonly Lazy<AccessTokenModel> _accessTokenLazy;
 
         #endregion Field
 
@@ -54,6 +55,7 @@ namespace Rabbit.WeiXin.MP.Api
         public CommonService(AccountModel accountModel)
         {
             _accountModel = accountModel;
+            _accessTokenLazy = new Lazy<AccessTokenModel>(InternalGetAccessToken);
         }
 
         #endregion Constructor
@@ -67,29 +69,13 @@ namespace Rabbit.WeiXin.MP.Api
         /// <returns>第三方用户唯一凭证密钥，即appsecret。</returns>
         public AccessTokenModel GetAccessToken(bool ignoreCached = false)
         {
-            const string grantType = "client_credential";
-
             var appId = _accountModel.AppId;
-            var appSecret = _accountModel.AppSecret;
-
-            Func<AccessTokenModel> get = () =>
+            return Dictionary.AddOrUpdate(appId, key => _accessTokenLazy.Value, (k, model) =>
             {
-                var url = string.Format("https://api.weixin.qq.com/cgi-bin/token?grant_type={0}&appid={1}&secret={2}", grantType, appId, appSecret);
-                return WeiXinHttpHelper.GetResultByJson<AccessTokenModel>(url);
-            };
-
-            return Dictionary.AddOrUpdate(appId, key => get(), (k, m) =>
-            {
-                //忽略缓存则负担和最新的数据。
-                if (ignoreCached)
-                    return get();
-
-                //没有过期则直接返回。
-                if (!m.IsExpired())
-                    return m;
-
-                var newModel = get();
-                return newModel.AccessToken == m.AccessToken ? m : newModel;
+                //无效、过期、忽略缓存则重新获取。
+                if (model == null || model.IsExpired() || ignoreCached)
+                    return InternalGetAccessToken();
+                return model;
             });
         }
 
@@ -127,6 +113,21 @@ namespace Rabbit.WeiXin.MP.Api
         }
 
         #endregion Implementation of ICommonService
+
+        #region Private Method
+
+        private AccessTokenModel InternalGetAccessToken()
+        {
+            const string grantType = "client_credential";
+
+            var appId = _accountModel.AppId;
+            var appSecret = _accountModel.AppSecret;
+
+            var url = string.Format("https://api.weixin.qq.com/cgi-bin/token?grant_type={0}&appid={1}&secret={2}", grantType, appId, appSecret);
+            return WeiXinHttpHelper.GetResultByJson<AccessTokenModel>(url);
+        }
+
+        #endregion Private Method
     }
 
     #region Help Class
