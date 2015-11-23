@@ -6,7 +6,7 @@ namespace Rabbit.WeiXin.MP.Api.Material
     public enum MaterialType
     {
         /// <summary>
-        /// Í¼ÎÄ£¨jpg£¬1mb£©¡£
+        /// Í¼Æ¬£¨jpg£¬1mb£©¡£
         /// </summary>
         Image = 0,
 
@@ -23,6 +23,10 @@ namespace Rabbit.WeiXin.MP.Api.Material
         /// <summary>
         /// ·âÃæ£¨jpg£¬64kb£©¡£
         /// </summary>
-        Thumb = 3
+        Thumb = 3,
+        /// <summary>
+        /// Í¼ÎÄ
+        /// </summary>
+        News = 4,
     }
 }
