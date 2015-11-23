@@ -1,6 +1,6 @@
-﻿using Rabbit.WeiXin.Tests.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rabbit.WeiXin.MP.Api.Material;
+using Rabbit.WeiXin.Tests.Utility;
 using System;
 
 namespace Rabbit.WeiXin.Tests
@@ -11,7 +11,6 @@ namespace Rabbit.WeiXin.Tests
         #region Field
 
         private readonly IForeverMaterialService _materialService;
-        private readonly ITemporaryMaterialService _temporaryMaterialService;
 
         #endregion Field
 
@@ -20,7 +19,6 @@ namespace Rabbit.WeiXin.Tests
         public ForeverMaterialTest()
         {
             _materialService = new ForeverMaterialService(AccountModel);
-            _temporaryMaterialService = new TemporaryMaterialService(AccountModel);
         }
 
         #endregion Constructor
@@ -137,6 +135,13 @@ namespace Rabbit.WeiXin.Tests
             var list = _materialService.GetList(new GetMaterialListFilter { Take = 20, Skip = 0, Type = MaterialType.Image });
 
             Assert.IsTrue(list.TotalCount > 0);
+        }
+
+        [TestMethod]
+        public void GetNewsTest()
+        {
+            var news = _materialService.GetNews("K0pUMZZjT-kibJVKt8dQycPdJGU8C5xUi2Kzezzypr0");
+            Assert.IsNotNull(news);
         }
 
         #endregion Test Method

@@ -207,7 +207,8 @@ namespace Rabbit.WeiXin.MP.Api.Material
         {
             var data = GetMaterial(mediaId);
             var content = Encoding.UTF8.GetString(data);
-            return JsonConvert.DeserializeObject<NewsArticleModel[]>(content);
+
+            return JsonConvert.DeserializeObject<NewsArticleModel[]>(((JArray)JObject.Parse(content)["news_item"]).ToString());
         }
 
         #endregion Implementation of IMediaService
