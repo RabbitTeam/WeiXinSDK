@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Rabbit.WeiXin.Utility;
 using Rabbit.WeiXin.Utility.Extensions;
 using System;
@@ -22,10 +23,33 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         void Set(CustomMenuButtonBase[] menus);
 
         /// <summary>
+        /// 设置自定义菜单。
+        /// </summary>
+        /// <param name="menus">自定义菜单数组。</param>
+        /// <param name="matchRule">匹配规则。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="menus"/> 为null。</exception>
+        /// <exception cref="ArgumentException"><paramref name="menus"/> 长度超过3。</exception>
+        void Set(CustomMenuButtonBase[] menus, CustomMeunMatchRule matchRule);
+
+        /// <summary>
         /// 获取自定义菜单信息。
         /// </summary>
         /// <returns>自定义菜单数组。</returns>
+        [Obsolete("请使用 Get 方法来代替。", false)]
         CustomMenuButtonBase[] GetList();
+
+        /// <summary>
+        /// 获取自定义菜单信息。
+        /// </summary>
+        /// <returns>自定义菜单信息。</returns>
+        CustomMenuModel Get();
+
+        /// <summary>
+        /// 获取指定用户的自定义菜单信息。
+        /// </summary>
+        /// <param name="openIdOrWeChatAccount">用户的Id或是微信账号。</param>
+        /// <returns>自定义菜单数组。</returns>
+        CustomMenuButtonBase[] GetList(string openIdOrWeChatAccount);
 
         /// <summary>
         /// 删除自定义菜单。
@@ -81,12 +105,33 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// <exception cref="ArgumentException"><paramref name="menus"/> 长度超过3。</exception>
         public void Set(CustomMenuButtonBase[] menus)
         {
+            Set(menus, null);
+        }
+
+        /// <summary>
+        /// 设置自定义菜单。
+        /// </summary>
+        /// <param name="menus">自定义菜单数组。</param>
+        /// <param name="matchRule">匹配规则。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="menus"/> 为null。</exception>
+        /// <exception cref="ArgumentException"><paramref name="menus"/> 长度超过3。</exception>
+        public void Set(CustomMenuButtonBase[] menus, CustomMeunMatchRule matchRule)
+        {
             if (menus.NotNull("menus").Length > 3)
-                throw new ArgumentException("顶级菜单项不能超过3个。", "menus");
+                throw new ArgumentException("顶级菜单项不能超过3个。", nameof(menus));
 
-            var url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + _accountModel.GetAccessToken();
+            if (matchRule == null)
+            {
+                var url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + _accountModel.GetAccessToken();
 
-            WeiXinHttpHelper.Post(url, new { button = menus.Select(GetMenuItem) });
+                WeiXinHttpHelper.Post(url, new { button = menus.Select(GetMenuItem) });
+            }
+            else
+            {
+                var url = "https://api.weixin.qq.com/cgi-bin/menu/addconditional?access_token=" + _accountModel.GetAccessToken();
+
+                WeiXinHttpHelper.Post(url, new { button = menus.Select(GetMenuItem), matchrule = matchRule });
+            }
         }
 
         /// <summary>
@@ -98,10 +143,32 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
             var url = "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=" + _accountModel.GetAccessToken();
 
             var content = WeiXinHttpHelper.GetString(url);
+            return GetListByJson(content);
+        }
 
-            var buttons = (JArray)JObject.Parse(content)["menu"]["button"];
+        /// <summary>
+        /// 获取自定义菜单信息。
+        /// </summary>
+        /// <returns>自定义菜单信息。</returns>
+        public CustomMenuModel Get()
+        {
+            var url = "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=" + _accountModel.GetAccessToken();
 
-            return buttons.Select(token => GetMenuItemByWeiXin((JObject)token)).ToArray();
+            var content = WeiXinHttpHelper.GetString(url);
+            return GetByJson(content);
+        }
+
+        /// <summary>
+        /// 获取指定用户的自定义菜单信息。
+        /// </summary>
+        /// <param name="openIdOrWeChatAccount">用户的Id或是微信账号。</param>
+        /// <returns>自定义菜单数组。</returns>
+        public CustomMenuButtonBase[] GetList(string openIdOrWeChatAccount)
+        {
+            var url = "https://api.weixin.qq.com/cgi-bin/menu/trymatch?access_token=" + _accountModel.GetAccessToken();
+
+            var content = WeiXinHttpHelper.PostString(url, new { user_id = openIdOrWeChatAccount });
+            return GetListByJson(content);
         }
 
         /// <summary>
@@ -116,6 +183,36 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         #endregion Implementation of ICustomMenuService
 
         #region Private Method
+
+        private static CustomMenuModel GetByJson(string content)
+        {
+            var data = JObject.Parse(content);
+            return new CustomMenuModel
+            {
+                DefaultMenu = GetItem(data["menu"]),
+                ConditionalMenus = ((JArray)data["conditionalmenu"]).Select(GetItem).ToArray()
+            };
+        }
+
+        private static CustomMenuItemModel GetItem(JToken token)
+        {
+            var menuObj = (JObject)token;
+
+            var matchruleObj = menuObj["matchrule"];
+            return new CustomMenuItemModel
+            {
+                MenuId = menuObj.Value<int>("menuid"),
+                MatchRule = matchruleObj == null ? null : JsonConvert.DeserializeObject<CustomMeunMatchRule>(matchruleObj.ToString()),
+                Buttons = ((JArray)menuObj["button"]).Select(i => GetMenuItemByWeiXin((JObject)i)).ToArray()
+            };
+        }
+
+        public CustomMenuButtonBase[] GetListByJson(string content)
+        {
+            var buttons = (JArray)JObject.Parse(content)["menu"]["button"];
+
+            return buttons.Select(token => GetMenuItemByWeiXin((JObject)token)).ToArray();
+        }
 
         private static CustomMenuButtonBase GetMenuItemByWeiXin(JObject obj)
         {
@@ -221,6 +318,43 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
     #region Help Class
 
     /// <summary>
+    /// 自定义菜单模型。
+    /// </summary>
+    public sealed class CustomMenuModel
+    {
+        /// <summary>
+        /// 默认菜单。
+        /// </summary>
+        public CustomMenuItemModel DefaultMenu { get; set; }
+
+        /// <summary>
+        /// 具有条件的菜单。
+        /// </summary>
+        public CustomMenuItemModel[] ConditionalMenus { get; set; }
+    }
+
+    /// <summary>
+    /// 自定义菜单项模型。
+    /// </summary>
+    public sealed class CustomMenuItemModel
+    {
+        /// <summary>
+        /// 菜单Id。
+        /// </summary>
+        public int MenuId { get; set; }
+
+        /// <summary>
+        /// 匹配规则。
+        /// </summary>
+        public CustomMeunMatchRule MatchRule { get; set; }
+
+        /// <summary>
+        /// 菜单按钮。
+        /// </summary>
+        public CustomMenuButtonBase[] Buttons { get; set; }
+    }
+
+    /// <summary>
     /// 自定义菜单按钮基类。
     /// </summary>
     public abstract class CustomMenuButtonBase
@@ -237,12 +371,12 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
             if (this is CustomMenuTopButton)
             {
                 if (Name.Length > 16)
-                    throw new ArgumentException("顶级菜单标题长度不能超过16个字节。", "name");
+                    throw new ArgumentException("顶级菜单标题长度不能超过16个字节。", nameof(name));
             }
             else
             {
                 if (Name.Length > 40)
-                    throw new ArgumentException("子级菜单标题长度不能超过40个字节。", "name");
+                    throw new ArgumentException("子级菜单标题长度不能超过40个字节。", nameof(name));
             }
         }
 
@@ -296,7 +430,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         {
             menus.NotNull("menus");
 
-            var result = Childs == null ? menus : Childs.Concat(menus).ToArray();
+            var result = Childs?.Concat(menus).ToArray() ?? menus;
 
             var count = result.Count();
             const ushort maxCount = 5;
@@ -339,12 +473,6 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
     /// </summary>
     public sealed class CustomMenuKeyButton : CustomMenuButton
     {
-        #region Field
-
-        private readonly CustomMenuType _type;
-
-        #endregion Field
-
         #region Constructor
 
         /// <summary>
@@ -367,7 +495,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
                 case CustomMenuType.ViewLimited:
                     throw new NotSupportedException("不支持的类型：" + type);
             }
-            _type = type;
+            Type = type;
             Key = key.NotEmptyOrWhiteSpace("key");
         }
 
@@ -384,7 +512,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// <summary>
         /// 菜单的响应动作类型
         /// </summary>
-        public override CustomMenuType Type { get { return _type; } }
+        public override CustomMenuType Type { get; }
 
         #endregion Overrides of CustomMenuButton
     }
@@ -409,9 +537,9 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         {
             Url = url.NotEmptyOrWhiteSpace("url");
             if (url.Length > 256)
-                throw new ArgumentException("url 的长度不能超过256个字节。", "url");
+                throw new ArgumentException("url 的长度不能超过256个字节。", nameof(url));
             if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
-                throw new ArgumentException(url + " 不是一个有效的url地址。", "url");
+                throw new ArgumentException(url + " 不是一个有效的url地址。", nameof(url));
         }
 
         #endregion Constructor
@@ -427,7 +555,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// <summary>
         /// 菜单的响应动作类型
         /// </summary>
-        public override CustomMenuType Type { get { return CustomMenuType.View; } }
+        public override CustomMenuType Type => CustomMenuType.View;
 
         #endregion Overrides of CustomMenuButton
     }
@@ -437,12 +565,6 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
     /// </summary>
     public sealed class CustomMenuMediaButton : CustomMenuButton
     {
-        #region Field
-
-        private readonly CustomMenuType _type;
-
-        #endregion Field
-
         #region Constructor
 
         /// <summary>
@@ -467,7 +589,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
                 default:
                     throw new NotSupportedException("不支持的类型：" + type);
             }
-            _type = type;
+            Type = type;
             MediaId = mediaId.NotEmptyOrWhiteSpace("mediaId");
         }
 
@@ -484,7 +606,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// <summary>
         /// 菜单的响应动作类型
         /// </summary>
-        public override CustomMenuType Type { get { return _type; } }
+        public override CustomMenuType Type { get; }
 
         #endregion Overrides of CustomMenuButton
     }

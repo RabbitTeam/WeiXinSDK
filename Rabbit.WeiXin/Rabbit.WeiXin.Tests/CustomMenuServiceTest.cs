@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rabbit.WeiXin;
 using Rabbit.WeiXin.MP.Api.CustomMenu;
+using Rabbit.WeiXin.MP.Api.User;
+using System;
 using System.Linq;
 
 namespace Rabbit.WeiXin.Tests
@@ -55,12 +56,47 @@ namespace Rabbit.WeiXin.Tests
         }
 
         [TestMethod]
+        public void SetPersonaliseBySexTest()
+        {
+            var menu1 = new CustomMenuTopButton("男生可见");
+            menu1.AppendChildMenus(new CustomMenuKeyButton("ScancodePush", CustomMenuType.ScancodePush, "test"), new CustomMenuKeyButton("ScancodeWaitmsg", CustomMenuType.ScancodeWaitmsg, "test"));
+            var menu2 = new CustomMenuTopButton("女生可见");
+            menu2.AppendChildMenus(new CustomMenuKeyButton("ScancodePush", CustomMenuType.ScancodePush, "test"), new CustomMenuKeyButton("ScancodeWaitmsg", CustomMenuType.ScancodeWaitmsg, "test"));
+
+            _customMenuService.Set(new CustomMenuButtonBase[] { menu1 }, new CustomMeunMatchRule
+            {
+                Sex = SexEnum.Male
+            });
+
+            _customMenuService.Set(new CustomMenuButtonBase[] { menu2 }, new CustomMeunMatchRule
+            {
+                Sex = SexEnum.Female
+            });
+
+            Assert.AreEqual(menu1.Name, _customMenuService.GetList(OpenId).First().Name);
+        }
+
+        [TestMethod]
+        public void GetOutTest()
+        {
+            var test = new Action<CustomMenuButtonBase[]>(list =>
+            {
+                Assert.IsNotNull(list);
+                Assert.IsTrue(list.Length > 0);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(list.First().Name));
+            });
+            test(_customMenuService.GetList());
+            test(_customMenuService.GetList(OpenId));
+        }
+
+        [TestMethod]
         public void GetTest()
         {
-            var list = _customMenuService.GetList();
-            Assert.IsNotNull(list);
-            Assert.IsTrue(list.Length > 0);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(list.First().Name));
+            var model = _customMenuService.Get();
+            Assert.IsNotNull(model);
+            Assert.IsNotNull(model.DefaultMenu);
+            Assert.IsNull(model.DefaultMenu.MatchRule);
+            Assert.IsNotNull(model.DefaultMenu.MenuId);
         }
 
         [TestMethod]

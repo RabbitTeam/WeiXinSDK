@@ -55,6 +55,7 @@
     <Compile Include="MP\Api\Card\ICardService.cs" />
     <Compile Include="MP\Api\CommonService.cs" />
     <Compile Include="MP\Api\CustomMenu\CustomMenuService.cs" />
+    <Compile Include="MP\Api\CustomMenu\CustomMeunMatchRule.cs" />
     <Compile Include="MP\Api\CustomService\CustomServiceMessageService.cs" />
     <Compile Include="MP\Api\CustomService\CustomServiceService.cs" />
     <Compile Include="MP\Api\CustomService\CustomServiceSessionService.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="MP\Api\Material\TemporaryMaterialService.cs" />
     <Compile Include="MP\Api\Model\JsonResultError.cs" />
     <Compile Include="MP\Api\OAuth\OAuthService.cs" />
+    <Compile Include="MP\Api\PlatformTypeEnum.cs" />
     <Compile Include="MP\Api\QrCode\QrCodeService.cs" />
     <Compile Include="MP\Api\Store\StoreService.cs" />
     <Compile Include="MP\Api\TemplateMessage\TemplateMessageService.cs" />
