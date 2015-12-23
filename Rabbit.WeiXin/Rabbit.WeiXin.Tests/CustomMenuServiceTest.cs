@@ -115,6 +115,20 @@ namespace Rabbit.WeiXin.Tests
             }
         }
 
+        [TestMethod]
+        public void DeleteByMenuIdTest()
+        {
+            var menuModel = _customMenuService.Get();
+            if (menuModel.ConditionalMenus == null || !menuModel.ConditionalMenus.Any())
+                return;
+            var menu = menuModel.ConditionalMenus.First();
+            _customMenuService.DeleteByMenuId(menu.MenuId);
+
+            var menus = _customMenuService.Get().ConditionalMenus;
+            if (menus != null && menus.Any(i => i.MenuId == menu.MenuId))
+                Assert.Fail();
+        }
+
         #endregion Test Method
     }
 }

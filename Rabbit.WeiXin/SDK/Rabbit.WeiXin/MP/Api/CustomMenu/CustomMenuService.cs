@@ -54,7 +54,19 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// <summary>
         /// 删除自定义菜单。
         /// </summary>
+        [Obsolete("请使用 DeleteAll 方法来代替。", false)]
         void Delete();
+
+        /// <summary>
+        /// 删除所有自定义菜单。
+        /// </summary>
+        void DeleteAll();
+
+        /// <summary>
+        /// 根据菜单Id删除自定义菜单。
+        /// </summary>
+        /// <param name="menuId">菜单Id。</param>
+        void DeleteByMenuId(int menuId);
     }
 
     /// <summary>
@@ -176,8 +188,28 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// </summary>
         public void Delete()
         {
+            DeleteAll();
+        }
+
+        /// <summary>
+        /// 删除所有自定义菜单。
+        /// </summary>
+        public void DeleteAll()
+        {
             WeiXinHttpHelper.GetString("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=" +
                                        _accountModel.GetAccessToken());
+        }
+
+        /// <summary>
+        /// 根据菜单Id删除自定义菜单。
+        /// </summary>
+        /// <param name="menuId">菜单Id。</param>
+        public void DeleteByMenuId(int menuId)
+        {
+            var url = "https://api.weixin.qq.com/cgi-bin/menu/delconditional?access_token=" +
+                      _accountModel.GetAccessToken();
+
+            WeiXinHttpHelper.PostString(url, new { menuid = menuId });
         }
 
         #endregion Implementation of ICustomMenuService
