@@ -29,7 +29,8 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// <param name="matchRule">匹配规则。</param>
         /// <exception cref="ArgumentNullException"><paramref name="menus"/> 为null。</exception>
         /// <exception cref="ArgumentException"><paramref name="menus"/> 长度超过3。</exception>
-        void Set(CustomMenuButtonBase[] menus, CustomMeunMatchRule matchRule);
+        /// <returns>如果是个性化菜单会返回菜单Id。</returns>
+        int? Set(CustomMenuButtonBase[] menus, CustomMeunMatchRule matchRule);
 
         /// <summary>
         /// 获取自定义菜单信息。
@@ -127,7 +128,8 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
         /// <param name="matchRule">匹配规则。</param>
         /// <exception cref="ArgumentNullException"><paramref name="menus"/> 为null。</exception>
         /// <exception cref="ArgumentException"><paramref name="menus"/> 长度超过3。</exception>
-        public void Set(CustomMenuButtonBase[] menus, CustomMeunMatchRule matchRule)
+        /// <returns>如果是个性化菜单会返回菜单Id。</returns>
+        public int? Set(CustomMenuButtonBase[] menus, CustomMeunMatchRule matchRule)
         {
             if (menus.NotNull("menus").Length > 3)
                 throw new ArgumentException("顶级菜单项不能超过3个。", nameof(menus));
@@ -137,12 +139,14 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
                 var url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + _accountModel.GetAccessToken();
 
                 WeiXinHttpHelper.Post(url, new { button = menus.Select(GetMenuItem) });
+                return null;
             }
             else
             {
                 var url = "https://api.weixin.qq.com/cgi-bin/menu/addconditional?access_token=" + _accountModel.GetAccessToken();
 
-                WeiXinHttpHelper.Post(url, new { button = menus.Select(GetMenuItem), matchrule = matchRule });
+                var result = WeiXinHttpHelper.PostString(url, new { button = menus.Select(GetMenuItem), matchrule = matchRule });
+                return JObject.Parse(result).Value<int>("menuid");
             }
         }
 

@@ -63,15 +63,17 @@ namespace Rabbit.WeiXin.Tests
             var menu2 = new CustomMenuTopButton("女生可见");
             menu2.AppendChildMenus(new CustomMenuKeyButton("ScancodePush", CustomMenuType.ScancodePush, "test"), new CustomMenuKeyButton("ScancodeWaitmsg", CustomMenuType.ScancodeWaitmsg, "test"));
 
-            _customMenuService.Set(new CustomMenuButtonBase[] { menu1 }, new CustomMeunMatchRule
+            var result = _customMenuService.Set(new CustomMenuButtonBase[] { menu1 }, new CustomMeunMatchRule
             {
                 Sex = SexEnum.Male
             });
+            Assert.IsTrue(result.HasValue);
 
-            _customMenuService.Set(new CustomMenuButtonBase[] { menu2 }, new CustomMeunMatchRule
+            result = _customMenuService.Set(new CustomMenuButtonBase[] { menu2 }, new CustomMeunMatchRule
             {
                 Sex = SexEnum.Female
             });
+            Assert.IsTrue(result.HasValue);
 
             Assert.AreEqual(menu1.Name, _customMenuService.GetList(OpenId).First().Name);
         }
