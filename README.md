@@ -12,7 +12,7 @@
 
 ## 事件消息
 由于较多直接给出GitHub地址：
-https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.WeiXin/Messages/Events
+https://github.com/RabbitTeam/WeiXinSDK/tree/master/Rabbit.WeiXin/SDK/Rabbit.WeiXin/MP/Messages/Events
 
 ## 响应消息
 1. ResponseMessageImage（图片消息）
