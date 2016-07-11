@@ -294,16 +294,16 @@ namespace Rabbit.WeiXin.MP.Api.QrCode
         private uint _expireSeconds;
 
         /// <summary>
-        /// 该二维码有效时间，以秒为单位。 最大不超过604800（即7天）。
+        /// 该二维码有效时间，以秒为单位。 最大不超过2592000（即30天）。
         /// </summary>
-        [JsonProperty("expire_seconds"), Range(60, 604800)]
+        [JsonProperty("expire_seconds"), Range(0, 2592000)]
         public uint ExpireSeconds
         {
             get { return _expireSeconds; }
             set
             {
-                if (value < 60 || value > 604800)
-                    throw new ArgumentOutOfRangeException("value", value, "有效时间不能小于0秒且不大于604800秒。");
+                if (value < 0 || value > 2592000)
+                    throw new ArgumentOutOfRangeException("value", value, "有效时间不能小于0秒且不大于2592000秒。");
                 _expireSeconds = value;
             }
         }
