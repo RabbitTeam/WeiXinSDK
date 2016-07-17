@@ -101,6 +101,11 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
         /// 卡券。
         /// </summary>
         Card,
+
+        /// <summary>
+        /// 微信图文素材。
+        /// </summary>
+        MpNews
     }
 
     /// <summary>
@@ -124,7 +129,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
         public string ToUserId { get; private set; }
 
         /// <summary>
-        /// 消息类型
+        /// 消息类型。
         /// </summary>
         public abstract CustomServiceMessageType Type { get; }
 
@@ -540,6 +545,50 @@ namespace Rabbit.WeiXin.MP.Api.CustomService
             });
             return obj.ToString();
         }
+    }
+
+    /// <summary>
+    /// 自定义服务消息微信图文素材消息。
+    /// </summary>
+    public sealed class CustomServiceMessageMpNews : CustomServiceMessage
+    {
+        /// <summary>
+        /// 初始化一个新的自定义客服消息。
+        /// </summary>
+        /// <param name="toUserId">接收消息的用户Id。</param>
+        /// <param name="mediaId">素材Id。</param>
+        public CustomServiceMessageMpNews(string toUserId, string mediaId) : base(toUserId)
+        {
+            MediaId = mediaId;
+        }
+
+        /// <summary>
+        /// 素材Id。
+        /// </summary>
+        public string MediaId { get; set; }
+
+        #region Overrides of CustomServiceMessage
+
+        /// <summary>
+        /// 消息类型。
+        /// </summary>
+        public override CustomServiceMessageType Type { get; } = CustomServiceMessageType.MpNews;
+
+        /// <summary>
+        /// 获取对象的Json文本。
+        /// </summary>
+        /// <returns></returns>
+        internal override string GetJson()
+        {
+            var obj = GetBasicJsonObject();
+            obj["mpnews"] = JObject.FromObject(new
+            {
+                media_id = MediaId
+            });
+            return obj.ToString();
+        }
+
+        #endregion Overrides of CustomServiceMessage
     }
 
     /// <summary>
