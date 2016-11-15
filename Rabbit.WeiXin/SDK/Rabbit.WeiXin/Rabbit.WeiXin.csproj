@@ -69,6 +69,7 @@
     <Compile Include="MP\Api\OAuth\OAuthService.cs" />
     <Compile Include="MP\Api\PlatformTypeEnum.cs" />
     <Compile Include="MP\Api\QrCode\QrCodeService.cs" />
+    <Compile Include="MP\Api\Sport\DeviceQrTicketService.cs" />
     <Compile Include="MP\Api\Store\StoreService.cs" />
     <Compile Include="MP\Api\TemplateMessage\TemplateMessageService.cs" />
     <Compile Include="MP\Api\User\UserGroupService.cs" />
