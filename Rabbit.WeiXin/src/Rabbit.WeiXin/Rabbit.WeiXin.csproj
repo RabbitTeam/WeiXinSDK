@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>微信开发SDK。</Description>
+    <Copyright>© RabbitHub. All rights reserved.</Copyright>
+    <VersionPrefix>0.3</VersionPrefix>
+    <Authors>majian</Authors>
+    <TargetFrameworks>net40;net45;netstandard1.6</TargetFrameworks>
+    <AssemblyName>Rabbit.WeiXin</AssemblyName>
+    <PackageId>Rabbit.WeiXin</PackageId>
+    <PackageTags> RabbitHub;WeiXinSDK;Rabbit.WeiXin</PackageTags>
+    <PackageIconUrl>http://www.rabbithub.com/icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://rabbitteam.github.io/WeiXinSDK</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/RabbitTeam/WeiXinSDK/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET40;NET</DefineConstants>
+    <DocumentationFile>bin\Debug\net40\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET45;NET</DefineConstants>
+    <DocumentationFile>bin\Debug\net45\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.6|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.6\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="1.0.2" />
+    <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.0.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
+    <PackageReference Include="System.Net.Requests" Version="4.0.11" />
+    <PackageReference Include="System.Net.WebHeaderCollection" Version="4.0.1" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.0.0" />
+    <PackageReference Include="System.Xml.XmlDocument" Version="4.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  </ItemGroup>
+</Project>

@@ -1,22 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26401.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0DB7779A-D1BA-4E91-AA87-47B5E83ECE4B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ADB1CF73-998A-4F07-A894-BE28EFA81CAB}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rabbit.WeiXin", "src\Rabbit.WeiXin\Rabbit.WeiXin.csproj", "{7EF14100-118E-4BD9-B661-D44C4AC95EEA}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Rabbit.WeiXin", "src\Rabbit.WeiXin\Rabbit.WeiXin.xproj", "{7EF14100-118E-4BD9-B661-D44C4AC95EEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rabbit.WeiXin.MvcExtension", "src\Rabbit.WeiXin.MvcExtension\Rabbit.WeiXin.MvcExtension.csproj", "{1C5AE5A8-AC04-4284-98BD-0BD741D4CCFC}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Rabbit.WeiXin.MvcExtension", "src\Rabbit.WeiXin.MvcExtension\Rabbit.WeiXin.MvcExtension.xproj", "{1C5AE5A8-AC04-4284-98BD-0BD741D4CCFC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5484D81C-A46E-4191-BB36-1C0C4F0B8121}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5484D81C-A46E-4191-BB36-1C0C4F0B8121}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rabbit.WeiXin.Tests", "test\Rabbit.WeiXin.Tests\Rabbit.WeiXin.Tests.csproj", "{612F2AA4-BC2F-442C-B151-560D75F30A67}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Rabbit.WeiXin.Tests", "src\tests\Rabbit.WeiXin.Tests\Rabbit.WeiXin.Tests.xproj", "{612F2AA4-BC2F-442C-B151-560D75F30A67}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{C31BB725-27AA-4E1B-BA23-181DABBE6D77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,7 +40,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7EF14100-118E-4BD9-B661-D44C4AC95EEA} = {0DB7779A-D1BA-4E91-AA87-47B5E83ECE4B}
 		{1C5AE5A8-AC04-4284-98BD-0BD741D4CCFC} = {0DB7779A-D1BA-4E91-AA87-47B5E83ECE4B}
-		{5484D81C-A46E-4191-BB36-1C0C4F0B8121} = {0DB7779A-D1BA-4E91-AA87-47B5E83ECE4B}
 		{612F2AA4-BC2F-442C-B151-560D75F30A67} = {5484D81C-A46E-4191-BB36-1C0C4F0B8121}
 	EndGlobalSection
 EndGlobal

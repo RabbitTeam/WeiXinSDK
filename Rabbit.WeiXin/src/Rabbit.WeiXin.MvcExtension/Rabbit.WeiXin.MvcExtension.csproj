@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>微信开发 SDK 对 MVC 的扩展。</Description>
+    <Copyright>© RabbitHub. All rights reserved.</Copyright>
+    <VersionPrefix>0.3-beta1</VersionPrefix>
+    <Authors>majian</Authors>
+    <TargetFrameworks>net40;net45;netstandard1.6</TargetFrameworks>
+    <AssemblyName>Rabbit.WeiXin.MvcExtension</AssemblyName>
+    <PackageId>Rabbit.WeiXin.MvcExtension</PackageId>
+    <PackageTags> RabbitHub;WeiXinSDK;Rabbit.WeiXin</PackageTags>
+    <PackageIconUrl>http://www.rabbithub.com/icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://rabbitteam.github.io/WeiXinSDK</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/RabbitTeam/WeiXinSDK/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Version>0.3</Version>
+    <FileVersion>0.1.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rabbit.WeiXin\Rabbit.WeiXin.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="4.0.30506.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="4.0.30506.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <DefineConstants>$(DefineConstants);NET</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.3" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET40;NET</DefineConstants>
+    <DocumentationFile>bin\Debug\net40\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NET45;NET</DefineConstants>
+    <DocumentationFile>bin\Debug\net45\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.6|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.6\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>

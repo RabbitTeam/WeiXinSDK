@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Rabbit.WeiXin.Utility.Extensions
@@ -27,18 +26,19 @@ namespace Rabbit.WeiXin.Utility.Extensions
                 stream.Seek(0, SeekOrigin.Begin);
             };
 
-            trySeekBegin();
+            try
+            {
+                trySeekBegin();
 
-            var list = new List<byte>(stream.CanSeek ? (stream.Length > int.MaxValue ? int.MaxValue : (int)stream.Length) : 300);
+                var buffer = new byte[(int)stream.Length];
+                stream.Read(buffer, 0, buffer.Length);
 
-            int b;
-
-            while ((b = stream.ReadByte()) != -1)
-                list.Add((byte)b);
-
-            trySeekBegin();
-
-            return list.ToArray();
+                return buffer;
+            }
+            finally
+            {
+                trySeekBegin();
+            }
         }
     }
 }

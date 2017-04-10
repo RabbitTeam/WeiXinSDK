@@ -1,4 +1,5 @@
-﻿using Rabbit.WeiXin.Handlers;
+﻿using System;
+using Rabbit.WeiXin.Handlers;
 
 #if NET
 using System.Web.Mvc;

@@ -226,7 +226,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
             return new CustomMenuModel
             {
                 DefaultMenu = GetItem(data["menu"]),
-                ConditionalMenus = ((JArray)data["conditionalmenu"]).Select(GetItem).ToArray()
+                ConditionalMenus = (data["conditionalmenu"] as JArray)?.Select(GetItem).ToArray()
             };
         }
 
@@ -243,7 +243,7 @@ namespace Rabbit.WeiXin.MP.Api.CustomMenu
             };
         }
 
-        public CustomMenuButtonBase[] GetListByJson(string content)
+        private CustomMenuButtonBase[] GetListByJson(string content)
         {
             var buttons = (JArray)JObject.Parse(content)["menu"]["button"];
 
