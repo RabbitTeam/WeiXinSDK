@@ -1,0 +1,78 @@
+{
+  "description": "微信开发SDK。",
+  "copyright": "© RabbitHub. All rights reserved.",
+  "authors": [ "majian" ],
+
+  "packOptions": {
+    "tags": [ " RabbitHub", "WeiXinSDK", "Rabbit.WeiXin" ],
+    "owners": [ "majian" ],
+    "iconUrl": "http://www.rabbithub.com/icon.png",
+    "projectUrl": "http://rabbitteam.github.io/WeiXinSDK",
+    "licenseUrl": "https://github.com/RabbitTeam/WeiXinSDK/blob/master/LICENSE",
+    "url": "http://rabbitteam.github.io/WeiXinSDK"
+  },
+  "version": "0.3-alpha1-*",
+
+  "frameworks": {
+    "net40": {
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.Xml.Linq": "4.0.0.0"
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
+      },
+      "dependencies": {
+        "Newtonsoft.Json": "6.0.8"
+      }
+    },
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.Xml.Linq": "4.0.0.0"
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
+      },
+      "dependencies": {
+        "Newtonsoft.Json": "6.0.8"
+      }
+    },
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.Xml.Linq": "4.0.0.0"
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
+      },
+      "dependencies": {
+        "Newtonsoft.Json": "6.0.8"
+      }
+    },
+    "netstandard1.3": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "Microsoft.AspNetCore.WebUtilities": "1.0.0",
+        "NETStandard.Library": "1.6.0",
+        "System.Collections.Concurrent": "4.0.12",
+        "System.Collections.NonGeneric": "4.0.1",
+        "System.ComponentModel.Annotations": "4.1.0",
+        "System.Net.Requests": "4.0.11",
+        "System.Net.WebHeaderCollection": "4.0.1",
+        "System.Reflection": "4.1.0",
+        "System.Reflection.TypeExtensions": "4.1.0",
+        "System.Security.Cryptography.Algorithms": "4.2.0",
+        "System.Text.Encodings.Web": "4.0.0",
+        "System.Xml.XmlDocument": "4.0.1",
+        "Newtonsoft.Json": "9.0.1"
+      }
+    }
+  }
+}
