@@ -47,18 +47,17 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.3" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
+  <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
     <DefineConstants>TRACE;DEBUG;NET40;NET</DefineConstants>
     <DocumentationFile>bin\Debug\net40\Rabbit.WeiXin.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <DefineConstants>TRACE;DEBUG;NET45;NET</DefineConstants>
     <DocumentationFile>bin\Debug\net45\Rabbit.WeiXin.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.6|AnyCPU'">
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.6'">
     <DocumentationFile>bin\Debug\netstandard1.6\Rabbit.WeiXin.xml</DocumentationFile>
   </PropertyGroup>
-
 </Project>

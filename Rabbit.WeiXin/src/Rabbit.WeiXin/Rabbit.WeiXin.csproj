@@ -20,20 +20,6 @@
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET40;NET</DefineConstants>
-    <DocumentationFile>bin\Debug\net40\Rabbit.WeiXin.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NET45;NET</DefineConstants>
-    <DocumentationFile>bin\Debug\net45\Rabbit.WeiXin.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.6|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.6\Rabbit.WeiXin.xml</DocumentationFile>
-  </PropertyGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <Reference Include="System.Web" />
@@ -68,4 +54,18 @@
     <PackageReference Include="System.Xml.XmlDocument" Version="4.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
+    <DefineConstants>TRACE;DEBUG;NET40;NET</DefineConstants>
+    <DocumentationFile>bin\Debug\net40\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
+    <DefineConstants>TRACE;DEBUG;NET45;NET</DefineConstants>
+    <DocumentationFile>bin\Debug\net45\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.6'">
+    <DocumentationFile>bin\Debug\netstandard1.6\Rabbit.WeiXin.xml</DocumentationFile>
+  </PropertyGroup>
 </Project>
