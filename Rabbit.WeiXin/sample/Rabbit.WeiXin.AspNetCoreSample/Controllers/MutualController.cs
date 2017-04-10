@@ -1,21 +1,38 @@
-﻿using Rabbit.WeiXin.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc;
+using Rabbit.WeiXin.AspNetCoreSample.Handlers;
+using Rabbit.WeiXin.DependencyInjection;
 using Rabbit.WeiXin.Handlers;
 using Rabbit.WeiXin.Handlers.Impl;
 using Rabbit.WeiXin.MvcExtension.Results;
-using Rabbit.WeiXin.Sample.Handlers;
 using System;
+using System.IO;
 using System.Text;
-using System.Web.Mvc;
 
-namespace Rabbit.WeiXin.Sample.Controllers
+namespace Rabbit.WeiXin.AspNetCoreSample.Controllers
 {
+    public class WeChatConfig
+    {
+        public static WeChatConfig Instance { get; } = new WeChatConfig
+        {
+            AppId = "appId",
+            EncodingAesKey = "encodingAesKey",
+            Token = "token"
+        };
+
+        public string AppId { get; set; }
+        public string Token { get; set; }
+        public string EncodingAesKey { get; set; }
+    }
+
     public class MutualController : Controller
     {
+        private readonly WeChatConfig _weChatConfig = WeChatConfig.Instance;
+
         [HttpGet]
         public string Index(string signature, string timestamp, string nonce, string echostr)
         {
             var signatureService = DefaultDependencyResolver.Instance.GetService<ISignatureService>();
-            if (signatureService.Check(signature, timestamp, nonce, "weixin"))
+            if (signatureService.Check(signature, timestamp, nonce, _weChatConfig.Token))
                 return echostr;
 
             throw new Exception("非法请求。");
@@ -33,16 +50,22 @@ namespace Rabbit.WeiXin.Sample.Controllers
                 .Use<IgnoreRepeatMessageHandlerMiddleware>() //忽略重复的消息中间件。
                 .Use<TestMessageHandlerMiddleware>() //测试消息处理中间件。
                 .Use<GenerateResponseXmlHandlerMiddleware>(); //生成相应XML处理中间件（内置消息加密逻辑）。
-            //                            .Use<AgentHandlerMiddleware>(new AgentRequestModel(new Uri("http://localhost:22479/Mutual")));
+                                                              //                            .Use<AgentHandlerMiddleware>(new AgentRequestModel(new Uri("http://localhost:22479/Mutual")));
 
-            var context = new HandlerContext(Request);
+            string content;
+            using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                content = reader.ReadToEnd();
+            }
+
+            var context = new HandlerContext(content);
 
             //设置基本信息。
             context
                 .SetMessageHandlerBaseInfo(new MessageHandlerBaseInfo(
-                    "wxa4ab3e636e2eb702",
-                    "q0OlAOdGzpmm5B8HEqycylcn17nUp25HG04dr7KD6ET",
-                    "weixin"));
+                    _weChatConfig.AppId,
+                    _weChatConfig.EncodingAesKey,
+                    _weChatConfig.Token));
 
             IWeiXinHandler weiXinHandler = new DefaultWeiXinHandler(builder);
             weiXinHandler.Execute(context);

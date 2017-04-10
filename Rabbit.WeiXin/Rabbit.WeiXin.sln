@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rabbit.WeiXin.Tests", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{C31BB725-27AA-4E1B-BA23-181DABBE6D77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.WeiXin.AspNetCoreSample", "sample\Rabbit.WeiXin.AspNetCoreSample\Rabbit.WeiXin.AspNetCoreSample.csproj", "{83C4DECF-4413-417B-BDF1-B0D8A0CA710B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{612F2AA4-BC2F-442C-B151-560D75F30A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{612F2AA4-BC2F-442C-B151-560D75F30A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{612F2AA4-BC2F-442C-B151-560D75F30A67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83C4DECF-4413-417B-BDF1-B0D8A0CA710B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83C4DECF-4413-417B-BDF1-B0D8A0CA710B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83C4DECF-4413-417B-BDF1-B0D8A0CA710B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83C4DECF-4413-417B-BDF1-B0D8A0CA710B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,5 +47,6 @@ Global
 		{7EF14100-118E-4BD9-B661-D44C4AC95EEA} = {0DB7779A-D1BA-4E91-AA87-47B5E83ECE4B}
 		{1C5AE5A8-AC04-4284-98BD-0BD741D4CCFC} = {0DB7779A-D1BA-4E91-AA87-47B5E83ECE4B}
 		{612F2AA4-BC2F-442C-B151-560D75F30A67} = {5484D81C-A46E-4191-BB36-1C0C4F0B8121}
+		{83C4DECF-4413-417B-BDF1-B0D8A0CA710B} = {C31BB725-27AA-4E1B-BA23-181DABBE6D77}
 	EndGlobalSection
 EndGlobal

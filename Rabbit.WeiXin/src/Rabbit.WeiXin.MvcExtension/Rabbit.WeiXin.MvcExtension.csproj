@@ -12,8 +12,6 @@
     <PackageIconUrl>http://www.rabbithub.com/icon.png</PackageIconUrl>
     <PackageProjectUrl>http://rabbitteam.github.io/WeiXinSDK</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/RabbitTeam/WeiXinSDK/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.0</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
