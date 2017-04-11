@@ -1,4 +1,4 @@
-﻿#if NET45 || NET451 || NETSTANDARD1_3
+﻿#if NET45 || NET451 || NETSTANDARD1_6
 
 using Rabbit.WeiXin.MP.Messages.Events;
 using Rabbit.WeiXin.MP.Messages.Events.CustomMenu;
@@ -15,7 +15,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
     /// </summary>
     public abstract class MessageHandlerMiddlewareAsync : HandlerMiddleware
     {
-#region Constructor
+        #region Constructor
 
         /// <summary>
         /// 初始化一个新的处理中间件。
@@ -26,18 +26,18 @@ namespace Rabbit.WeiXin.Handlers.Impl
         {
         }
 
-#endregion Constructor
+        #endregion Constructor
 
-#region Property
+        #region Property
 
         /// <summary>
         /// 处理上下文。
         /// </summary>
         protected IHandlerContext Context { get; private set; }
 
-#endregion Property
+        #endregion Property
 
-#region Overrides of HandlerMiddleware
+        #region Overrides of HandlerMiddleware
 
         /// <summary>
         /// 调用。
@@ -102,9 +102,9 @@ namespace Rabbit.WeiXin.Handlers.Impl
             await Next.Invoke(context);
         }
 
-#endregion Overrides of HandlerMiddleware
+        #endregion Overrides of HandlerMiddleware
 
-#region Receive Message
+        #region Receive Message
 
         /// <summary>
         /// 文字类型请求
@@ -215,7 +215,8 @@ namespace Rabbit.WeiXin.Handlers.Impl
                     break;
 
                 case EventType.ScanCode_Push:
-                    responseMessage = await OnEvent_ScancodePushRequest(requestMessage as ScanCodePushMessage);
+                    await OnEvent_ScancodePushRequest(requestMessage as ScanCodePushMessage);
+                    responseMessage = null;
                     break;
 
                 case EventType.ScanCode_WaitMsg:
@@ -251,7 +252,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
             return responseMessage;
         }
 
-#region Event Push
+        #region Event Push
 
         /// <summary>
         /// Event事件类型请求之LOCATION
@@ -341,9 +342,13 @@ namespace Rabbit.WeiXin.Handlers.Impl
         /// 扫码推事件
         /// </summary>
         /// <returns></returns>
-        public virtual Task<IResponseMessage> OnEvent_ScancodePushRequest(ScanCodePushMessage requestMessage)
+        public virtual Task OnEvent_ScancodePushRequest(ScanCodePushMessage requestMessage)
         {
-            return Task.FromResult<IResponseMessage>(null);
+#if NET45
+            return Task.FromResult(0);
+#else
+            return Task.CompletedTask;
+#endif
         }
 
         /// <summary>
@@ -410,9 +415,9 @@ namespace Rabbit.WeiXin.Handlers.Impl
             return Task.FromResult<IResponseMessage>(null);
         }
 
-#endregion Event Push
+        #endregion Event Push
 
-#endregion Receive Message
+        #endregion Receive Message
     }
 }
 

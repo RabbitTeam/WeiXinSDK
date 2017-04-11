@@ -16,6 +16,8 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.3.0.1</FileVersion>
+    <Version>0.3.1</Version>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">

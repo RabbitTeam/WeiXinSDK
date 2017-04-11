@@ -213,7 +213,8 @@ namespace Rabbit.WeiXin.Handlers.Impl
                     break;
 
                 case EventType.ScanCode_Push:
-                    responseMessage = OnEvent_ScancodePushRequest(requestMessage as ScanCodePushMessage);
+                    OnEvent_ScancodePushRequest(requestMessage as ScanCodePushMessage);
+                    responseMessage = null;
                     break;
 
                 case EventType.ScanCode_WaitMsg:
@@ -339,9 +340,8 @@ namespace Rabbit.WeiXin.Handlers.Impl
         /// 扫码推事件
         /// </summary>
         /// <returns></returns>
-        public virtual IResponseMessage OnEvent_ScancodePushRequest(ScanCodePushMessage requestMessage)
+        public virtual void OnEvent_ScancodePushRequest(ScanCodePushMessage requestMessage)
         {
-            return null;
         }
 
         /// <summary>
