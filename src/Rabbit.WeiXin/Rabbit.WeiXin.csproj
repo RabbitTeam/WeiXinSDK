@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>微信开发SDK。</Description>
+    <PackageReleaseNotes>解决读取Response Stream时失败的问题。</PackageReleaseNotes>
     <Copyright>© RabbitHub. All rights reserved.</Copyright>
     <VersionPrefix>0.3</VersionPrefix>
     <Authors>majian</Authors>
@@ -16,8 +17,8 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.3.1.0</FileVersion>
-    <Version>0.3.1</Version>
+    <FileVersion>0.3.2.0</FileVersion>
+    <Version>0.3.2</Version>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">

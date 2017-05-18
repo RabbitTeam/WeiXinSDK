@@ -90,12 +90,12 @@ namespace Rabbit.WeiXin.Utility
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
 #if NET
-                        using (var response = request.GetResponse())
+            using (var response = request.GetResponse())
             {
                 using (var responseStream = response.GetResponseStream())
                 {
                     responseHeaders = response.Headers;
-                    return responseStream.ReadBytes();
+                    return responseStream.ReadBytes(response.ContentLength);
                 }
             }
 #else
@@ -105,7 +105,7 @@ namespace Rabbit.WeiXin.Utility
                  {
                      using (var responseStream = response.GetResponseStream())
                      {
-                         return new KeyValuePair<byte[], WebHeaderCollection>(responseStream.ReadBytes(), response.Headers);
+                         return new KeyValuePair<byte[], WebHeaderCollection>(responseStream.ReadBytes(response.ContentLength), response.Headers);
                      }
                  }
              }).Result;
@@ -121,17 +121,17 @@ namespace Rabbit.WeiXin.Utility
             request.Method = "POST";
             request.ContentType = contentType;
 #if NET
-                using (var requestStream = request.GetRequestStream())
+            using (var requestStream = request.GetRequestStream())
+            {
+                requestStream.Write(postData, 0, postData.Length);
+                using (var response = request.GetResponse())
                 {
-                    requestStream.Write(postData, 0, postData.Length);
-                    using (var response = request.GetResponse())
+                    using (var responseStream = response.GetResponseStream())
                     {
-                        using (var responseStream = response.GetResponseStream())
-                        {
-                            return responseStream.ReadBytes();
-                        }
+                        return responseStream.ReadBytes();
                     }
                 }
+            }
 #else
             return Task.Run(async () =>
             {
