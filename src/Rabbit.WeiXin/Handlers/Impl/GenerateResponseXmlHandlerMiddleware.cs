@@ -53,9 +53,8 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 if (!string.IsNullOrWhiteSpace(content))
                 {
                     var parameters = context.GetRequestParameters();
-                    var encryptType = parameters["encrypt_type"];
 
-                    if (encryptType != null)
+                    if (parameters.ContainsKey("encrypt_type"))
                     {
                         var nonce = parameters["nonce"];
                         var timestamp = parameters["timestamp"];

@@ -5,8 +5,8 @@ using Rabbit.WeiXin.Utility.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 #if NET
 
@@ -89,7 +89,7 @@ namespace Rabbit.WeiXin.Handlers
         {
             Request = request.NotNull("request");
             Environment = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            Content = Encoding.UTF8.GetString(request.InputStream.ReadBytes());
+            Content = Encoding.UTF8.GetString(request.InputStream.ReadBytes(request.ContentLength));
             this.SetRequestParameters(request.QueryString.AllKeys.ToDictionary(i => i, i => request.QueryString[i]));
 
             //设置默认的依赖解析器。

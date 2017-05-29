@@ -128,7 +128,7 @@ namespace Rabbit.WeiXin.Utility
                 {
                     using (var responseStream = response.GetResponseStream())
                     {
-                        return responseStream.ReadBytes();
+                        return responseStream.ReadBytes(response.ContentLength);
                     }
                 }
             }
@@ -142,7 +142,7 @@ namespace Rabbit.WeiXin.Utility
                     {
                         using (var responseStream = response.GetResponseStream())
                         {
-                            return responseStream.ReadBytes();
+                            return responseStream.ReadBytes(response.ContentLength);
                         }
                     }
                 }

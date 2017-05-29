@@ -36,9 +36,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
 
             #region Decrypt
 
-            var encryptType = parameters["encrypt_type"];
-
-            if (encryptType != null)
+            if (parameters.ContainsKey("encrypt_type"))
             {
                 var nonce = parameters["nonce"];
                 var signature = parameters["msg_signature"];
