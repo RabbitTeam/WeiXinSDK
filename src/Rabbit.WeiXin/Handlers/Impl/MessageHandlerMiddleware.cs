@@ -48,6 +48,8 @@ namespace Rabbit.WeiXin.Handlers.Impl
 
             var requestMessage = context.GetRequestMessage();
 
+            OnRequestBefore(requestMessage);
+
             IResponseMessage responseMessage;
             switch (requestMessage.MessageType)
             {
@@ -95,6 +97,8 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 responseMessage.ToUserName = requestMessage.FromUserName;
             }
 
+            OnRequestAfter(requestMessage, responseMessage);
+
             context.SetResponseMessage(responseMessage);
 
             return Next.Invoke(context);
@@ -103,6 +107,25 @@ namespace Rabbit.WeiXin.Handlers.Impl
         #endregion Overrides of HandlerMiddleware
 
         #region Receive Message
+
+        /// <summary>
+        /// 前置处理
+        /// </summary>
+        /// <param name="requestMessage">请求消息</param>
+        public virtual void OnRequestBefore(IRequestMessageBase requestMessage)
+        {
+
+        }
+
+        /// <summary>
+        /// 后置处理
+        /// </summary>
+        /// <param name="requestMessage">请求消息</param>
+        /// <param name="responseMessage">响应消息</param>
+        public virtual void OnRequestAfter(IRequestMessageBase requestMessage, IResponseMessage responseMessage)
+        {
+
+        }
 
         /// <summary>
         /// 文字类型请求
