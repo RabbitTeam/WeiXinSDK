@@ -15,6 +15,11 @@
             get { return EventType.Subscribe; }
         }
 
+        /// <summary>
+        /// 扫码的Secene值
+        /// </summary>
+        public string SeceneValue => EventKey.Substring(8);
+
         #endregion Overrides of EventMessageBase
     }
 }
