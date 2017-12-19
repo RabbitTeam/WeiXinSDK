@@ -47,7 +47,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
             Context = context;
 
             var requestMessage = context.GetRequestMessage();
-
+             
             IResponseMessage responseMessage;
             switch (requestMessage.MessageType)
             {
@@ -93,7 +93,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
                 responseMessage.CreateTime = DateTime.Now;
                 responseMessage.FromUserName = requestMessage.ToUserName;
                 responseMessage.ToUserName = requestMessage.FromUserName;
-            }
+            } 
 
             context.SetResponseMessage(responseMessage);
 
@@ -103,7 +103,7 @@ namespace Rabbit.WeiXin.Handlers.Impl
         #endregion Overrides of HandlerMiddleware
 
         #region Receive Message
-
+         
         /// <summary>
         /// 文字类型请求
         /// </summary>
