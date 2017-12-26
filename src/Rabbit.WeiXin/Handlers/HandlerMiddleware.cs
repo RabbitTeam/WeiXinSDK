@@ -14,35 +14,14 @@ namespace Rabbit.WeiXin.Handlers
         /// <param name="next">下一个处理中间件。</param>
         protected HandlerMiddleware(HandlerMiddleware next)
         {
-            Next = next;
-            MiddleBag = new Dictionary<string, object>();
-            if (next != null && MiddleBag.Count > 0)
-            {
-                foreach (var item in MiddleBag)
-                {
-                    if (next.MiddleBag.ContainsKey(item.Key))
-                    {
-                        next.MiddleBag[item.Key] = item.Value;
-                    }
-                    else
-                    {
-                        next.MiddleBag.Add(item.Key, item.Value);
-                    }
-                }
-
-            }
+            Next = next; 
         }
 
         /// <summary>
         /// 下一个处理中间件。
         /// </summary>
         protected HandlerMiddleware Next { get; private set; }
-
-        /// <summary>
-        /// 中间件消息传递器
-        /// </summary>
-        protected Dictionary<string, object> MiddleBag { get; private set; } = new Dictionary<string, object>();
-
+         
         /// <summary>
         /// 调用。
         /// </summary>
