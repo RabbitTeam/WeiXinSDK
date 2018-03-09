@@ -21,5 +21,10 @@ namespace Rabbit.WeiXin.MP.Api
         /// 获取调用接口凭证。
         /// </summary>
         public Func<string> GetAccessToken { get; set; }
+
+        /// <summary>
+        /// 获取Js调用接口凭证。
+        /// </summary>
+        public Func<string> GetJsApiTicket { get; set; }
     }
 }
