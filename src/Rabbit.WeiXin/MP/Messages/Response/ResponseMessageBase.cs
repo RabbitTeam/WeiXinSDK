@@ -6,12 +6,7 @@ namespace Rabbit.WeiXin.MP.Messages.Response
     /// 响应消息类型。
     /// </summary>
     public enum ResponseMessageType
-    { 
-        /// <summary>
-        /// 空消息
-        /// </summary>
-        Empty = -1,
-
+    {
         /// <summary>
         /// 文本消息。
         /// </summary>

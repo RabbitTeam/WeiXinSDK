@@ -56,8 +56,7 @@ namespace Rabbit.WeiXin.MP.Serialization
             {ResponseMessageType.Text, new response.TextMessageFormatter()},
             {ResponseMessageType.TransferCustomerServic, new response.TransferCustomerServiceMessageFormatter()},
             {ResponseMessageType.Video, new response.VideoMessageFormatter()},
-            {ResponseMessageType.Voice, new response.VoiceMessageFormatter()},
-            {ResponseMessageType.Empty, new response.EmptyMessageFormatter()}
+            {ResponseMessageType.Voice, new response.VoiceMessageFormatter()}
         };
 
         #endregion Field
