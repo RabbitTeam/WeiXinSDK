@@ -322,7 +322,7 @@ namespace Rabbit.WeiXin.MP.Api.OAuth
         public string NickName { get; set; }
 
         /// <summary>
-        /// 性别（0：位置，1：男，2：女）
+        /// 性别（0：未知，1：男，2：女）
         /// </summary>
         [JsonProperty("sex")]
         internal int SexNumber { get; set; }
