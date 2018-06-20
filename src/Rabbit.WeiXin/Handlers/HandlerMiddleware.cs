@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Rabbit.WeiXin.Handlers
 {
@@ -13,14 +14,14 @@ namespace Rabbit.WeiXin.Handlers
         /// <param name="next">下一个处理中间件。</param>
         protected HandlerMiddleware(HandlerMiddleware next)
         {
-            Next = next;
+            Next = next; 
         }
 
         /// <summary>
         /// 下一个处理中间件。
         /// </summary>
         protected HandlerMiddleware Next { get; private set; }
-
+         
         /// <summary>
         /// 调用。
         /// </summary>

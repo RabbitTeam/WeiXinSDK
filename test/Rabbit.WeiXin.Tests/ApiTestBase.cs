@@ -29,7 +29,8 @@ namespace Rabbit.WeiXin.Tests
             {
                 AppId = AppId,
                 AppSecret = AppSecret,
-                GetAccessToken = GetAccessToken
+                GetAccessToken = GetAccessToken,
+                GetJsApiTicket = GetJsApiTicket,
             };
             CommonService = new CommonService(AccountModel);
         }
@@ -41,6 +42,11 @@ namespace Rabbit.WeiXin.Tests
         protected string GetAccessToken()
         {
             return CommonService.GetAccessToken().AccessToken;
+        }
+
+        protected string GetJsApiTicket()
+        {
+            return CommonService.GetJsApiTicket().Ticket;
         }
 
         #endregion Protected Method

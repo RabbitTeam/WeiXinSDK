@@ -20,6 +20,13 @@ namespace Rabbit.WeiXin.MP.Api
         AccessTokenModel GetAccessToken(bool ignoreCached = false);
 
         /// <summary>
+        /// 获取JsApi的全局唯一票据。
+        /// </summary>
+        /// <param name="ignoreCached">是否忽略缓存。</param>
+        /// <returns>第三方用户唯一凭证密钥。</returns>
+        JsApiTicketModel GetJsApiTicket(bool ignoreCached = false);
+
+        /// <summary>
         /// 将一个url地址转换成一个短地址。
         /// </summary>
         /// <param name="url">url地址。</param>
@@ -44,6 +51,9 @@ namespace Rabbit.WeiXin.MP.Api
         private static readonly ConcurrentDictionary<string, AccessTokenModel> Dictionary = new ConcurrentDictionary<string, AccessTokenModel>();
         private readonly Lazy<AccessTokenModel> _accessTokenLazy;
 
+        private static readonly ConcurrentDictionary<string, JsApiTicketModel> JsDictionary = new ConcurrentDictionary<string, JsApiTicketModel>();
+        private readonly Lazy<JsApiTicketModel> _jsApiTicketLazy;
+
         #endregion Field
 
         #region Constructor
@@ -56,6 +66,7 @@ namespace Rabbit.WeiXin.MP.Api
         {
             _accountModel = accountModel;
             _accessTokenLazy = new Lazy<AccessTokenModel>(InternalGetAccessToken);
+            _jsApiTicketLazy = new Lazy<JsApiTicketModel>(InternalGetJsApiTicket);
         }
 
         #endregion Constructor
@@ -75,6 +86,23 @@ namespace Rabbit.WeiXin.MP.Api
                 //无效、过期、忽略缓存则重新获取。
                 if (model == null || model.IsExpired() || ignoreCached)
                     return InternalGetAccessToken();
+                return model;
+            });
+        }
+
+        /// <summary>
+        /// 获取JsApi的全局唯一票据。
+        /// </summary>
+        /// <param name="ignoreCached">是否忽略缓存。</param>
+        /// <returns>第三方用户唯一凭证密钥。</returns>
+        public JsApiTicketModel GetJsApiTicket(bool ignoreCached = false)
+        {
+            var appId = _accountModel.AppId;
+            return JsDictionary.AddOrUpdate(appId, key => _jsApiTicketLazy.Value, (k, model) =>
+            {
+                //无效、过期、忽略缓存则重新获取。
+                if (model == null || model.IsExpired() || ignoreCached)
+                    return InternalGetJsApiTicket();
                 return model;
             });
         }
@@ -127,6 +155,13 @@ namespace Rabbit.WeiXin.MP.Api
             return WeiXinHttpHelper.GetResultByJson<AccessTokenModel>(url);
         }
 
+        private JsApiTicketModel InternalGetJsApiTicket()
+        {
+            var accessToken = _accountModel.GetAccessToken();
+            var url = string.Format("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type=jsapi", accessToken);
+            return WeiXinHttpHelper.GetResultByJson<JsApiTicketModel>(url);
+        }
+
         #endregion Private Method
     }
 
@@ -154,6 +189,51 @@ namespace Rabbit.WeiXin.MP.Api
         /// </summary>
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
+
+        /// <summary>
+        /// 凭证有效时间（秒）。
+        /// </summary>
+        [JsonProperty("expires_in")]
+        public int ExpiresIn { get; set; }
+
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
+        [JsonIgnore]
+        public DateTime CreateTime { get; private set; }
+
+        /// <summary>
+        /// 是否过期。
+        /// </summary>
+        /// <returns>如果过期返回true，否则返回false。</returns>
+        public bool IsExpired()
+        {
+            return CreateTime.AddSeconds(ExpiresIn - 20/*不采用最后的期限作为判断，防止在很少的时间内到期导致后续的逻辑无法执行*/) <= DateTime.Now;
+        }
+    }
+
+    /// <summary>
+    /// 获取JsApi全局唯一票据结果模型
+    /// </summary>
+    public sealed class JsApiTicketModel
+    {
+        #region Constructor
+
+        /// <summary>
+        /// 初始化一个新的JsApi的全局唯一票据。
+        /// </summary>
+        public JsApiTicketModel()
+        {
+            CreateTime = DateTime.Now;
+        }
+
+        #endregion Constructor
+
+        /// <summary>
+        /// 全局唯一票据
+        /// </summary>
+        [JsonProperty("ticket")]
+        public string Ticket { get; set; }
 
         /// <summary>
         /// 凭证有效时间（秒）。

@@ -31,6 +31,23 @@ namespace Rabbit.WeiXin.Tests
         }
 
         [Fact]
+        public void GetJsApiTicketTest()
+        {
+            Func<bool, JsApiTicketModel> get =
+                ignoreCached => CommonService.GetJsApiTicket(ignoreCached);
+
+            var model = get(false);
+
+            Assert.NotNull(model.Ticket);
+
+            Assert.False(model.IsExpired());
+
+            var model2 = get(false);
+            Assert.Equal(model.Ticket, model2.Ticket);
+            Assert.False(model2.IsExpired()); 
+        }
+
+        //[Fact]
         public void GenerateShotAddressTest()
         {
             const string url = "http://cn.bing.com/search?q=windows10&go=%E6%8F%90%E4%BA%A4&qs=n&form=QBLH&pq=windows10&sc=8-9&sp=-1&sk=&ghc=1&cvid=6d333afcfbec4834bbf3ce592b699f66";
